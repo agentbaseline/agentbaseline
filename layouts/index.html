@@ -106,16 +106,37 @@
   nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
   ol.factors > li { scroll-margin-top:20px; }
 
-  ol.questions { list-style:none; margin:34px 0 30px; padding:0;
-    counter-reset:q; border-top:1px solid var(--line); }
-  ol.questions li { counter-increment:q; padding:16px 0; border-bottom:1px solid var(--line);
-    display:grid; grid-template-columns:30px 1fr; gap:3px 12px; }
-  ol.questions li::before { content:counter(q); grid-row:1/3;
-    font-family:var(--mono); font-size:12px; color:var(--faint); padding-top:5px;
-    font-variant-numeric:tabular-nums; }
-  ol.questions .q { font-size:18.5px; font-weight:700; text-wrap:balance; }
-  ol.questions .a { font-family:var(--mono); font-size:12.5px; color:var(--accent);
-    letter-spacing:.03em; }
+  /* Rail colours match Figure 1's three bands, so the list and the figure
+     reference each other without either restating the other's content. */
+  ol.questions { list-style:none; margin:36px 0 34px; padding:0; counter-reset:q;
+    display:flex; flex-direction:column; gap:2px; }
+  ol.questions li { counter-increment:q; padding:18px 0 18px 22px;
+    border-left:3px solid var(--rail); background:linear-gradient(
+      to right, color-mix(in srgb, var(--rail) 7%, transparent), transparent 62%); }
+  ol.questions .q1 { --rail:#4A3FB0; }
+  ol.questions .q2 { --rail:#12457F; }
+  ol.questions .q3 { --rail:#1F5F3B; }
+  @media (prefers-color-scheme:dark) {
+    ol.questions .q1 { --rail:#9B8FEA; } ol.questions .q2 { --rail:#6FA8E8; }
+    ol.questions .q3 { --rail:#6FC291; } }
+  :root[data-theme="dark"] ol.questions .q1 { --rail:#9B8FEA; }
+  :root[data-theme="dark"] ol.questions .q2 { --rail:#6FA8E8; }
+  :root[data-theme="dark"] ol.questions .q3 { --rail:#6FC291; }
+  /* The toggle must win in BOTH directions: without these, a light stamp on a
+     dark-preferring OS still picks up the media query's dark rails. */
+  :root[data-theme="light"] ol.questions .q1 { --rail:#4A3FB0; }
+  :root[data-theme="light"] ol.questions .q2 { --rail:#12457F; }
+  :root[data-theme="light"] ol.questions .q3 { --rail:#1F5F3B; }
+  ol.questions .q { display:block; font-size:21px; font-weight:700;
+    line-height:1.35; text-wrap:balance; }
+  ol.questions .q::before { content:counter(q); font-family:var(--mono);
+    font-size:11.5px; font-weight:700; color:var(--rail); vertical-align:6px;
+    margin-right:11px; }
+  ol.questions .a { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  ol.questions .a a { font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--rail); text-decoration:none; border:1px solid var(--rail);
+    border-radius:3px; padding:3px 9px; }
+  ol.questions .a a:hover { background:var(--rail); color:var(--paper); }
 
   ol.controls { list-style:none; margin:18px 0 4px; padding:0; grid-column:2;
     border-top:1px solid var(--line); }
@@ -191,12 +212,12 @@
   </div>
 
   <ol class="questions">
-    <li><span class="q">What is operating, and under whose authority?</span>
-        <span class="a">Discover · Authorize</span></li>
-    <li><span class="q">Is it staying inside approved boundaries?</span>
-        <span class="a">Constrain · Validate</span></li>
-    <li><span class="q">Can you prove what happened — and stop it?</span>
-        <span class="a">Observe · Respond</span></li>
+    <li class="q1"><span class="q">What is operating, and under whose authority?</span>
+      <span class="a"><a href="/controls/#discover">Discover</a><a href="/controls/#authorize">Authorize</a></span></li>
+    <li class="q2"><span class="q">Is it staying inside approved boundaries?</span>
+      <span class="a"><a href="/controls/#constrain">Constrain</a><a href="/controls/#validate">Validate</a></span></li>
+    <li class="q3"><span class="q">Can you prove what happened — and stop it?</span>
+      <span class="a"><a href="/controls/#observe">Observe</a><a href="/controls/#respond">Respond</a></span></li>
   </ol>
 
   <div class="prose">
@@ -227,7 +248,7 @@
 
   <figure class="fig1">
     {{ partial "figure-1.svg" . }}
-    <figcaption><strong>Figure 1.</strong> The six outcomes, grouped by the question each pair answers. Take it into a vendor conversation and ask which they cover.</figcaption>
+    <figcaption><strong>Figure 1.</strong> The same six, by scope. One is a standing inventory, three are gates in the path of a single action, and two span every run.</figcaption>
   </figure>
 
   <h2>What this is</h2>

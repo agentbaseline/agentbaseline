@@ -50,18 +50,33 @@ for a in boxes:
         errors.append(f"text outside canvas: {a['tag']!r} at "
                       f"({a['x']:.0f},{a['y']:.0f}) {a['w']:.0f}×{a['h']:.0f}, canvas {W}×{H}")
 
-# 3. text straddling a rect edge — the failure that produced the clipped terminal
-rects = [(float(m[0]), float(m[1]), float(m[2]), float(m[3]))
-         for m in re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" '
-                             r'height="([\d.]+)"[^>]*class="(?:band|cell)', svg)]
+# 3. containment — a text run that visually sits in a box must be fully inside it.
+#    Earlier versions only caught text LEAVING a box horizontally, and missed both
+#    text entering from outside (the scope rail running into the band) and text
+#    falling out of the bottom (the Observe gloss).
+rects = [(float(a), float(b), float(w), float(h)) for a, b, w, h in
+         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
+                    r'[^>]*class="(?:band|cell)', svg)]
+
+def spans(a, lo, hi, key, size):
+    return a[key] < hi and a[key] + a[size] > lo
+
 for a in boxes:
+    cy = a["y"] + a["h"] / 2
     for rx, ry, rw, rh in rects:
-        inside_x = rx <= a["x"] and a["x"] + a["w"] <= rx + rw
-        starts_in = rx <= a["x"] <= rx + rw
-        vert = ry <= a["y"] + a["h"] / 2 <= ry + rh
-        if vert and starts_in and not inside_x:
-            errors.append(f"text crosses a box edge: {a['tag']!r} runs to "
-                          f"{a['x']+a['w']:.0f}, box ends {rx+rw:.0f}")
+        touches_v = ry < cy < ry + rh
+        touches_h = spans(a, rx, rx + rw, "x", "w")
+        if not (touches_v and touches_h):
+            continue
+        if a["x"] < rx - 0.5:
+            errors.append(f"text enters a box from outside: {a['tag']!r} starts "
+                          f"{rx - a['x']:.0f}px left of a box at x={rx:.0f}")
+        if a["x"] + a["w"] > rx + rw + 0.5:
+            errors.append(f"text leaves a box: {a['tag']!r} runs to {a['x']+a['w']:.0f}, "
+                          f"box ends {rx+rw:.0f}")
+        if a["y"] < ry - 0.5 or a["y"] + a["h"] > ry + rh + 0.5:
+            errors.append(f"text overflows a box vertically: {a['tag']!r} spans "
+                          f"{a['y']:.0f}..{a['y']+a['h']:.0f}, box {ry:.0f}..{ry+rh:.0f}")
 
 # 3b. cells must nest inside their band, with clearance
 bands = [(float(a),float(b),float(w),float(h)) for a,b,w,h in
