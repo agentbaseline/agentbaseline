@@ -1,0 +1,70 @@
+# Contributors — the authority argument for this document.
+#
+# People, not logos. Named individuals with their affiliation and the sections
+# they wrote. Sourced from the drafting record: the Technical DRI line, the
+# per-section author headings, and the band-ownership table.
+#
+# ⟡ Entries marked `confirmed: false` are inferred from the drafting record and
+#   MUST be verified with the person before publication. Do not publish an
+#   affiliation or an email that person has not agreed to.
+---
+statement: >-
+  Drafted jointly by engineers at Docker, Snyk and Keycard. Sections are
+  attributed to the people who wrote them.
+
+contributors:
+  - name: Ranti Familusi
+    affiliation: Docker
+    role: Technical DRI
+    sections:
+      - Runtime isolation
+      - Agentic recovery and replay
+      - Reference architecture
+    confirmed: true
+
+  - name: Chris Huszcza
+    affiliation: Snyk
+    email: chris.huszcza@snyk.io
+    role: Technical DRI
+    sections:
+      - Discover
+      - Constrain — composition and supply-chain enforcement
+      - Validate
+      - Supply-chain and tool verification
+      - Agent-native observability
+    confirmed: true
+
+  - name: David Schott
+    affiliation: Snyk
+    role: Technical DRI
+    sections: []
+    confirmed: true
+
+  - name: Kamil Potrec
+    affiliation: Keycard
+    email: kamil@keycard.ai
+    role: Technical DRI · editor
+    sections:
+      - Editorial integration
+      - Control catalogue
+    confirmed: true
+
+  # ⟡ Named in the drafting record by first name only. Wrote three sections,
+  #   all mapped to Keycard-owned rows in the band-ownership table, so the
+  #   affiliation below is INFERRED. Confirm surname, affiliation and email.
+  - name: Jelmer
+    affiliation: Keycard
+    role: Section author
+    sections:
+      - Identity and attribution
+      - Delegated authorization and policy
+      - Accountability
+    confirmed: false
+
+  # ⟡ Appears as a second reviewer on supply-chain, paired with Ranti.
+  #   Affiliation and surname unknown. Confirm whether this is authorship or review.
+  - name: William
+    affiliation: ~
+    role: Reviewer — supply-chain and tool verification
+    sections: []
+    confirmed: false

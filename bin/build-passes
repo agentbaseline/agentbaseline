@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+"""Render docs/passes/index.html — every pass, newest first, for side-by-side review."""
+import pathlib, re, html, datetime
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+P = ROOT / "docs/passes"
+passes = sorted([d for d in P.iterdir() if d.is_dir() and re.fullmatch(r"v\d+", d.name)],
+                key=lambda d: int(d.name[1:]), reverse=True)
+cards = []
+for d in passes:
+    label = (d / "LABEL").read_text().strip() if (d / "LABEL").exists() else ""
+    svg = (d / "figure-1.svg").read_text() if (d / "figure-1.svg").exists() else ""
+    svg = re.sub(r'\swidth="\d+"\s+height="\d+"', ' width="100%"', svg, count=1)
+    size = (d / "index.html").stat().st_size if (d / "index.html").exists() else 0
+    ctl = re.search(r'(\d+) controls', svg)
+    cards.append(f'''
+<section class="pass">
+  <header>
+    <span class="v">{d.name}</span>
+    <span class="label">{html.escape(label)}</span>
+    <span class="meta">page {size:,} bytes{" · " + ctl.group(0) if ctl else ""}</span>
+  </header>
+  <div class="fig">{svg}</div>
+  <p class="links"><a href="{d.name}/index.html">open the page for {d.name} →</a></p>
+</section>''')
+
+out = f'''<title>Agent Baseline — design passes</title>
+<style>
+ :root {{ --paper:#FFF; --ink:#222422; --soft:#5C605C; --faint:#909490; --line:#E6E7E4; --mark:#B3541E;
+   --serif:Charter,"Iowan Old Style",Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace; }}
+ @media (prefers-color-scheme:dark) {{ :root {{ --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8;
+   --faint:#7C807C; --line:#2F312F; --mark:#E08050; }} }}
+ :root[data-theme=light] {{ --paper:#FFF; --ink:#222422; --soft:#5C605C; --faint:#909490; --line:#E6E7E4; --mark:#B3541E; }}
+ :root[data-theme=dark] {{ --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8; --faint:#7C807C; --line:#2F312F; --mark:#E08050; }}
+ body {{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--serif);
+   font-size:17px; line-height:1.65; }}
+ .wrap {{ max-width:1040px; margin:0 auto; padding:48px 24px 96px; }}
+ h1 {{ font-size:30px; margin:0 0 8px; letter-spacing:-.01em; }}
+ .sub {{ font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:0 0 40px; line-height:1.9; }}
+ .pass {{ border-top:1px solid var(--line); padding:28px 0 8px; }}
+ .pass header {{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:18px; }}
+ .v {{ font-family:var(--mono); font-size:13px; font-weight:700; color:var(--mark);
+   letter-spacing:.06em; }}
+ .label {{ font-size:19px; font-weight:700; }}
+ .meta {{ font-family:var(--mono); font-size:11px; color:var(--faint); margin-left:auto; }}
+ .fig {{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#FFF; }}
+ .fig svg {{ display:block; height:auto; }}
+ .links {{ font-family:var(--mono); font-size:12px; margin:12px 0 0; }}
+ .links a {{ color:var(--soft); }}
+</style>
+<div class="wrap">
+<h1>Design passes</h1>
+<p class="sub">Every build kept, newest first — so a regression is visible rather than inferred.<br>
+Generated {datetime.date(2026,7,27)} · figures render from <code>whitepaper/controls.yaml</code></p>
+{''.join(cards)}
+</div>'''
+(P / "index.html").write_text(out)
+print(f"wrote docs/passes/index.html — {len(passes)} pass(es)")

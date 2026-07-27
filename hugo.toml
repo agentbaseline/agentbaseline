@@ -1,0 +1,26 @@
+baseURL = "https://agentbaseline.org/"
+title = "Agent Baseline"
+locale = "en"
+
+# The site renders FROM the catalogue: whitepaper/controls.yaml is mounted
+# into Hugo's data tree, so the outcomes and their identifier ranges on the
+# page are generated from it and cannot drift.
+[[module.mounts]]
+  source = "whitepaper/controls.yaml"
+  target = "data/catalogue.yaml"
+[[module.mounts]]
+  source = "whitepaper/contributors.yaml"
+  target = "data/contributors.yaml"
+[[module.mounts]]
+  source = "layouts"
+  target = "layouts"
+[[module.mounts]]
+  source = "content"
+  target = "content"
+
+disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
+
+[params]
+  version       = "1.0-draft"
+  commentsUntil = "30 September 2026"
+  repo          = "https://github.com/agentbaseline/agentbaseline"

@@ -1,0 +1,334 @@
+# Agent Baseline — canonical control catalogue
+#
+# THIS FILE IS THE SOURCE OF TRUTH. The paper, the landing page and every
+# figure render from it. Where prose and this file disagree, this file wins
+# and the prose is a bug.
+#
+# Identifiers are BARE and PERMANENT: `DIS-01`, never `ACP-DIS-01`.
+# No project name lives inside an identifier — see
+# docs/decisions/0001-prefix-free-control-ids.md
+#
+# Superseded, never renumbered, never reused. See VERSIONING.md
+---
+version: "1.0-draft"
+status: draft            # every control is `draft` until the v1.0 freeze
+source: >-
+  Derived from Appendix A of the working draft, which is the later and
+  tighter of the paper's two catalogue passes. Section 5 of the prose has
+  not yet been reconciled against it — tracked publicly as issue #1.
+
+outcomes:
+  - prefix: DIS
+    name: Discover
+    requirement: "Discover every agent and its dependencies."
+    evidence: "Authoritative inventory reconciled with observed code, cloud, endpoint, identity, SaaS and runtime evidence."
+  - prefix: AUT
+    name: Authorize
+    requirement: "Bind identity, task, target and authority."
+    evidence: "Every consequential action attributable to an agent, a principal and an approved purpose, under attenuated delegation."
+  - prefix: CON
+    name: Constrain
+    requirement: "Limit components, runtime, data and reach."
+    evidence: "Versioned system manifest, broken toxic flows, isolated execution and confined resources."
+  - prefix: VAL
+    name: Validate
+    requirement: "Admit the system and verify outcomes."
+    evidence: "Admission gate passed, agent-specific testing performed, assurance evidence retained and revalidated on material change."
+  - prefix: OBS
+    name: Observe
+    requirement: "Correlate activity and prove what happened."
+    evidence: "Agent-native telemetry correlated end to end, with intent-to-outcome evidence of provable integrity."
+  - prefix: RES
+    name: Respond
+    requirement: "Stop, revoke, quarantine and scope impact."
+    evidence: "Demonstrated ability to halt an agent, revoke its authority, quarantine a version and preserve evidence."
+
+controls:
+  - id: DIS-01
+    outcome: DIS
+    title: "Authoritative agent registry"
+    status: draft
+    requirement: >-
+     The organization shall maintain an authoritative record with a stable
+     identifier for every agent proposed for corporate use or given access to
+     corporate data or systems.
+
+  - id: DIS-02
+    outcome: DIS
+    title: "Authoritative component registry"
+    status: draft
+    requirement: >-
+     The organization shall maintain an inventory of agentic components discovered
+     or made available for corporate use, including models, instructions, MCP
+     servers, skills, plugins and tools with documented record of source,
+     accountable owner, version and approval status.
+
+  - id: DIS-03
+    outcome: DIS
+    title: "Ownership and risk context"
+    status: draft
+    requirement: >-
+     Every registered agent shall have a documented business purpose, accountable
+     business and technical owners, and risk classification.
+
+  - id: DIS-04
+    outcome: DIS
+    title: "Status and decision history"
+    status: draft
+    requirement: >-
+     Every registered agent shall record its current operating status and approval
+     or exception status. Exceptions shall have an accountable risk owner and expiry
+     date. Records for retired agents and previous approved versions shall be
+     retained.
+
+  - id: DIS-05
+    outcome: DIS
+    title: "Automated discovery and reconciliation"
+    status: draft
+    requirement: >-
+     The organization shall compare agent and component registries against evidence
+     from source, cloud, endpoint, identity, SaaS, gateway, and runtime systems.
+
+  - id: DIS-06
+    outcome: DIS
+    title: "Agent composition mapping"
+    status: draft
+    requirement: >-
+     Every registered agent shall be linked to the components and other agents it
+     uses, including deployed versions where available. The organization shall be
+     able to identify every agent affected by a vulnerable or compromised component.
+
+  - id: DIS-07
+    outcome: DIS
+    title: "Effective-access mapping"
+    status: draft
+    requirement: >-
+     Every registered agent shall be mapped to the identities and credentials it
+     uses and the data, systems and actions those identities permit, including
+     access obtained through its components. ## Authorize
+
+  - id: AUT-01
+    outcome: AUT
+    title: "Distinct identity and action attribution"
+    status: draft
+    requirement: >-
+     Every consequential action shall be attributable to a distinct agent and
+     deployment identity, the initiating principal or approved autonomous purpose,
+     the run, task, target and time.
+
+  - id: AUT-02
+    outcome: AUT
+    title: "Purpose- and task-bound authority"
+    status: draft
+    requirement: >-
+     Authority shall be limited by purpose, task, target resource, action, data
+     scope, limits, jurisdiction, approval conditions and validity period.
+
+  - id: AUT-03
+    outcome: AUT
+    title: "Delegation attenuation"
+    status: draft
+    requirement: >-
+     A downstream agent shall receive no more authority than its caller holds, and
+     every delegation hop shall preserve the origin context and be recorded.
+
+  - id: AUT-04
+    outcome: AUT
+    title: "Just-in-time credentialing"
+    status: draft
+    requirement: >-
+     Short-lived, resource-scoped credentials or action permits shall be issued only
+     after authorization and shall not be stored in model context, memory or
+     agent-accessible files.
+
+  - id: AUT-05
+    outcome: AUT
+    title: "Independent approval"
+    status: draft
+    requirement: >-
+     Actions outside the approved autonomy or impact boundary shall require approval
+     by a person or deterministic control independent of the requesting agent.
+
+  - id: AUT-06
+    outcome: AUT
+    title: "Fail-closed authorization and circuit breaking"
+    status: draft
+    requirement: >-
+     Material actions shall be denied or halted when identity, policy, context,
+     evidence, approval or target-state requirements cannot be verified. ##
+     Constrain
+
+  - id: CON-01
+    outcome: CON
+    title: "Agentic System Manifest"
+    status: draft
+    requirement: >-
+     Every production agent shall have a versioned manifest covering models,
+     instructions, tools, agents, data, memory, dependencies, runtime, providers,
+     approvals and tests.
+
+  - id: CON-02
+    outcome: CON
+    title: "Toxic-flow analysis"
+    status: draft
+    requirement: >-
+     The organization shall identify and break dangerous paths among untrusted
+     inputs, sensitive data, external communication and destructive capabilities.
+
+  - id: CON-03
+    outcome: CON
+    title: "Component least privilege and trust boundaries"
+    status: draft
+    requirement: >-
+     Each component shall receive only the identity, permissions, data and
+     communication paths required for its function, with controls at external or
+     lower-trust boundaries.
+
+  - id: CON-04
+    outcome: CON
+    title: "Isolated execution"
+    status: draft
+    requirement: >-
+     Agent-controlled code and tools shall execute within a risk-appropriate process
+     or workload boundary separated from unrelated hosts, projects, credentials and
+     workloads.
+
+  - id: CON-05
+    outcome: CON
+    title: "Filesystem, network and resource confinement"
+    status: draft
+    requirement: >-
+     Runtime policy shall restrict filesystem access, network destinations,
+     credential delivery, compute, duration, process count, persistence and retained
+     state.
+
+  - id: CON-06
+    outcome: CON
+    title: "Approved and verified components"
+    status: draft
+    requirement: >-
+     Agents shall use only registered and policy-approved models, packages, tools,
+     APIs, MCP servers, skills, plugins and downstream agents that pass required
+     provenance, integrity, vulnerability, malware, licence and compliance checks.
+
+  - id: CON-07
+    outcome: CON
+    title: "Runtime component and generated-artifact policy"
+    status: draft
+    requirement: >-
+     Runtime enforcement shall prevent component substitution or drift and shall
+     test and scan material generated artifacts before release. ## Validate
+
+  - id: VAL-01
+    outcome: VAL
+    title: "Deployment admission"
+    status: draft
+    requirement: >-
+     An agent shall not be deployed unless its identity, manifest, purpose, risk
+     profile, policy, runtime profile and validation evidence are present, approved
+     and current.
+
+  - id: VAL-02
+    outcome: VAL
+    title: "Agent-specific security testing"
+    status: draft
+    requirement: >-
+     Agents shall be tested for prompt injection, jailbreaking, tool misuse, data
+     exfiltration, boundary bypass, unsafe autonomy and other relevant abuse cases
+     before deployment and after material change.
+
+  - id: VAL-03
+    outcome: VAL
+    title: "Third-party assurance"
+    status: draft
+    requirement: >-
+     Third-party agents and components shall be assessed for data handling,
+     provenance, providers, administration, auditability, autonomous capabilities,
+     subcontractors, vulnerabilities, compliance and exit options.
+
+  - id: VAL-04
+    outcome: VAL
+    title: "Independent outcome validation"
+    status: draft
+    requirement: >-
+     Material decisions, communications, generated artifacts and transactions shall
+     be checked against source data, business rules, policy and expected effect
+     before release or completion.
+
+  - id: VAL-05
+    outcome: VAL
+    title: "Material-change revalidation"
+    status: draft
+    requirement: >-
+     Changes to models, instructions, tools, data, permissions, runtime, providers,
+     purpose or behavior shall trigger reassessment and re-admission when they may
+     invalidate the approved state. ## Observe
+
+  - id: OBS-01
+    outcome: OBS
+    title: "Agent-native telemetry"
+    status: draft
+    requirement: >-
+     The organization shall record the initiating principal, agent, deployment, run,
+     task, model, tool invocation, target, policy decision, requested action,
+     executed action, result and outcome.
+
+  - id: OBS-02
+    outcome: OBS
+    title: "End-to-end correlation and behavior monitoring"
+    status: draft
+    requirement: >-
+     Correlation identifiers shall propagate across models, agents, MCP servers,
+     tools and target systems, and monitoring shall detect anomalous access, tool
+     use, destinations, resource consumption and drift.
+
+  - id: OBS-03
+    outcome: OBS
+    title: "Intent-to-outcome evidence"
+    status: draft
+    requirement: >-
+     Every material outcome shall be traceable to business intent, identities,
+     composition, delegated authority, policy, approvals, actions, validation and
+     target-system results.
+
+  - id: OBS-04
+    outcome: OBS
+    title: "Evidence integrity, completeness and protection"
+    status: draft
+    requirement: >-
+     Evidence shall use consistent timestamps, appropriate integrity protection,
+     completeness checks, access control, redaction, encryption, retention, deletion
+     and legal-hold rules. ## Respond
+
+  - id: RES-01
+    outcome: RES
+    title: "Immediate stop and authority revocation"
+    status: draft
+    requirement: >-
+     The organization shall be able to stop an agent, prevent new work and revoke
+     active credentials, permits, delegated grants and sessions within a period
+     appropriate to maximum impact.
+
+  - id: RES-02
+    outcome: RES
+    title: "Version and component quarantine"
+    status: draft
+    requirement: >-
+     The organization shall be able to block affected agent versions, models, tools,
+     skills, plugins, MCP servers and other components from further use.
+
+  - id: RES-03
+    outcome: RES
+    title: "Impact scoping and evidence preservation"
+    status: draft
+    requirement: >-
+     The organization shall preserve relevant evidence and identify affected
+     resources, records, customers, transactions, agent versions and dependencies.
+
+  - id: RES-04
+    outcome: RES
+    title: "Safe failure and non-agent fallback"
+    status: draft
+    requirement: >-
+     Unverified high-impact actions shall fail closed, and essential workflows shall
+     provide an approved non-agent fallback where continuity requires one. #

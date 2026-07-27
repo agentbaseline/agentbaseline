@@ -1,0 +1,338 @@
+<title>Agent Baseline — design passes</title>
+<style>
+ :root { --paper:#FFF; --ink:#222422; --soft:#5C605C; --faint:#909490; --line:#E6E7E4; --mark:#B3541E;
+   --serif:Charter,"Iowan Old Style",Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace; }
+ @media (prefers-color-scheme:dark) { :root { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8;
+   --faint:#7C807C; --line:#2F312F; --mark:#E08050; } }
+ :root[data-theme=light] { --paper:#FFF; --ink:#222422; --soft:#5C605C; --faint:#909490; --line:#E6E7E4; --mark:#B3541E; }
+ :root[data-theme=dark] { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8; --faint:#7C807C; --line:#2F312F; --mark:#E08050; }
+ body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--serif);
+   font-size:17px; line-height:1.65; }
+ .wrap { max-width:1040px; margin:0 auto; padding:48px 24px 96px; }
+ h1 { font-size:30px; margin:0 0 8px; letter-spacing:-.01em; }
+ .sub { font-family:var(--mono); font-size:12.5px; color:var(--faint); margin:0 0 40px; line-height:1.9; }
+ .pass { border-top:1px solid var(--line); padding:28px 0 8px; }
+ .pass header { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:18px; }
+ .v { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--mark);
+   letter-spacing:.06em; }
+ .label { font-size:19px; font-weight:700; }
+ .meta { font-family:var(--mono); font-size:11px; color:var(--faint); margin-left:auto; }
+ .fig { border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#FFF; }
+ .fig svg { display:block; height:auto; }
+ .links { font-family:var(--mono); font-size:12px; margin:12px 0 0; }
+ .links a { color:var(--soft); }
+</style>
+<div class="wrap">
+<h1>Design passes</h1>
+<p class="sub">Every build kept, newest first — so a regression is visible rather than inferred.<br>
+Generated 2026-07-27 · figures render from <code>whitepaper/controls.yaml</code></p>
+
+<section class="pass">
+  <header>
+    <span class="v">v4</span>
+    <span class="label">Responsive verified 485–1785px · partial carries viewBox only</span>
+    <span class="meta">page 20,369 bytes · 33 controls</span>
+  </header>
+  <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 552" width="100%" role="img" aria-labelledby="fig1-title fig1-desc">
+  <title id="fig1-title">The six outcomes as one control system</title>
+  <desc id="fig1-desc">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate, which control each material action, producing an enterprise action. Observe and Respond maintain evidence and containment across every run.</desc>
+  <defs>
+  <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+          markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#5C605C"/>
+  </marker>
+</defs>
+  <rect width="940" height="552" fill="#FFFFFF"/>
+  <text x="470.0" y="34" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="20" fill="#222422" font-weight="700" text-anchor="middle">The six outcomes as one control system</text>
+  <text x="470.0" y="55" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="13.5" fill="#5C605C" font-weight="400" text-anchor="middle">across enterprise intent, action, evidence and containment</text>
+  <rect x="24" y="76" width="892" height="104" rx="9" fill="#F2F1FC" stroke="#5B4FB8" stroke-width="1.5" class="band band-envelope"/>
+  <text x="44" y="98" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#5B4FB8" font-weight="400" text-anchor="start" letter-spacing="0.09em">ESTABLISH THE OPERATING ENVELOPE</text>
+  <text x="44" y="116" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Before deployment, and continuously as agents, components, permissions and business context change</text>
+  <rect x="44" y="124" width="852" height="44" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-dis"/>
+  <text x="60" y="144.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Discover</text>
+  <text x="60" y="162.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#5B4FB8" font-weight="700" text-anchor="start" letter-spacing="0.04em">DIS-01…07</text>
+  <text x="222" y="153.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Find agents and components; record purpose, assurance and effective access</text>
+  <line x1="470.0" y1="180" x2="470.0" y2="206" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="197.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">sets the permitted envelope</text>
+  <rect x="24" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-intent"/>
+  <text x="108" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Business intent</text>
+  <text x="108" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Human, service or</text>
+  <text x="108" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">business event</text>
+  <text x="108" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Initiating principal</text>
+  <text x="108" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">or approved purpose</text>
+  <rect x="216" y="212" width="508" height="150" rx="9" fill="#EDF3FB" stroke="#1F4E8C" stroke-width="1.5" class="band band-control"/>
+  <text x="236" y="234" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1F4E8C" font-weight="400" text-anchor="start" letter-spacing="0.09em">CONTROL EACH MATERIAL ACTION</text>
+  <text x="236" y="252" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Identity, authority, capability and outcome checks remain outside model reasoning</text>
+  <rect x="236" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-aut"/>
+  <text x="252" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Authorize</text>
+  <text x="252" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">AUT-01…06</text>
+  <text x="252" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Bind identity, task,</text>
+  <text x="252" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">target and authority</text>
+  <rect x="400" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-con"/>
+  <text x="416" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Constrain</text>
+  <text x="416" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">CON-01…07</text>
+  <text x="416" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Limit components, runtime,</text>
+  <text x="416" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">data and reach</text>
+  <rect x="564" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-val"/>
+  <text x="580" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Validate</text>
+  <text x="580" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">VAL-01…05</text>
+  <text x="580" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Admit the system and</text>
+  <text x="580" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">verify outcomes</text>
+  <rect x="748" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-action"/>
+  <text x="832" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Enterprise action</text>
+  <text x="832" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Tool, API, record,</text>
+  <text x="832" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">message or transaction</text>
+  <text x="832" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Protected resource</text>
+  <text x="832" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">and business outcome</text>
+  <line x1="192" y1="287" x2="214" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="726" y1="287" x2="746" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="470.0" y1="362" x2="470.0" y2="396" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="383.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">emits correlated decisions, actions and outcomes</text>
+  <rect x="24" y="402" width="892" height="126" rx="9" fill="#ECF5EF" stroke="#2C6B45" stroke-width="1.5" class="band band-evidence"/>
+  <text x="44" y="424" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#2C6B45" font-weight="400" text-anchor="start" letter-spacing="0.09em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <text x="44" y="442" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Across every run and action, including delegated work and downstream effects</text>
+  <rect x="44" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-obs"/>
+  <text x="60" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Observe</text>
+  <text x="60" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">OBS-01…04</text>
+  <text x="174" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Correlate activity and prove what happened</text>
+  <rect x="492" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-res"/>
+  <text x="508" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Respond</text>
+  <text x="508" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">RES-01…04</text>
+  <text x="622" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Stop, revoke, quarantine and scope impact</text>
+  <text x="916" y="544" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#909490" text-anchor="end">generated from controls.yaml · 33 controls</text>
+  </svg>
+</div>
+  <p class="links"><a href="v4/index.html">open the page for v4 →</a></p>
+</section>
+<section class="pass">
+  <header>
+    <span class="v">v3</span>
+    <span class="label">Figure centred and responsive — cascade collision fixed</span>
+    <span class="meta">page 20,353 bytes · 33 controls</span>
+  </header>
+  <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 552" width="100%" role="img" aria-labelledby="fig1-title fig1-desc">
+  <title id="fig1-title">The six outcomes as one control system</title>
+  <desc id="fig1-desc">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate, which control each material action, producing an enterprise action. Observe and Respond maintain evidence and containment across every run.</desc>
+  <defs>
+  <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+          markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#5C605C"/>
+  </marker>
+</defs>
+  <rect width="940" height="552" fill="#FFFFFF"/>
+  <text x="470.0" y="34" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="20" fill="#222422" font-weight="700" text-anchor="middle">The six outcomes as one control system</text>
+  <text x="470.0" y="55" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="13.5" fill="#5C605C" font-weight="400" text-anchor="middle">across enterprise intent, action, evidence and containment</text>
+  <rect x="24" y="76" width="892" height="104" rx="9" fill="#F2F1FC" stroke="#5B4FB8" stroke-width="1.5" class="band band-envelope"/>
+  <text x="44" y="98" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#5B4FB8" font-weight="400" text-anchor="start" letter-spacing="0.09em">ESTABLISH THE OPERATING ENVELOPE</text>
+  <text x="44" y="116" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Before deployment, and continuously as agents, components, permissions and business context change</text>
+  <rect x="44" y="124" width="852" height="44" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-dis"/>
+  <text x="60" y="144.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Discover</text>
+  <text x="60" y="162.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#5B4FB8" font-weight="700" text-anchor="start" letter-spacing="0.04em">DIS-01…07</text>
+  <text x="222" y="153.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Find agents and components; record purpose, assurance and effective access</text>
+  <line x1="470.0" y1="180" x2="470.0" y2="206" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="197.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">sets the permitted envelope</text>
+  <rect x="24" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-intent"/>
+  <text x="108" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Business intent</text>
+  <text x="108" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Human, service or</text>
+  <text x="108" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">business event</text>
+  <text x="108" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Initiating principal</text>
+  <text x="108" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">or approved purpose</text>
+  <rect x="216" y="212" width="508" height="150" rx="9" fill="#EDF3FB" stroke="#1F4E8C" stroke-width="1.5" class="band band-control"/>
+  <text x="236" y="234" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1F4E8C" font-weight="400" text-anchor="start" letter-spacing="0.09em">CONTROL EACH MATERIAL ACTION</text>
+  <text x="236" y="252" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Identity, authority, capability and outcome checks remain outside model reasoning</text>
+  <rect x="236" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-aut"/>
+  <text x="252" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Authorize</text>
+  <text x="252" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">AUT-01…06</text>
+  <text x="252" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Bind identity, task,</text>
+  <text x="252" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">target and authority</text>
+  <rect x="400" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-con"/>
+  <text x="416" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Constrain</text>
+  <text x="416" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">CON-01…07</text>
+  <text x="416" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Limit components, runtime,</text>
+  <text x="416" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">data and reach</text>
+  <rect x="564" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-val"/>
+  <text x="580" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Validate</text>
+  <text x="580" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">VAL-01…05</text>
+  <text x="580" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Admit the system and</text>
+  <text x="580" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">verify outcomes</text>
+  <rect x="748" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-action"/>
+  <text x="832" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Enterprise action</text>
+  <text x="832" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Tool, API, record,</text>
+  <text x="832" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">message or transaction</text>
+  <text x="832" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Protected resource</text>
+  <text x="832" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">and business outcome</text>
+  <line x1="192" y1="287" x2="214" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="726" y1="287" x2="746" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="470.0" y1="362" x2="470.0" y2="396" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="383.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">emits correlated decisions, actions and outcomes</text>
+  <rect x="24" y="402" width="892" height="126" rx="9" fill="#ECF5EF" stroke="#2C6B45" stroke-width="1.5" class="band band-evidence"/>
+  <text x="44" y="424" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#2C6B45" font-weight="400" text-anchor="start" letter-spacing="0.09em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <text x="44" y="442" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Across every run and action, including delegated work and downstream effects</text>
+  <rect x="44" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-obs"/>
+  <text x="60" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Observe</text>
+  <text x="60" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">OBS-01…04</text>
+  <text x="174" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Correlate activity and prove what happened</text>
+  <rect x="492" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-res"/>
+  <text x="508" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Respond</text>
+  <text x="508" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">RES-01…04</text>
+  <text x="622" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Stop, revoke, quarantine and scope impact</text>
+  <text x="916" y="544" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#909490" text-anchor="end">generated from controls.yaml · 33 controls</text>
+  </svg>
+</div>
+  <p class="links"><a href="v3/index.html">open the page for v3 →</a></p>
+</section>
+<section class="pass">
+  <header>
+    <span class="v">v2</span>
+    <span class="label">Figure 1 embedded in the page, full-bleed at desktop</span>
+    <span class="meta">page 20,304 bytes · 33 controls</span>
+  </header>
+  <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 552" width="100%" role="img" aria-labelledby="fig1-title fig1-desc">
+  <title id="fig1-title">The six outcomes as one control system</title>
+  <desc id="fig1-desc">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate, which control each material action, producing an enterprise action. Observe and Respond maintain evidence and containment across every run.</desc>
+  <defs>
+  <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+          markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#5C605C"/>
+  </marker>
+</defs>
+  <rect width="940" height="552" fill="#FFFFFF"/>
+  <text x="470.0" y="34" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="20" fill="#222422" font-weight="700" text-anchor="middle">The six outcomes as one control system</text>
+  <text x="470.0" y="55" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="13.5" fill="#5C605C" font-weight="400" text-anchor="middle">across enterprise intent, action, evidence and containment</text>
+  <rect x="24" y="76" width="892" height="104" rx="9" fill="#F2F1FC" stroke="#5B4FB8" stroke-width="1.5" class="band band-envelope"/>
+  <text x="44" y="98" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#5B4FB8" font-weight="400" text-anchor="start" letter-spacing="0.09em">ESTABLISH THE OPERATING ENVELOPE</text>
+  <text x="44" y="116" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Before deployment, and continuously as agents, components, permissions and business context change</text>
+  <rect x="44" y="124" width="852" height="44" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-dis"/>
+  <text x="60" y="144.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Discover</text>
+  <text x="60" y="162.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#5B4FB8" font-weight="700" text-anchor="start" letter-spacing="0.04em">DIS-01…07</text>
+  <text x="222" y="153.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Find agents and components; record purpose, assurance and effective access</text>
+  <line x1="470.0" y1="180" x2="470.0" y2="206" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="197.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">sets the permitted envelope</text>
+  <rect x="24" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-intent"/>
+  <text x="108" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Business intent</text>
+  <text x="108" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Human, service or</text>
+  <text x="108" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">business event</text>
+  <text x="108" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Initiating principal</text>
+  <text x="108" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">or approved purpose</text>
+  <rect x="216" y="212" width="508" height="150" rx="9" fill="#EDF3FB" stroke="#1F4E8C" stroke-width="1.5" class="band band-control"/>
+  <text x="236" y="234" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1F4E8C" font-weight="400" text-anchor="start" letter-spacing="0.09em">CONTROL EACH MATERIAL ACTION</text>
+  <text x="236" y="252" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Identity, authority, capability and outcome checks remain outside model reasoning</text>
+  <rect x="236" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-aut"/>
+  <text x="252" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Authorize</text>
+  <text x="252" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">AUT-01…06</text>
+  <text x="252" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Bind identity, task,</text>
+  <text x="252" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">target and authority</text>
+  <rect x="400" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-con"/>
+  <text x="416" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Constrain</text>
+  <text x="416" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">CON-01…07</text>
+  <text x="416" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Limit components, runtime,</text>
+  <text x="416" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">data and reach</text>
+  <rect x="564" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-val"/>
+  <text x="580" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Validate</text>
+  <text x="580" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">VAL-01…05</text>
+  <text x="580" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Admit the system and</text>
+  <text x="580" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">verify outcomes</text>
+  <rect x="748" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-action"/>
+  <text x="832" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Enterprise action</text>
+  <text x="832" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Tool, API, record,</text>
+  <text x="832" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">message or transaction</text>
+  <text x="832" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Protected resource</text>
+  <text x="832" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">and business outcome</text>
+  <line x1="192" y1="287" x2="214" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="726" y1="287" x2="746" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="470.0" y1="362" x2="470.0" y2="396" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="383.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">emits correlated decisions, actions and outcomes</text>
+  <rect x="24" y="402" width="892" height="126" rx="9" fill="#ECF5EF" stroke="#2C6B45" stroke-width="1.5" class="band band-evidence"/>
+  <text x="44" y="424" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#2C6B45" font-weight="400" text-anchor="start" letter-spacing="0.09em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <text x="44" y="442" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Across every run and action, including delegated work and downstream effects</text>
+  <rect x="44" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-obs"/>
+  <text x="60" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Observe</text>
+  <text x="60" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">OBS-01…04</text>
+  <text x="174" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Correlate activity and prove what happened</text>
+  <rect x="492" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-res"/>
+  <text x="508" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Respond</text>
+  <text x="508" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">RES-01…04</text>
+  <text x="622" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Stop, revoke, quarantine and scope impact</text>
+  <text x="916" y="544" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#909490" text-anchor="end">generated from controls.yaml · 33 controls</text>
+  </svg>
+</div>
+  <p class="links"><a href="v2/index.html">open the page for v2 →</a></p>
+</section>
+<section class="pass">
+  <header>
+    <span class="v">v1</span>
+    <span class="label">Catalogue-driven page + generated Figure 1 (static)</span>
+    <span class="meta">page 9,398 bytes · 33 controls</span>
+  </header>
+  <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 552" width="100%" role="img" aria-labelledby="fig1-title fig1-desc">
+  <title id="fig1-title">The six outcomes as one control system</title>
+  <desc id="fig1-desc">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate, which control each material action, producing an enterprise action. Observe and Respond maintain evidence and containment across every run.</desc>
+  <defs>
+  <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"
+          markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#5C605C"/>
+  </marker>
+</defs>
+  <rect width="940" height="552" fill="#FFFFFF"/>
+  <text x="470.0" y="34" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="20" fill="#222422" font-weight="700" text-anchor="middle">The six outcomes as one control system</text>
+  <text x="470.0" y="55" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="13.5" fill="#5C605C" font-weight="400" text-anchor="middle">across enterprise intent, action, evidence and containment</text>
+  <rect x="24" y="76" width="892" height="104" rx="9" fill="#F2F1FC" stroke="#5B4FB8" stroke-width="1.5" class="band band-envelope"/>
+  <text x="44" y="98" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#5B4FB8" font-weight="400" text-anchor="start" letter-spacing="0.09em">ESTABLISH THE OPERATING ENVELOPE</text>
+  <text x="44" y="116" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Before deployment, and continuously as agents, components, permissions and business context change</text>
+  <rect x="44" y="124" width="852" height="44" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-dis"/>
+  <text x="60" y="144.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Discover</text>
+  <text x="60" y="162.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#5B4FB8" font-weight="700" text-anchor="start" letter-spacing="0.04em">DIS-01…07</text>
+  <text x="222" y="153.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Find agents and components; record purpose, assurance and effective access</text>
+  <line x1="470.0" y1="180" x2="470.0" y2="206" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="197.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">sets the permitted envelope</text>
+  <rect x="24" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-intent"/>
+  <text x="108" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Business intent</text>
+  <text x="108" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Human, service or</text>
+  <text x="108" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">business event</text>
+  <text x="108" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Initiating principal</text>
+  <text x="108" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">or approved purpose</text>
+  <rect x="216" y="212" width="508" height="150" rx="9" fill="#EDF3FB" stroke="#1F4E8C" stroke-width="1.5" class="band band-control"/>
+  <text x="236" y="234" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1F4E8C" font-weight="400" text-anchor="start" letter-spacing="0.09em">CONTROL EACH MATERIAL ACTION</text>
+  <text x="236" y="252" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Identity, authority, capability and outcome checks remain outside model reasoning</text>
+  <rect x="236" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-aut"/>
+  <text x="252" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Authorize</text>
+  <text x="252" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">AUT-01…06</text>
+  <text x="252" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Bind identity, task,</text>
+  <text x="252" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">target and authority</text>
+  <rect x="400" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-con"/>
+  <text x="416" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Constrain</text>
+  <text x="416" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">CON-01…07</text>
+  <text x="416" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Limit components, runtime,</text>
+  <text x="416" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">data and reach</text>
+  <rect x="564" y="258" width="152" height="94" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-val"/>
+  <text x="580" y="284" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Validate</text>
+  <text x="580" y="302" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1F4E8C" font-weight="700" text-anchor="start" letter-spacing="0.04em">VAL-01…05</text>
+  <text x="580" y="322" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Admit the system and</text>
+  <text x="580" y="337" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">verify outcomes</text>
+  <rect x="748" y="212" width="168" height="150" rx="9" fill="#F7F7F5" stroke="#D8DAD6" stroke-width="1.2" class="node node-action"/>
+  <text x="832" y="250" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#222422" font-weight="700" text-anchor="middle">Enterprise action</text>
+  <text x="832" y="272" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Tool, API, record,</text>
+  <text x="832" y="288" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">message or transaction</text>
+  <text x="832" y="316" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">Protected resource</text>
+  <text x="832" y="332" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="middle">and business outcome</text>
+  <line x1="192" y1="287" x2="214" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="726" y1="287" x2="746" y2="287" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <line x1="470.0" y1="362" x2="470.0" y2="396" stroke="#5C605C" stroke-width="1.3" marker-end="url(#tip)"/>
+  <text x="482.0" y="383.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#909490" font-weight="400" text-anchor="start">emits correlated decisions, actions and outcomes</text>
+  <rect x="24" y="402" width="892" height="126" rx="9" fill="#ECF5EF" stroke="#2C6B45" stroke-width="1.5" class="band band-evidence"/>
+  <text x="44" y="424" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#2C6B45" font-weight="400" text-anchor="start" letter-spacing="0.09em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <text x="44" y="442" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12" fill="#5C605C" font-weight="400" text-anchor="start">Across every run and action, including delegated work and downstream effects</text>
+  <rect x="44" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-obs"/>
+  <text x="60" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Observe</text>
+  <text x="60" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">OBS-01…04</text>
+  <text x="174" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Correlate activity and prove what happened</text>
+  <rect x="492" y="452" width="424" height="56" rx="6" fill="#FFFFFF" stroke="#D8DAD6" stroke-width="1.1" class="cell cell-res"/>
+  <text x="508" y="478.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="17" fill="#222422" font-weight="700" text-anchor="start">Respond</text>
+  <text x="508" y="496.0" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#2C6B45" font-weight="700" text-anchor="start" letter-spacing="0.04em">RES-01…04</text>
+  <text x="622" y="487.0" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5C605C" font-weight="400" text-anchor="start">Stop, revoke, quarantine and scope impact</text>
+  <text x="916" y="544" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#909490" text-anchor="end">generated from controls.yaml · 33 controls</text>
+  </svg>
+</div>
+  <p class="links"><a href="v1/index.html">open the page for v1 →</a></p>
+</section>
+</div>
