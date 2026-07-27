@@ -13,6 +13,7 @@ P
 hugo --gc --minify --quiet
 mkdir -p "docs/passes/v$N"
 cp public/index.html "docs/passes/v$N/index.html"
+cp public/controls/index.html "docs/passes/v$N/controls.html" 2>/dev/null || true
 cp whitepaper/figures/figure-1.svg "docs/passes/v$N/figure-1.svg"
 printf '%s\n' "$LABEL" > "docs/passes/v$N/LABEL"
 echo "pass v$N — $LABEL"

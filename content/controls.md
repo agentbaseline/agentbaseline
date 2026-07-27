@@ -1,0 +1,4 @@
+---
+title: Controls
+layout: controls
+---

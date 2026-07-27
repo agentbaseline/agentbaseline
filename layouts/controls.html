@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent Baseline — security outcomes for enterprise AI agents</title>
+<title>Controls — Agent Baseline</title>
 <meta name="description" content="An open reference architecture and controls for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
 <link rel="canonical" href="{{ .Site.BaseURL }}">
 <style>
@@ -126,6 +126,8 @@
     figure.fig1 { width:min(920px, calc(100vw - 48px));
       margin-inline-start:calc(50% - min(460px, calc(50vw - 24px))); }
   }
+  .outcome-req { color:var(--soft); font-size:16px; margin:-8px 0 4px; }
+  ol.controls { border-top:none; }
 </style>
 </head>
 <body>
@@ -143,108 +145,39 @@
 
 <main class="page">
 
-  <h1>Security outcomes for enterprise AI agents</h1>
-
+  <h1>Controls</h1>
   <p class="metaline">
-    Draft for public comment · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
-    {{ with resources.Get "whitepaper.pdf" }}<a href="{{ .RelPermalink }}">PDF</a> · {{ end }}
+    {{ len $cat.controls }} controls across six outcomes · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
+    <a href="/">overview</a> ·
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
-    <a href="{{ .Site.Params.repo }}">repository</a>
+    <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">identifier stability</a>
   </p>
-
-  <h2>Abstract</h2>
-  <div class="intro">
-    <p>An enterprise deploying an AI agent is not provisioning fixed-function software.
-    It is provisioning a programmable actor: an end user can reprogram it at runtime in
-    natural language, changing what it is asked to do and how it uses approved tools and
-    data. Existing controls still matter, but they were not built for that combination of
-    runtime programmability, access and autonomy.</p>
-
-    <p>The baseline defines what an enterprise must achieve, by <strong>outcome</strong>
-    rather than by product category. Each outcome carries controls with stable identifiers,
-    written to be cited.</p>
-
-    <p class="status-line">Open for public comment until {{ .Site.Params.commentsUntil }}.
-    Identifiers are not yet frozen — read
-    <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before citing.</p>
-  </div>
 
   <nav class="toc" aria-label="Contents">
     {{- range $cat.outcomes }}
     {{- $ids := where $cat.controls "outcome" .prefix }}
-    <a href="/controls/#{{ lower .name }}">{{ .name }}<span class="n">{{ len $ids }}</span></a>
+    <a href="#{{ lower .name }}">{{ .name }}<span class="n">{{ len $ids }}</span></a>
     {{- end }}
   </nav>
 
-  <h2>The six outcomes</h2>
-  <ol class="factors">
-    {{- range $cat.outcomes }}
-    {{- $prefix := .prefix }}
-    {{- $ids := where $cat.controls "outcome" $prefix }}
-    {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
-    <li id="{{ $prefix }}">
-      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ $last }}</span></span>
-      <span class="req">{{ .requirement }}</span>    </li>
-    {{- end }}
-  </ol>
-
-  <div class="prose">
-    <p class="note">{{ len $cat.controls }} controls across six outcomes. The six are the
-    minimum category test: a product may implement one or more, but end-to-end control
-    requires all six through an integrated architecture. By the baseline's own test, none of
-    the organizations that convened it is a complete implementation.</p>
-  </div>
-
-  <figure class="fig1">
-    {{ partial "figure-1.svg" . }}
-    <figcaption>No single enforcement point delivers this. The outcomes are logically
-    unified but physically distributed across identity, runtime, tool, data and evidence
-    boundaries — common context and control identifiers are what let them operate as one
-    path from intent to outcome.</figcaption>
-  </figure>
-
-  <h2>Who wrote this</h2>
-  <div class="prose">
-    <p>{{ $people.statement }}</p>
-  </div>
-  <ul class="people">
-    {{- range where $people.contributors "confirmed" true }}
-    <li>
-      <span class="who">{{ .name }}<span class="org">{{ with .affiliation }}{{ . }}{{ else }}⟡ affiliation to confirm{{ end }}</span></span>
-      <span class="wrote">{{ with .sections }}{{ delimit . " · " }}{{ else }}⟡ sections to confirm{{ end }}</span>
-      <span class="role">{{ .role }}</span>
+  {{- range $cat.outcomes }}
+  {{- $prefix := .prefix }}
+  {{- $ids := where $cat.controls "outcome" $prefix }}
+  <h2 id="{{ lower .name }}">{{ .name }}</h2>
+  <p class="outcome-req">{{ .requirement }}</p>
+  <ol class="controls">
+    {{- range $ids }}
+    <li id="{{ .id }}">
+      <a class="cid" href="#{{ .id }}">{{ .id }}</a>
+      <span class="ctitle">{{ .title }}</span>
+      <span class="creq">{{ .requirement }}</span>
     </li>
     {{- end }}
-  </ul>
-
-  <h2>How to cite</h2>
-  <div class="cite">Agent Baseline, “Security outcomes for enterprise AI agents”,<br>v{{ .Site.Params.version }}, DIS-01, agentbaseline.org, {{ .Site.Params.published }}</div>
-  <div class="prose" style="margin-top:16px">
-    <p class="note">Identifiers are bare and permanent — superseded, never renumbered, never
-    reused. They carry no project name so that a rename, or a transfer to a community body,
-    never breaks a citation you have already published.</p>
-  </div>
-
-  <h2>Contributing</h2>
-  <div class="prose">
-    <p>Read, comment, contribute. The most useful thing you can do is tell us where a control
-    is wrong, unimplementable, or missing. Open an issue against a specific identifier.</p>
-    <p class="note">Crosswalks to frameworks you already run — NIST AI RMF, ISO 42001, OWASP,
-    CIS — are the contribution we most need from outside the group that drafted this.
-    See <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
-  </div>
-
-  <h2>Provenance</h2>
-  <div class="prose">
-    <p class="note">This work was convened by companies that sell products in the area it
-    describes. Who they are, what they sell, and which outcomes they sell into is disclosed
-    in <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a>. Read it
-    before you weigh anything here.</p>
-  </div>
+  </ol>
+  {{- end }}
 
   <footer>
-    Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
+    Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
     <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a>
   </footer>
 
