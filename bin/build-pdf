@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""Render whitepaper/whitepaper.pdf from whitepaper.md.
+
+Markdown -> HTML via pandoc, then Chrome's print engine. Deliberately not LaTeX:
+this way the PDF inherits the site's typography, so the page, the PDF, the slides
+and the social card are visibly one artifact rather than four.
+"""
+import pathlib, subprocess, sys, shutil
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SRC = ROOT / "whitepaper" / "whitepaper.md"
+OUT = ROOT / "static" / "whitepaper.pdf"
+TMP = ROOT / "whitepaper" / ".paper.html"
+
+if not shutil.which("pandoc"):
+    sys.exit("pandoc not installed")
+
+CSS = """
+@page { size: A4; margin: 22mm 20mm; }
+body { font-family: Charter,'Iowan Old Style',Georgia,serif; font-size: 10.5pt;
+  line-height: 1.55; color: #1A1C1A; max-width: none; }
+h1 { font-size: 20pt; line-height: 1.2; margin: 0 0 6pt; }
+h2 { font-size: 13pt; margin: 22pt 0 6pt; break-after: avoid; }
+h3 { font-size: 11pt; margin: 14pt 0 4pt; break-after: avoid; }
+h4 { font-family: ui-monospace,Menlo,monospace; font-size: 9pt; letter-spacing: .04em;
+  color: #12457F; margin: 12pt 0 3pt; break-after: avoid; }
+p { margin: 0 0 8pt; orphans: 3; widows: 3; }
+code { font-family: ui-monospace,Menlo,monospace; font-size: 9pt; }
+table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 10pt 0;
+  break-inside: avoid; }
+th, td { border-bottom: .4pt solid #DCDDD9; padding: 4pt 6pt; text-align: left;
+  vertical-align: top; }
+th { font-family: ui-monospace,Menlo,monospace; font-size: 7.5pt;
+  text-transform: uppercase; letter-spacing: .07em; color: #6E726E; }
+img, figure { break-inside: avoid; max-width: 100%; }
+blockquote { border-left: 2pt solid #DCDDD9; margin: 10pt 0; padding-left: 10pt;
+  color: #5A5E5A; }
+"""
+(ROOT / "whitepaper" / ".paper.css").write_text(CSS, encoding="utf-8")
+
+subprocess.run(["pandoc", str(SRC), "-o", str(TMP), "--standalone",
+                "--metadata", "title=Agent Baseline — security outcomes for enterprise AI agents",
+                "-c", ".paper.css"], check=True)
+
+chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+OUT.parent.mkdir(exist_ok=True)
+subprocess.run([chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
+                f"--print-to-pdf={OUT}", TMP.as_uri()], capture_output=True)
+TMP.unlink(missing_ok=True); (ROOT / "whitepaper" / ".paper.css").unlink(missing_ok=True)
+print(f"wrote static/whitepaper.pdf  ({OUT.stat().st_size:,} bytes)" if OUT.exists()
+      else "PDF FAILED")

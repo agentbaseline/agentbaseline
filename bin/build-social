@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Generate static/social-card.png (1200x630) from Figure 1.
+
+Same source as everything else. The card carries the three questions and the six
+names only — at 630px tall the identifier ranges are illegible, so they are
+dropped rather than shipped as mush.
+"""
+import re, pathlib, subprocess, sys
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+fig = (ROOT / "whitepaper/figures/figure-1.svg").read_text(encoding="utf-8")
+
+# strip identifier ranges — unreadable at card scale
+card = re.sub(r'<text[^>]*font-family="ui-monospace[^>]*>[A-Z]{3}-01…\d\d</text>\n?\s*', '', fig)
+card = card.replace('viewBox="0 0 960 466"', 'viewBox="-40 -60 1040 586"')
+card = re.sub(r'width="960" height="466"', 'width="1200" height="630"', card)
+card = card.replace('<rect width="960" height="466" fill="#FCFCFA"/>',
+                    '<rect x="-40" y="-60" width="1040" height="586" fill="#FCFCFA"/>')
+tmp = ROOT / "whitepaper/figures/.social.svg"
+tmp.write_text(card, encoding="utf-8")
+
+chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+out = ROOT / "static/social-card.png"
+if not pathlib.Path(chrome).exists():
+    sys.exit("chrome not found — social card not regenerated")
+subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
+                f"--screenshot={out}", "--window-size=1200,630",
+                "--default-background-color=FCFCFAFF", tmp.as_uri()],
+               capture_output=True)
+tmp.unlink(missing_ok=True)
+print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)" if out.exists()
+      else "social card FAILED")

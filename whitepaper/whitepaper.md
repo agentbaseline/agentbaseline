@@ -146,7 +146,7 @@ Control requirements: RES-01 Immediate stop and authority revocation; RES-02 Ver
 
 Enterprise agents change the object of security from a model or software pipeline to a dynamic action system. The central risk is not only an incorrect response; it is the transformation of intent into consequential action through changing components, identities, tools, data and trust boundaries.
 
-The Agentic Control Plane governs that transformation. Its six outcomes establish the minimum standard: discover every agent, assign ownership, authorize purpose and delegated authority, constrain capability, validate the system and outcome, observe material activity, and respond through stop, revocation, quarantine and impact scoping. The ten principles and four-stage lifecycle turn those outcomes into an architecture that can be applied consistently across platforms and assurance levels.
+The Agentic Control Plane governs that transformation. Its six outcomes establish the minimum standard: discover every agent, assign ownership, authorize purpose and delegated authority, constrain capability, validate the system and outcome, observe material activity, and respond through stop, revocation, quarantine and impact scoping. 
 
 The control plane is not a new agent platform and is not a single mandatory proxy. It is the security and governance layer that allows enterprises to use many agent platforms safely. It remains modular by design, but common identity, policy, action and evidence contracts make the modules operate as one control system from business intent to business outcome.
 

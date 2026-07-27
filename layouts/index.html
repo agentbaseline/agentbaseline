@@ -8,6 +8,19 @@
 <title>Agent Baseline — security outcomes for enterprise AI agents</title>
 <meta name="description" content="An open reference architecture and controls for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
 <link rel="canonical" href="{{ .Site.BaseURL }}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Agent Baseline">
+<meta property="og:title" content="Security outcomes for enterprise AI agents">
+<meta property="og:description" content="Six outcomes, because together they answer the three questions you are already being asked. A draft for public comment.">
+<meta property="og:url" content="{{ .Site.BaseURL }}">
+<meta property="og:image" content="{{ .Site.BaseURL }}social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Security outcomes for enterprise AI agents">
+<meta name="twitter:description" content="Six outcomes, because together they answer the three questions you are already being asked.">
+<meta name="twitter:image" content="{{ .Site.BaseURL }}social-card.png">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>
   :root {
     --paper:#FFFFFF; --ink:#222422; --soft:#5C605C; --faint:#6E726E;
@@ -69,16 +82,9 @@
     color:var(--faint); margin-left:10px; white-space:nowrap; }
   ol.factors > li > .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
 
-  ul.people { list-style:none; margin:0; padding:0; }
-  ul.people li { padding:14px 0; border-top:1px solid var(--line);
-    display:flex; flex-direction:column; gap:2px; }
-  ul.people li:last-child { border-bottom:1px solid var(--line); }
-  ul.people .who { font-size:17px; font-weight:700; }
-  ul.people .org { font-family:var(--mono); font-size:11.5px; font-weight:400;
-    letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-left:10px; }
-  ul.people .wrote { color:var(--soft); font-size:15px; }
-  ul.people .role { font-family:var(--mono); font-size:11px; color:var(--faint);
-    letter-spacing:.05em; }
+
+  .aff { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  .cite + h2 { margin-top:56px; }
 
   figure.fig1 { margin-block:44px 0; margin-inline:0; padding:0; }
   /* The figure is deliberately light in both themes: identical bytes ship to the
@@ -158,7 +164,7 @@
 
   <p class="metaline">
     Draft for public comment · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
-    {{ with resources.Get "whitepaper.pdf" }}<a href="{{ .RelPermalink }}">PDF</a> · {{ end }}
+    {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">PDF</a> · {{ end }}
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
     <a href="{{ .Site.Params.repo }}">repository</a>
   </p>
@@ -199,10 +205,6 @@
     makes the list useful. Take it into a vendor conversation and ask which of the six they
     cover.</p>
 
-    <p class="status-line">Open for public comment until {{ .Site.Params.commentsUntil }}.
-    Identifiers are not yet frozen — read
-    <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before citing.</p>
   </div>
 
   <h2>The six outcomes</h2>
@@ -212,7 +214,7 @@
     {{- $ids := where $cat.controls "outcome" $prefix }}
     {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
     <li id="{{ $prefix }}">
-      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ $last }}</span></span>
+      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
       <span class="req">{{ .requirement }}</span>    </li>
     {{- end }}
   </ol>
@@ -228,43 +230,44 @@
     <figcaption><strong>Figure 1.</strong> The six outcomes, grouped by the question each pair answers. Take it into a vendor conversation and ask which they cover.</figcaption>
   </figure>
 
-  <h2>Who wrote this</h2>
+  <h2>What this is</h2>
   <div class="prose">
-    <p>{{ $people.statement }}</p>
+    <p>A draft, open for comment until {{ .Site.Params.commentsUntil }}.
+    <strong>It is not a standard, and no conformance programme exists.</strong> Nothing
+    here certifies anyone, including the people who wrote it.</p>
+    <p>Identifiers are not yet frozen. At v1.0 they freeze, and from then on a control is
+    superseded rather than renumbered — so a citation you publish keeps meaning what it
+    meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
+    before you cite.</p>
   </div>
-  <ul class="people">
-    {{- range where $people.contributors "confirmed" true }}
-    <li>
-      <span class="who">{{ .name }}<span class="org">{{ with .affiliation }}{{ . }}{{ else }}⟡ affiliation to confirm{{ end }}</span></span>
-      <span class="wrote">{{ with .sections }}{{ delimit . " · " }}{{ else }}⟡ sections to confirm{{ end }}</span>
-      <span class="role">{{ .role }}</span>
-    </li>
-    {{- end }}
-  </ul>
 
   <h2>How to cite</h2>
   <div class="cite">Agent Baseline, “Security outcomes for enterprise AI agents”,<br>v{{ .Site.Params.version }}, DIS-01, agentbaseline.org, {{ .Site.Params.published }}</div>
-  <div class="prose" style="margin-top:16px">
-    <p class="note">Identifiers are bare and permanent — superseded, never renumbered, never
-    reused. They carry no project name so that a rename, or a transfer to a community body,
-    never breaks a citation you have already published.</p>
-  </div>
 
   <h2>Contributing</h2>
   <div class="prose">
-    <p>Read, comment, contribute. The most useful thing you can do is tell us where a control
-    is wrong, unimplementable, or missing. Open an issue against a specific identifier.</p>
-    <p class="note">Crosswalks to frameworks you already run — NIST AI RMF, ISO 42001, OWASP,
-    CIS — are the contribution we most need from outside the group that drafted this.
-    See <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+    <p>Tell us where a control is wrong, unimplementable, or missing — against a specific
+    identifier, so the argument has somewhere to land.</p>
+    <p>The contribution we need most is the one we cannot write ourselves: a crosswalk to a
+    framework you already run — NIST AI RMF, ISO 42001, OWASP, CIS. Everyone who drafted this
+    works for a vendor in the space, so a mapping from outside is worth more than another
+    control from inside. See
+    <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
   </div>
 
-  <h2>Provenance</h2>
+  <h2>Who wrote it, and what they sell</h2>
   <div class="prose">
-    <p class="note">This work was convened by companies that sell products in the area it
-    describes. Who they are, what they sell, and which outcomes they sell into is disclosed
-    in <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a>. Read it
-    before you weigh anything here.</p>
+    <p>Drafted by&#32;
+    {{- $n := len (where $people.contributors "confirmed" true) }}
+    {{- range $i, $c := where $people.contributors "confirmed" true }}
+    {{- if $i }}{{ if eq (add $i 1) $n }} and {{ else }}, {{ end }}{{ end }}
+    {{- .name }} <span class="aff">({{ .affiliation }})</span>
+    {{- end }}. Section-level attribution is in the paper.</p>
+
+    <p class="note">All three companies sell products in the area this document describes.
+    Which outcomes each sells into is set out once, plainly, in
+    <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a> — read it before
+    you weigh anything here.</p>
   </div>
 
   <footer>
