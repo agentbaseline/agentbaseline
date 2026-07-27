@@ -30,10 +30,10 @@ If a section reads like a product datasheet, that is a bug. Open an issue.
 
 ## The test applied to ourselves
 
-The six outcomes are stated in this catalogue as the minimum category test for a control plane.
+The six outcomes are stated in the baseline as the minimum category test for a control plane.
 Applied honestly:
 
-> **By this catalogue's own test, none of the three convening organizations is a complete
+> **By the baseline's own test, none of the three convening organizations is a complete
 > implementation.** Each covers part of the problem. Any of them telling you otherwise is
 > contradicting a document they co-authored.
 

@@ -1,8 +1,8 @@
 # Agent Baseline
 
-**An open reference architecture and control catalogue for running AI agents in the
-enterprise — a draft for public comment, versioned in the open, intended for donation to a
-community body as it matures.**
+**A baseline of security outcomes for running AI agents in the enterprise.**
+A draft for public comment, versioned in the open, and intended for donation to a
+community body as it matures.
 
 > ⟡ **Working draft.** Names, scope and identifiers on this page are not yet final. See
 > [VERSIONING.md](VERSIONING.md) for what is and is not safe to cite today.
@@ -13,7 +13,7 @@ runtime in natural language, changing what it does and how it uses approved tool
 Existing controls still matter, but they were not built for that combination of runtime
 programmability, access and autonomy.
 
-This catalogue defines the security outcomes an enterprise must achieve, by outcome rather
+The baseline defines the security outcomes an enterprise must achieve, by outcome rather
 than by product category.
 
 ## The six outcomes
@@ -28,14 +28,14 @@ than by product category.
 | **RES** | Respond | Stop, revoke, quarantine, scope impact |
 
 The six are the **minimum category test**. A product may implement one or more; end-to-end
-control requires all six through an integrated architecture. By this catalogue's own test, no
-single vendor is a complete implementation — including the ones who wrote it.
+control requires all six through an integrated architecture. By the baseline's own test, no single
+vendor is a complete implementation — including the ones who wrote it.
 
 ## What's here
 
 | Path | |
 |---|---|
-| [`whitepaper/`](whitepaper/) | The paper, the control catalogue (`controls.yaml`), and figures |
+| [`whitepaper/`](whitepaper/) | The paper, the controls (`controls.yaml`), and figures |
 | [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO and OWASP ⟡ *committed, not yet written* |
 | [`docs/decisions/`](docs/decisions/) | Architecture decision records |
 
@@ -45,7 +45,7 @@ single vendor is a complete implementation — including the ones who wrote it.
 sensitive data, invoking an internal API, updating a system of record.
 
 **Not in scope:** a generic AI ethics framework, a model-development standard, or a product
-comparison. This catalogue does not prescribe how a model reasons. It governs the conditions
+comparison. The baseline does not prescribe how a model reasons. It governs the conditions
 under which an agent and each material action may proceed.
 
 ## How to cite
