@@ -11,6 +11,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Enforce the controls's own rules
         run: python3 bin/check-controls
+      - name: Figure geometry — no overlaps, no escaping text, ranges match
+        run: |
+          python3 whitepaper/figures/build-figure-1.py
+          python3 bin/check-figure
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls

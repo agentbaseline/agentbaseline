@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 N="${1:?usage: bin/snapshot <n> <label>}"; shift
 LABEL="${*:-untitled}"
 python3 whitepaper/figures/build-figure-1.py >/dev/null
+python3 bin/check-figure >/dev/null
 python3 - <<'P'
 import re,pathlib
 s=pathlib.Path("whitepaper/figures/figure-1.svg").read_text()

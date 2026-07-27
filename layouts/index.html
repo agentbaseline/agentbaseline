@@ -100,6 +100,17 @@
   nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
   ol.factors > li { scroll-margin-top:20px; }
 
+  ol.questions { list-style:none; margin:34px 0 30px; padding:0;
+    counter-reset:q; border-top:1px solid var(--line); }
+  ol.questions li { counter-increment:q; padding:16px 0; border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:30px 1fr; gap:3px 12px; }
+  ol.questions li::before { content:counter(q); grid-row:1/3;
+    font-family:var(--mono); font-size:12px; color:var(--faint); padding-top:5px;
+    font-variant-numeric:tabular-nums; }
+  ol.questions .q { font-size:18.5px; font-weight:700; text-wrap:balance; }
+  ol.questions .a { font-family:var(--mono); font-size:12.5px; color:var(--accent);
+    letter-spacing:.03em; }
+
   ol.controls { list-style:none; margin:18px 0 4px; padding:0; grid-column:2;
     border-top:1px solid var(--line); }
   ol.controls li { padding:14px 0; border-bottom:1px solid var(--line);
@@ -152,30 +163,47 @@
     <a href="{{ .Site.Params.repo }}">repository</a>
   </p>
 
-  <h2>Abstract</h2>
   <div class="intro">
-    <p>An enterprise deploying an AI agent is not provisioning fixed-function software.
-    It is provisioning a programmable actor: an end user can reprogram it at runtime in
-    natural language, changing what it is asked to do and how it uses approved tools and
-    data. Existing controls still matter, but they were not built for that combination of
-    runtime programmability, access and autonomy.</p>
+    <p>Agents are arriving in your organization on someone else's timeline. Security is
+    often not in the room when that decision is made, and by the time it is, agents already
+    hold access to real data and real systems. You can allow adoption without controls you
+    trust, or you can block it and become the obstacle — while it continues in the shadows
+    anyway.</p>
 
-    <p>The baseline defines what an enterprise must achieve, by <strong>outcome</strong>
-    rather than by product category. Each outcome carries controls with stable identifiers,
-    written to be cited.</p>
+    <p>Your existing controls still do their job. They were built for software whose
+    behaviour is settled before it ships. An agent's is not: an end user reprograms it at
+    runtime, in natural language, changing what it does and which approved tools and data it
+    reaches for. The enterprise is provisioning a programmable actor, and it can act at
+    machine speed before a person can intervene.</p>
+
+    <p>Buying the gap closed is its own problem. “Agent governance” can mean almost
+    anything. Every product solves some part of this; few will tell you which part, and no
+    datasheet explains how the parts fit together.</p>
+
+    <p>So judge by outcome rather than by product category. <strong>Six outcomes, because
+    together they answer the three questions you are already being asked:</strong></p>
+  </div>
+
+  <ol class="questions">
+    <li><span class="q">What is operating, and under whose authority?</span>
+        <span class="a">Discover · Authorize</span></li>
+    <li><span class="q">Is it staying inside approved boundaries?</span>
+        <span class="a">Constrain · Validate</span></li>
+    <li><span class="q">Can you prove what happened — and stop it?</span>
+        <span class="a">Observe · Respond</span></li>
+  </ol>
+
+  <div class="prose">
+    <p>No single enforcement point delivers all six. They are logically one system and
+    physically scattered across identity, runtime, tooling, data and evidence — which is what
+    makes the list useful. Take it into a vendor conversation and ask which of the six they
+    cover.</p>
 
     <p class="status-line">Open for public comment until {{ .Site.Params.commentsUntil }}.
     Identifiers are not yet frozen — read
     <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
     before citing.</p>
   </div>
-
-  <nav class="toc" aria-label="Contents">
-    {{- range $cat.outcomes }}
-    {{- $ids := where $cat.controls "outcome" .prefix }}
-    <a href="/controls/#{{ lower .name }}">{{ .name }}<span class="n">{{ len $ids }}</span></a>
-    {{- end }}
-  </nav>
 
   <h2>The six outcomes</h2>
   <ol class="factors">
@@ -190,18 +218,14 @@
   </ol>
 
   <div class="prose">
-    <p class="note">{{ len $cat.controls }} controls across six outcomes. The six are the
-    minimum category test: a product may implement one or more, but end-to-end control
-    requires all six through an integrated architecture. By the baseline's own test, none of
-    the organizations that convened it is a complete implementation.</p>
+    <p class="note">{{ len $cat.controls }} controls across the six. By this test, none of
+    the three organizations that convened this document is a complete implementation.
+    Use it on us.</p>
   </div>
 
   <figure class="fig1">
     {{ partial "figure-1.svg" . }}
-    <figcaption>No single enforcement point delivers this. The outcomes are logically
-    unified but physically distributed across identity, runtime, tool, data and evidence
-    boundaries — common context and control identifiers are what let them operate as one
-    path from intent to outcome.</figcaption>
+    <figcaption><strong>Figure 1.</strong> The six outcomes, grouped by the question each pair answers. Take it into a vendor conversation and ask which they cover.</figcaption>
   </figure>
 
   <h2>Who wrote this</h2>

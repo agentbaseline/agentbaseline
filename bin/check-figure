@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""
+Visual regression gate for Figure 1.
+
+Two earlier revisions shipped with colliding labels and a band running underneath
+a terminal, and both passed a clean build. This checks the geometry the build
+cannot see:
+
+  1. no two text runs overlap
+  2. no text run escapes the canvas
+  3. every text run sits inside some box, not floating over a boundary
+  4. the identifier ranges match controls.yaml
+
+Run after every figure change. bin/snapshot does it automatically.
+"""
+import json, re, sys, pathlib
+
+HERE = pathlib.Path(__file__).resolve().parents[1] / "whitepaper"
+BOXES = HERE / "figures" / ".figure-1.boxes.json"
+SVG = HERE / "figures" / "figure-1.svg"
+CAT = HERE / "controls.yaml"
+
+if not BOXES.exists():
+    sys.exit("no box manifest — run whitepaper/figures/build-figure-1.py first")
+
+boxes = json.loads(BOXES.read_text(encoding="utf-8"))
+svg = SVG.read_text(encoding="utf-8")
+errors = []
+
+# canvas
+vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', svg)
+W, H = int(vb.group(1)), int(vb.group(2))
+
+def overlap(a, b):
+    return not (a["x"] + a["w"] <= b["x"] + 0.5 or b["x"] + b["w"] <= a["x"] + 0.5
+                or a["y"] + a["h"] <= b["y"] + 0.5 or b["y"] + b["h"] <= a["y"] + 0.5)
+
+# 1. text-on-text collisions
+for i, a in enumerate(boxes):
+    for b in boxes[i + 1:]:
+        if overlap(a, b):
+            errors.append(
+                f"text collision: {a['tag']!r} ({a['x']:.0f},{a['y']:.0f} "
+                f"{a['w']:.0f}×{a['h']:.0f}) overlaps {b['tag']!r} "
+                f"({b['x']:.0f},{b['y']:.0f} {b['w']:.0f}×{b['h']:.0f})")
+
+# 2. escaping the canvas
+for a in boxes:
+    if a["x"] < 0 or a["y"] < 0 or a["x"] + a["w"] > W + 0.5 or a["y"] + a["h"] > H + 0.5:
+        errors.append(f"text outside canvas: {a['tag']!r} at "
+                      f"({a['x']:.0f},{a['y']:.0f}) {a['w']:.0f}×{a['h']:.0f}, canvas {W}×{H}")
+
+# 3. text straddling a rect edge — the failure that produced the clipped terminal
+rects = [(float(m[0]), float(m[1]), float(m[2]), float(m[3]))
+         for m in re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" '
+                             r'height="([\d.]+)"[^>]*class="(?:band|cell)', svg)]
+for a in boxes:
+    for rx, ry, rw, rh in rects:
+        inside_x = rx <= a["x"] and a["x"] + a["w"] <= rx + rw
+        starts_in = rx <= a["x"] <= rx + rw
+        vert = ry <= a["y"] + a["h"] / 2 <= ry + rh
+        if vert and starts_in and not inside_x:
+            errors.append(f"text crosses a box edge: {a['tag']!r} runs to "
+                          f"{a['x']+a['w']:.0f}, box ends {rx+rw:.0f}")
+
+# 3b. cells must nest inside their band, with clearance
+bands = [(float(a),float(b),float(w),float(h)) for a,b,w,h in
+         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
+                    r'[^>]*class="band', svg)]
+cells = [(float(a),float(b),float(w),float(h)) for a,b,w,h in
+         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
+                    r'[^>]*class="cell', svg)]
+for cx, cy, cw, ch in cells:
+    parent = next((b for b in bands if b[1] <= cy and cy + ch <= b[1] + b[3]), None)
+    if parent is None:
+        errors.append(f"cell at ({cx:.0f},{cy:.0f}) sits in no band")
+        continue
+    bx, by, bw, bh = parent
+    if cx < bx + 8 or cx + cw > bx + bw - 8:
+        errors.append(f"cell at x={cx:.0f}..{cx+cw:.0f} has under 8px clearance "
+                      f"inside its band ({bx:.0f}..{bx+bw:.0f})")
+
+# 4. identifier ranges agree with the source of truth
+cat = CAT.read_text(encoding="utf-8")
+hi = {}
+for m in re.finditer(r"^  - id: (\w+)-(\d+)$", cat, re.M):
+    hi[m.group(1)] = max(hi.get(m.group(1), 0), int(m.group(2)))
+for fam, n in hi.items():
+    want = f"{fam}-01…{n:02d}"
+    if want not in svg:
+        errors.append(f"identifier range missing or stale: expected {want}")
+
+print(f"figure {W}×{H} · {len(boxes)} text runs · {len(rects)} boxes")
+for e in errors:
+    print(f"  ERROR  {e}")
+print(f"\n{len(errors)} error(s)")
+sys.exit(1 if errors else 0)
