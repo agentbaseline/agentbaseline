@@ -97,7 +97,8 @@ if PAPER.exists():
 
 # ── 7. the published identifier range must be the MAX, never the count ────────
 for f in (ROOT / "layouts" / "index.html", ROOT / "whitepaper" / "figures" / "build-figure-1.py"):
-    if f.exists() and re.search(r"len \$ids|len\(.*ids.*\)|counts\[\w+\] \+ 1", f.read_text(encoding="utf-8")):
+    if f.exists() and re.search(r"-01…\{\{ printf .%02d. \(len \$ids\)|counts\[\w+\] \+ 1|"
+                       r"\{p\}-01…\{len\(", f.read_text(encoding="utf-8")):
         err(f"{f.name}: identifier range derived from a count — withdrawn controls leave "
             f"gaps, so the range must come from the highest identifier")
 
