@@ -13,11 +13,6 @@ v=sys.argv[1]; s=pathlib.Path(f"whitepaper/figures/{v}.svg").read_text(encoding=
 pathlib.Path(f"layouts/partials/{v}.svg").write_text(re.sub(r'\swidth="\d+"\s+height="\d+"','',s,count=1),encoding="utf-8")
 SY
 done
-python3 - <<'P'
-import re,pathlib
-s=pathlib.Path("whitepaper/figures/figure-1.svg").read_text()
-pathlib.Path("layouts/partials/figure-1.svg").write_text(re.sub(r"\swidth=\"\\d+\"\\s+height=\"\\d+\"","",s,count=1))
-P
 hugo --gc --minify --quiet
 mkdir -p "docs/passes/v$N"
 cp public/index.html "docs/passes/v$N/index.html"

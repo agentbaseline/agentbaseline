@@ -1,31 +1,51 @@
 #!/usr/bin/env python3
-"""Generate static/social-card.png (1200x630) from Figure 1.
+"""Generate static/social-card.png (1200x630) from whichever figure the site ships.
 
-Same source as everything else. The card carries the three questions and the six
-names only — at 630px tall the identifier ranges are illegible, so they are
-dropped rather than shipped as mush.
+Same source as the page and the PDF. Identifier ranges are stripped: at card
+scale they are illegible, and shipping unreadable type is worse than omitting it.
 """
 import re, pathlib, subprocess, sys
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-fig = (ROOT / "whitepaper/figures/figure-1.svg").read_text(encoding="utf-8")
 
-# strip identifier ranges — unreadable at card scale
-card = re.sub(r'<text[^>]*font-family="ui-monospace[^>]*>[A-Z]{3}-01…\d\d</text>\n?\s*', '', fig)
-card = card.replace('viewBox="0 0 960 466"', 'viewBox="-40 -60 1040 586"')
-card = re.sub(r'width="960" height="466"', 'width="1200" height="630"', card)
-card = card.replace('<rect width="960" height="466" fill="#FCFCFA"/>',
-                    '<rect x="-40" y="-60" width="1040" height="586" fill="#FCFCFA"/>')
-tmp = ROOT / "whitepaper/figures/.social.svg"
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+cfg = (ROOT / "hugo.toml").read_text(encoding="utf-8")
+variant = (re.search(r'figure\s*=\s*"([^"]+)"', cfg) or [None, "figure-1a-flow"])[1]
+
+src = ROOT / "whitepaper" / "figures" / f"{variant}.svg"
+if not src.exists():
+    sys.exit(f"{src.name} not found")
+fig = src.read_text(encoding="utf-8")
+
+vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', fig)
+fw, fh = int(vb.group(1)), int(vb.group(2))
+
+# aspect-fit the figure into 1200x630 with even padding
+pad_x = 40
+inner_w = fw + 2 * pad_x
+inner_h = max(fh + 2 * pad_x, inner_w * 630 / 1200)
+off_y = -(inner_h - fh) / 2
+
+card = re.sub(r'<text[^>]*font-family="ui-monospace[^>]*>[A-Z]{3}-01…\d\d</text>\n?\s*',
+              "", fig)
+card = card.replace(vb.group(0),
+                    f'viewBox="{-pad_x} {off_y:.0f} {inner_w} {inner_h:.0f}"')
+card = re.sub(r'width="\d+" height="\d+"', 'width="1200" height="630"', card, count=1)
+card = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>',
+              f'<rect x="{-pad_x}" y="{off_y:.0f}" width="{inner_w}" '
+              f'height="{inner_h:.0f}" fill="#FFFFFF"/>', card, count=1)
+
+tmp = ROOT / "whitepaper" / "figures" / ".social.svg"
 tmp.write_text(card, encoding="utf-8")
 
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-out = ROOT / "static/social-card.png"
+out = ROOT / "static" / "social-card.png"
+out.parent.mkdir(exist_ok=True)
 if not pathlib.Path(chrome).exists():
+    tmp.unlink(missing_ok=True)
     sys.exit("chrome not found — social card not regenerated")
 subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
                 f"--screenshot={out}", "--window-size=1200,630",
-                "--default-background-color=FCFCFAFF", tmp.as_uri()],
+                "--default-background-color=FFFFFFFF", tmp.as_uri()],
                capture_output=True)
 tmp.unlink(missing_ok=True)
-print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)" if out.exists()
-      else "social card FAILED")
+print(f"wrote static/social-card.png from {variant}  ({out.stat().st_size:,} bytes)"
+      if out.exists() else "social card FAILED")
