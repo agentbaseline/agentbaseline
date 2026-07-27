@@ -23,7 +23,8 @@ for d in passes:
   <p class="links"><a href="{d.name}/index.html">open the page for {d.name} →</a></p>
 </section>''')
 
-out = f'''<title>Agent Baseline — design passes</title>
+out = f'''<meta charset="utf-8">
+<title>Agent Baseline — design passes</title>
 <style>
  :root {{ --paper:#FFF; --ink:#222422; --soft:#5C605C; --faint:#909490; --line:#E6E7E4; --mark:#B3541E;
    --serif:Charter,"Iowan Old Style",Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace; }}

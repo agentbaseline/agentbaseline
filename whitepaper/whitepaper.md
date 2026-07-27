@@ -60,7 +60,7 @@ The same visibility problem applies to components. Third-party models, MCP serve
 
 Finding an agent is not enough. Security must know what it can access and do, who is accountable for it, and the business context in which it operates. Evidence is fragmented across cloud environments, source repositories, endpoints, identity systems and SaaS platforms. The required view changes as integrations are added and agents move into production, so registration must be supported by continuous discovery and reconciliation.
 
-Control requirements: ACP-DIS-01 Authoritative agent registry; ACP-DIS-02 Authoritative component registry; ACP-DIS-03 Ownership and risk context; ACP-DIS-04 Status and decision history; ACP-DIS-05 Automated discovery and reconciliation; ACP-DIS-06 Agent composition mapping; ACP-DIS-07 Effective-access mapping. (Full text in Appendix A.)
+Control requirements: DIS-01 Authoritative agent registry; DIS-02 Authoritative component registry; DIS-03 Ownership and risk context; DIS-04 Status and decision history; DIS-05 Automated discovery and reconciliation; DIS-06 Agent composition mapping; DIS-07 Effective-access mapping. (Full text in Appendix A.)
 
 ### Authorize
 
@@ -78,7 +78,7 @@ The required property is per-action least privilege. A proposed action against a
 
 Multi-agent delegation preserves both identities and authority. Each hop records the calling agent, receiving agent and authority passed, while the originating principal or autonomous purpose remains unchanged. The receiving agent may receive no more authority than the delegating agent holds, and policy can narrow it further. Circuit breaking is part of the same boundary: the point that permits an action must also be able to deny or halt it when context or behavior changes.
 
-Control requirements: ACP-AUT-01 Distinct identity and action attribution; ACP-AUT-02 Purpose- and task-bound authority; ACP-AUT-03 Delegation attenuation; ACP-AUT-04 Just-in-time credentialing; ACP-AUT-05 Independent approval; ACP-AUT-06 Fail-closed authorization and circuit breaking.
+Control requirements: AUT-01 Distinct identity and action attribution; AUT-02 Purpose- and task-bound authority; AUT-03 Delegation attenuation; AUT-04 Just-in-time credentialing; AUT-05 Independent approval; AUT-06 Fail-closed authorization and circuit breaking.
 
 ### Constrain
 
@@ -90,7 +90,7 @@ Risk can emerge from the combination of components, even when each appears benig
 
 Discovery establishes which components exist and where they are used. Supply-chain and composition controls determine which components may be used, how they may be connected, and whether agents can introduce unapproved components at runtime.
 
-Control requirements: ACP-CON-01 Agentic system manifest; ACP-CON-02 Approved and verified components; ACP-CON-03 Toxic capability combinations; ACP-CON-04 Component-scoped authority; ACP-CON-05 Rug-pull protection.
+Control requirements: CON-01 Agentic system manifest; CON-02 Approved and verified components; CON-03 Toxic capability combinations; CON-04 Component-scoped authority; CON-05 Rug-pull protection.
 
 **Runtime isolation.** An agent does not merely reason. It runs code, calls tools and starts processes. When this occurs inside a developer environment or general-purpose CI runner, the agent may inherit the host's filesystem, credentials, network and unrelated projects. An incorrect instruction or malicious content then executes with the reach of the host rather than the reach of the task.
 
@@ -98,7 +98,7 @@ Each agent task should run inside a small environment whose capability is limite
 
 **Sandbox operating model.** The boundary must remain usable or teams will bypass it. A practical operating model uses warm pools and approved templates to claim an environment quickly, attach the required workspace and policy, preserve a stable run identity, snapshot when necessary and destroy the environment afterward. The same lifecycle supports oversight: enforcement occurs at the boundary, a circuit breaker can halt a run, material actions can be sent for approval, and events can be correlated with the initiating user and task. Local developer sandboxes and remote cluster environments can implement the same policy contract while using different isolation technologies.
 
-Control requirements: ACP-CON-06 Isolated execution; ACP-CON-07 Filesystem, network and resource confinement.
+Control requirements: CON-06 Isolated execution; CON-07 Filesystem, network and resource confinement.
 
 ### Validate
 
@@ -106,11 +106,11 @@ Control requirements: ACP-CON-06 Isolated execution; ACP-CON-07 Filesystem, netw
 
 The same problem applies to third-party agents and components, where the organization may have limited visibility into how they were developed, how they handle data or how they change over time. Any approval is therefore a point-in-time judgement: a change to the model, tools, permissions or components can materially alter the risk without changing the application code.
 
-Control requirements: ACP-VAL-01 Production admission gate; ACP-VAL-02 Agent-specific security validation; ACP-VAL-03 First-party component assurance; ACP-VAL-04 Third-party agent assurance; ACP-VAL-05 Third-party component assurance; ACP-VAL-06 Revalidation.
+Control requirements: VAL-01 Production admission gate; VAL-02 Agent-specific security validation; VAL-03 First-party component assurance; VAL-04 Third-party agent assurance; VAL-05 Third-party component assurance; VAL-06 Revalidation.
 
 **Output validation.** Coding agents can create or modify code, configuration and dependencies at machine speed. Without the same security and release checks applied to human-produced changes, they can introduce vulnerable or malicious artifacts into production.
 
-Control requirements: ACP-VAL-07 Agent-generated artifact assurance.
+Control requirements: VAL-07 Agent-generated artifact assurance.
 
 ### Observe
 
@@ -132,7 +132,7 @@ The record feeds existing SIEM, audit ledger and GRC platforms rather than repla
 
 Observability and accountability — Observability emits and correlates runtime signals. Accountability consumes those signals to produce a workflow-level account that can be investigated, challenged and evidenced after the fact.
 
-Control requirements: ACP-OBS-01 Agent-native telemetry; ACP-OBS-02 End-to-end correlation; ACP-OBS-03 Behaviour and drift monitoring; ACP-OBS-04 Permitted-action harm detection; ACP-OBS-05 Intent-to-outcome evidence; ACP-OBS-06 Evidence integrity, completeness and protection.
+Control requirements: OBS-01 Agent-native telemetry; OBS-02 End-to-end correlation; OBS-03 Behaviour and drift monitoring; OBS-04 Permitted-action harm detection; OBS-05 Intent-to-outcome evidence; OBS-06 Evidence integrity, completeness and protection.
 
 ### Respond
 
@@ -140,7 +140,7 @@ Stop unsafe activity quickly, revoke active authority, contain affected versions
 
 Response is deliberately limited to containment in this architecture. Restoring business state remains a workflow-specific operational responsibility outside the current scope.
 
-Control requirements: ACP-RES-01 Immediate stop and authority revocation; ACP-RES-02 Version and component quarantine; ACP-RES-03 Impact scoping and evidence preservation; ACP-RES-04 Safe failure and non-agent fallback.
+Control requirements: RES-01 Immediate stop and authority revocation; RES-02 Version and component quarantine; RES-03 Impact scoping and evidence preservation; RES-04 Safe failure and non-agent fallback.
 
 ## Conclusion
 
@@ -156,17 +156,16 @@ Identify the agent. Bound its authority. Control its actions. Prove its outcomes
 
 (Canonical naming + requirement set; grouped by primary outcome. Publication-ready release extends each entry with lifecycle stage, assurance profile, accountable actor, policy decision point, enforcement point, evidence, test method, failure behavior, exception handling and framework mappings.)
 
-Discover: ACP-DIS-01 Authoritative agent registry · ACP-DIS-02 Authoritative component registry · ACP-DIS-03 Ownership and risk context · ACP-DIS-04 Status and decision history · ACP-DIS-05 Automated discovery and reconciliation · ACP-DIS-06 Agent composition mapping · ACP-DIS-07 Effective-access mapping.
+Discover: DIS-01 Authoritative agent registry · DIS-02 Authoritative component registry · DIS-03 Ownership and risk context · DIS-04 Status and decision history · DIS-05 Automated discovery and reconciliation · DIS-06 Agent composition mapping · DIS-07 Effective-access mapping.
 
-Authorize: ACP-AUT-01 Distinct identity and action attribution · ACP-AUT-02 Purpose- and task-bound authority · ACP-AUT-03 Delegation attenuation · ACP-AUT-04 Just-in-time credentialing · ACP-AUT-05 Independent approval · ACP-AUT-06 Fail-closed authorization and circuit breaking.
+Authorize: AUT-01 Distinct identity and action attribution · AUT-02 Purpose- and task-bound authority · AUT-03 Delegation attenuation · AUT-04 Just-in-time credentialing · AUT-05 Independent approval · AUT-06 Fail-closed authorization and circuit breaking.
 
-Constrain: ACP-CON-01 Agentic System Manifest · ACP-CON-02 Toxic-flow analysis · ACP-CON-03 Component least privilege and trust boundaries · ACP-CON-04 Isolated execution · ACP-CON-05 Filesystem, network and resource confinement · ACP-CON-06 Approved and verified components · ACP-CON-07 Runtime component and generated-artifact policy.
+Constrain: CON-01 Agentic System Manifest · CON-02 Toxic-flow analysis · CON-03 Component least privilege and trust boundaries · CON-04 Isolated execution · CON-05 Filesystem, network and resource confinement · CON-06 Approved and verified components · CON-07 Runtime component and generated-artifact policy.
 
-Validate: ACP-VAL-01 Deployment admission · ACP-VAL-02 Agent-specific security testing · ACP-VAL-03 Third-party assurance · ACP-VAL-04 Independent outcome validation · ACP-VAL-05 Material-change revalidation.
+Validate: VAL-01 Deployment admission · VAL-02 Agent-specific security testing · VAL-03 Third-party assurance · VAL-04 Independent outcome validation · VAL-05 Material-change revalidation.
 
-Observe: ACP-OBS-01 Agent-native telemetry · ACP-OBS-02 End-to-end correlation and behavior monitoring · ACP-OBS-03 Intent-to-outcome evidence · ACP-OBS-04 Evidence integrity, completeness and protection.
+Observe: OBS-01 Agent-native telemetry · OBS-02 End-to-end correlation and behavior monitoring · OBS-03 Intent-to-outcome evidence · OBS-04 Evidence integrity, completeness and protection.
 
-Respond: ACP-RES-01 Immediate stop and authority revocation · ACP-RES-02 Version and component quarantine · ACP-RES-03 Impact scoping and evidence preservation · ACP-RES-04 Safe failure and non-agent fallback.
+Respond: RES-01 Immediate stop and authority revocation · RES-02 Version and component quarantine · RES-03 Impact scoping and evidence preservation · RES-04 Safe failure and non-agent fallback.
 
 ---
-*NOTE (internal): §5 control numbering and Appendix A numbering diverge in v0.2 (e.g., Constrain body lists manifest/components/toxic/component-authority/rug-pull as CON-01..05 + isolation as CON-06..07, while Appendix A orders and titles them differently; Validate body has 7 controls, appendix has 5; Observe body 6, appendix 4). The conclusion references "ten principles and four-stage lifecycle" not present in this draft. Known v0.2 editorial gaps — flagged for the doc owner, relevant to GTM only insofar as the citable IDs must be stable before launch.*

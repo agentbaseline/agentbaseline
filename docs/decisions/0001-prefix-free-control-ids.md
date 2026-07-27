@@ -2,9 +2,9 @@
 
 - **Status:** Accepted
 - **Date:** 2026-07-27
-- **Deciders:** Taishō (Creager), on the tōryō's recommendation
+- **Deciders:** Matthew Creager (Keycard)
 - **Supersedes:** the `ACP-` prefix used throughout the v0.2 draft
-- **Related:** D0 (name + org), D4a (mechanical ID consistency), D10 (Figure 1 redraw)
+- **Related:** the naming decision, catalogue reconciliation, and the Figure 1 redraw
 
 ## Context
 
@@ -17,8 +17,8 @@ Three facts collided:
    `agentcontrolplane.org` are both already taken, on top of three protocol collisions and an
    occupied category term. The property will not be called ACP.
 2. **The name was therefore blocking the catalogue.** Because the name was baked into the
-   identifier, we could not freeze the control IDs (D4a) until we had chosen a name (D0),
-   and we could not redraw Figure 1 (D10) until the IDs were frozen. A three-deep dependency
+   identifier, we could not freeze the control identifiers until we had chosen a name,
+   and we could not redraw Figure 1 until the identifiers were frozen. A three-deep dependency
    chain with three days of runway.
 3. **The stated destination is donation** to a community body. A donated catalogue carrying a
    dead sponsor-era acronym forces a renumbering at exactly the moment the artifact is meant
@@ -47,7 +47,7 @@ The mock landing page already does exactly this. This decision makes it the rule
 
 **Good**
 
-- **The D0 → D4a → D10 chain is broken.** ID reconciliation and the Figure 1 redraw can both
+- **The dependency chain is broken.** ID reconciliation and the Figure 1 redraw can both
   proceed before the name is chosen. This removes the single worst scheduling risk in the launch.
 - A future rename costs nothing. So does donation, so does a fourth or fifth vendor joining.
 - The IDs read as neutral. `DIS-01` belongs to whoever cites it; `ACP-DIS-01` belongs to a
@@ -73,7 +73,7 @@ The mock landing page already does exactly this. This decision makes it the rule
 - [ ] Sweep `ACP-` out of `whitepaper.md` and Appendix A — before Tue 7/28 EOD content lock
 - [ ] Author `controls.yaml` with bare keys
 - [ ] `VERSIONING.md`: state the bare-identifier rule and the namespace-qualification rule
-- [ ] Figure 1 (D10) drawn with bare IDs
+- [ ] Figure 1 drawn with bare identifiers
 - [ ] `check-control-ids` fails the build on any `ACP-`-style prefix inside an identifier
 - [ ] Tell partners before they draft blogs — a partner citing `ACP-AUT-01` on launch day is
       a broken citation on someone else's property, which we cannot fix

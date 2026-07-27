@@ -1,0 +1,18 @@
+name: catalogue
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce the catalogue's own rules
+        run: python3 bin/check-catalogue
+      - name: Rebuild Figure 1 and fail on drift
+        run: |
+          python3 whitepaper/figures/build-figure-1.py
+          git diff --exit-code whitepaper/figures/figure-1.svg \
+            || { echo "::error::figure-1.svg is stale — regenerate it from controls.yaml"; exit 1; }

@@ -1,4 +1,4 @@
-# Agent Controls
+# Agent Baseline
 
 **An open reference architecture and control catalogue for running AI agents in the
 enterprise — a draft for public comment, versioned in the open, intended for donation to a
@@ -36,7 +36,6 @@ single vendor is a complete implementation — including the ones who wrote it.
 | Path | |
 |---|---|
 | [`whitepaper/`](whitepaper/) | The paper, the control catalogue (`controls.yaml`), and figures |
-| [`site/`](site/) | The landing page — versioned with the paper, one commit moves both |
 | [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO and OWASP ⟡ *committed, not yet written* |
 | [`docs/decisions/`](docs/decisions/) | Architecture decision records |
 

@@ -3,7 +3,6 @@
 # THIS FILE IS THE SOURCE OF TRUTH. The paper, the landing page and every
 # figure render from it. Where prose and this file disagree, this file wins
 # and the prose is a bug.
-#
 # Identifiers are BARE and PERMANENT: `DIS-01`, never `ACP-DIS-01`.
 # No project name lives inside an identifier — see
 # docs/decisions/0001-prefix-free-control-ids.md
@@ -105,8 +104,7 @@ controls:
     requirement: >-
      Every registered agent shall be mapped to the identities and credentials it
      uses and the data, systems and actions those identities permit, including
-     access obtained through its components. ## Authorize
-
+     access obtained through its components.
   - id: AUT-01
     outcome: AUT
     title: "Distinct identity and action attribution"
@@ -155,7 +153,7 @@ controls:
     status: draft
     requirement: >-
      Material actions shall be denied or halted when identity, policy, context,
-     evidence, approval or target-state requirements cannot be verified. ##
+     evidence, approval or target-state requirements cannot be verified.
      Constrain
 
   - id: CON-01
@@ -217,8 +215,7 @@ controls:
     status: draft
     requirement: >-
      Runtime enforcement shall prevent component substitution or drift and shall
-     test and scan material generated artifacts before release. ## Validate
-
+     test and scan material generated artifacts before release.
   - id: VAL-01
     outcome: VAL
     title: "Deployment admission"
@@ -262,8 +259,7 @@ controls:
     requirement: >-
      Changes to models, instructions, tools, data, permissions, runtime, providers,
      purpose or behavior shall trigger reassessment and re-admission when they may
-     invalidate the approved state. ## Observe
-
+     invalidate the approved state.
   - id: OBS-01
     outcome: OBS
     title: "Agent-native telemetry"
@@ -298,8 +294,7 @@ controls:
     requirement: >-
      Evidence shall use consistent timestamps, appropriate integrity protection,
      completeness checks, access control, redaction, encryption, retention, deletion
-     and legal-hold rules. ## Respond
-
+     and legal-hold rules.
   - id: RES-01
     outcome: RES
     title: "Immediate stop and authority revocation"
@@ -331,4 +326,4 @@ controls:
     status: draft
     requirement: >-
      Unverified high-impact actions shall fail closed, and essential workflows shall
-     provide an approved non-agent fallback where continuity requires one. #
+     provide an approved non-agent fallback where continuity requires one.

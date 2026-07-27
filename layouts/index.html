@@ -48,8 +48,8 @@
   .intro p { margin:0 0 22px; }
   .intro .status-line { color:var(--soft); font-size:16.5px; }
 
-  h2 { font-size:15px; font-family:var(--mono); font-weight:400;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--faint);
+  h2 { font-size:14px; font-family:var(--mono); font-weight:400;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--soft);
     margin:60px 0 20px; }
 
   ol.factors { list-style:none; margin:0; padding:0; counter-reset:f; }
@@ -71,16 +71,21 @@
   ul.people .org { font-family:var(--mono); font-size:11.5px; font-weight:400;
     letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-left:10px; }
   ul.people .wrote { color:var(--soft); font-size:15px; }
+  ul.people .role { font-family:var(--mono); font-size:11px; color:var(--faint);
+    letter-spacing:.05em; }
 
   figure.fig1 { margin-block:44px 0; margin-inline:0; padding:0; }
   /* The figure is deliberately light in both themes: identical bytes ship to the
      page, the PDF, partner slides and the social card. One artifact, five surfaces. */
   figure.fig1 { min-width:0; }
+  .prose + figure.fig1 { margin-block-start:40px; }
+  figure.fig1 + h2 { margin-top:72px; }
   figure.fig1 svg { display:block; width:100%; max-width:100%; height:auto;
     border:1px solid var(--line); border-radius:8px; background:#FFFFFF; }
-  figure.fig1 figcaption { font-size:14px; color:var(--soft); margin-top:12px;
-    line-height:1.6; }
+  figure.fig1 figcaption { font-size:14px; color:var(--soft); margin-top:14px;
+    line-height:1.6; max-width:592px; margin-inline:auto; }
 
+  ol.factors + .prose { margin-top:28px; }
   .prose p { margin:0 0 18px; }
   .prose .note { color:var(--soft); font-size:16px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
@@ -115,7 +120,7 @@
 
   <p class="metaline">
     Draft for public comment · v{{ .Site.Params.version }}<br>
-    <a href="/whitepaper.pdf">PDF</a> ·
+    {{ with resources.Get "whitepaper.pdf" }}<a href="{{ .RelPermalink }}">PDF</a> · {{ end }}
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
     <a href="{{ .Site.Params.repo }}">repository</a>
   </p>
@@ -137,20 +142,14 @@
     before citing.</p>
   </div>
 
-  <figure class="fig1">
-    {{ partial "figure-1.svg" . }}
-    <figcaption>The six outcomes operate as one control system. Discover sets the
-    operating envelope; Authorize, Constrain and Validate control each material
-    action; Observe and Respond maintain evidence and containment.</figcaption>
-  </figure>
-
   <h2>The six outcomes</h2>
   <ol class="factors">
     {{- range $cat.outcomes }}
     {{- $prefix := .prefix }}
     {{- $ids := where $cat.controls "outcome" $prefix }}
+    {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
     <li>
-      <span class="name">{{ .name }}<span class="ids">{{ $prefix }}-01…{{ printf "%02d" (len $ids) }}</span></span>
+      <span class="name">{{ .name }}<span class="ids">{{ $prefix }}-01…{{ $last }}</span></span>
       <span class="req">{{ .requirement }}</span>
     </li>
     {{- end }}
@@ -163,6 +162,14 @@
     of the organizations that convened it is a complete implementation.</p>
   </div>
 
+  <figure class="fig1">
+    {{ partial "figure-1.svg" . }}
+    <figcaption>No single enforcement point delivers this. The outcomes are logically
+    unified but physically distributed across identity, runtime, tool, data and evidence
+    boundaries — common context and control identifiers are what let them operate as one
+    path from intent to outcome.</figcaption>
+  </figure>
+
   <h2>Who wrote this</h2>
   <div class="prose">
     <p>{{ $people.statement }}</p>
@@ -171,11 +178,8 @@
     {{- range $people.contributors }}
     <li>
       <span class="who">{{ .name }}<span class="org">{{ with .affiliation }}{{ . }}{{ else }}⟡ affiliation to confirm{{ end }}</span></span>
-      {{- with .sections }}
-      <span class="wrote">{{ delimit . " · " }}</span>
-      {{- else }}
-      <span class="wrote">{{ .role }}</span>
-      {{- end }}
+      <span class="wrote">{{ with .sections }}{{ delimit . " · " }}{{ else }}⟡ sections to confirm{{ end }}</span>
+      <span class="role">{{ .role }}</span>
     </li>
     {{- end }}
   </ul>
@@ -207,8 +211,7 @@
 
   <footer>
     Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
-    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a><br>
-    Generated from <code>whitepaper/controls.yaml</code> — the page cannot disagree with the catalogue.
+    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a>
   </footer>
 
 </main>
