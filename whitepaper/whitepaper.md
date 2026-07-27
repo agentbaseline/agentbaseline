@@ -152,7 +152,7 @@ The control plane is not a new agent platform and is not a single mandatory prox
 
 Identify the agent. Bound its authority. Control its actions. Prove its outcomes.
 
-## Appendix A. Canonical control catalogue
+## Appendix A. Canonical controls
 
 (Canonical naming + requirement set; grouped by primary outcome. Publication-ready release extends each entry with lifecycle stage, assurance profile, accountable actor, policy decision point, enforcement point, evidence, test method, failure behavior, exception handling and framework mappings.)
 

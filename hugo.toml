@@ -7,7 +7,7 @@ locale = "en"
 # page are generated from it and cannot drift.
 [[module.mounts]]
   source = "whitepaper/controls.yaml"
-  target = "data/catalogue.yaml"
+  target = "data/controls.yaml"
 [[module.mounts]]
   source = "whitepaper/contributors.yaml"
   target = "data/contributors.yaml"
@@ -22,5 +22,6 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
 
 [params]
   version       = "1.0-draft"
+  published     = "30 July 2026"
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"

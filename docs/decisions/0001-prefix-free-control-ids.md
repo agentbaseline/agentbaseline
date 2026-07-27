@@ -4,7 +4,7 @@
 - **Date:** 2026-07-27
 - **Deciders:** Matthew Creager (Keycard)
 - **Supersedes:** the `ACP-` prefix used throughout the v0.2 draft
-- **Related:** the naming decision, catalogue reconciliation, and the Figure 1 redraw
+- **Related:** the naming decision, controls reconciliation, and the Figure 1 redraw
 
 ## Context
 
@@ -16,11 +16,11 @@ Three facts collided:
 1. **"ACP" is burned.** The GitHub org `agentcontrolplane` and the domain
    `agentcontrolplane.org` are both already taken, on top of three protocol collisions and an
    occupied category term. The property will not be called ACP.
-2. **The name was therefore blocking the catalogue.** Because the name was baked into the
+2. **The name was therefore blocking the controls.** Because the name was baked into the
    identifier, we could not freeze the control identifiers until we had chosen a name,
    and we could not redraw Figure 1 until the identifiers were frozen. A three-deep dependency
    chain with three days of runway.
-3. **The stated destination is donation** to a community body. A donated catalogue carrying a
+3. **The stated destination is donation** to a community body. A donated controls carrying a
    dead sponsor-era acronym forces a renumbering at exactly the moment the artifact is meant
    to gain independence.
 

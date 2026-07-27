@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Enforce the catalogue's own rules. Every promise this repository makes in prose
+Enforce the controls's own rules. Every promise this repository makes in prose
 is checked here, because a rule that lives only in Markdown holds exactly as well
 as it holds today.
 
-Run:  bin/check-catalogue          errors exit 1
-      bin/check-catalogue --warn   report only, always exit 0
+Run:  bin/check-controls          errors exit 1
+      bin/check-controls --warn   report only, always exit 0
 """
 import re, sys, pathlib, collections
 
@@ -83,7 +83,7 @@ if missing:
         f"CONTRIBUTING.md requires one on every control "
         f"(first: {', '.join(missing[:5])}{'…' if len(missing) > 5 else ''})")
 
-# ── 6. the paper may not disagree with the catalogue ──────────────────────────
+# ── 6. the paper may not disagree with the controls ──────────────────────────
 if PAPER.exists():
     ptext = PAPER.read_text(encoding="utf-8")
     if re.search(r"\b[A-Z]{2,5}-(?:DIS|AUT|CON|VAL|OBS|RES)-\d{2}\b", ptext):
@@ -103,7 +103,7 @@ for f in (ROOT / "layouts" / "index.html", ROOT / "whitepaper" / "figures" / "bu
 
 # ── report ────────────────────────────────────────────────────────────────────
 fam = collections.Counter(c["id"].split("-")[0] for c in controls)
-print(f"catalogue: {len(controls)} controls across {len(outcomes)} outcomes  "
+print(f"controls: {len(controls)} controls across {len(outcomes)} outcomes  "
       f"({', '.join(f'{k} {v}' for k, v in fam.items())})")
 for w in warnings: print(f"  warn   {w}")
 for e in errors:   print(f"  ERROR  {e}")

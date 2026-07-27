@@ -2,9 +2,9 @@
 """
 Generate Figure 1 — the six outcomes as one control system — from controls.yaml.
 
-The figure carries control identifiers, so it MUST be generated from the catalogue
+The figure carries control identifiers, so it MUST be generated from the controls
 rather than hand-drawn. That is precisely the defect found in the v0.2 draft, whose
-figure claimed ACP-DIS-01-03 where the catalogue held seven Discover controls.
+figure claimed ACP-DIS-01-03 where the controls held seven Discover controls.
 
 Composition: the action path is the spine — intent enters on the left, passes through
 the three gating outcomes, and leaves as an enterprise action. Discover brackets the

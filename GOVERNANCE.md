@@ -48,7 +48,7 @@ and its reasoning will be public.
 
 ## Conflicts of interest
 
-The convening organizations sell products in the area this catalogue describes. Those interests
+The convening organizations sell products in the area these controls describes. Those interests
 are named in [PROVENANCE.md](PROVENANCE.md), maintainers' employers are disclosed, and reviews
 happen in public. A maintainer reviewing a change that materially advantages their employer
 should say so in the thread.
@@ -72,6 +72,6 @@ existing citation. See [ADR-0001](docs/decisions/0001-prefix-free-control-ids.md
 - **No demand generation.** No gated downloads, no lead capture, no contact forms. Nothing here
   is a funnel.
 - **No product placement.** No vendor's product is named as an implementation of a control here.
-  Where a convening organization writes about how its own products relate to this catalogue,
+  Where a convening organization writes about how its own products relate to these controls,
   that lives on that company's property, clearly labelled, and does not share this one's visual
   identity.

@@ -15,7 +15,7 @@ can do is tell us where a control is wrong, unimplementable, or missing.
 what's wrong and, where you can, what would make it right. "This is not implementable in a
 regulated environment" is a good issue. So is "this reads like a vendor datasheet."
 
-**File a crosswalk** — map this catalogue to a framework you already run: NIST AI RMF, ISO
+**File a crosswalk** — map these controls to a framework you already run: NIST AI RMF, ISO
 42001, OWASP, CIS, SOC 2. One pull request per framework, into `crosswalks/`. This is the
 single most valuable contribution, and the one we most need from outside the founding group.
 

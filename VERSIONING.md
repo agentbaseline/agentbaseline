@@ -1,6 +1,6 @@
 # Versioning and identifier stability
 
-This document is the promise that makes this catalogue citable. If we break it, the catalogue
+This document is the promise that makes these controls citable. If we break it, the controls
 is worth nothing, because a citation that can silently change meaning is not a citation.
 
 ## The identifier
@@ -77,10 +77,10 @@ is described in [GOVERNANCE.md](GOVERNANCE.md) and [CONTRIBUTING.md](CONTRIBUTIN
 
 Consume `whitepaper/controls.yaml`. It carries identifier, title, requirement, evidence of
 achievement, status, and supersession links. Do not scrape the prose or the figures — they
-render from the catalogue and are not the source of truth.
+render from the controls and are not the source of truth.
 
 ## If this repository moves
 
 This work is intended for donation to a community body as it matures. **Identifiers do not
 change when that happens.** That is the reason they carry no project name. A new steward
-inherits the catalogue, the numbering and this promise intact.
+inherits the controls, the numbering and this promise intact.

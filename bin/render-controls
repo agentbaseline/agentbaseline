@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""Generate whitepaper/CONTROLS.md from controls.yaml.
+
+Committed so GitHub browsing works and so pull-request diffs show prose changes
+rather than YAML indentation. Never hand-edit the output; CI fails if it is stale.
+"""
+import re, pathlib
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+src = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
+
+names = dict(re.findall(r"^  - prefix: (\w+)\n    name: (.+)$", src, re.M))
+reqs = dict(re.findall(r'^  - prefix: (\w+)\n    name: .+\n    requirement: "(.*)"$', src, re.M))
+version = (re.search(r'^version: "(.+)"$', src, re.M) or [None, "unversioned"])[1]
+
+controls = []
+for b in re.split(r"\n(?=  - id: )", src.split("controls:", 1)[1]):
+    m = re.search(r"- id: (\S+)", b)
+    if not m: continue
+    controls.append((
+        m.group(1),
+        (re.search(r'title: "(.*)"', b) or [None, ""])[1],
+        " ".join((re.search(r"requirement: >-\n((?:     .*\n?)+)", b) or [None, ""])[1].split()),
+    ))
+
+out = [f"# Controls\n",
+       f"<!-- GENERATED FROM controls.yaml BY bin/render-controls — DO NOT EDIT -->\n",
+       f"`{version}` · {len(controls)} controls across {len(names)} outcomes.",
+       f"Identifiers are bare and permanent — superseded, never renumbered, never reused.",
+       f"See [VERSIONING.md](../VERSIONING.md).\n",
+       "## Contents\n"]
+for pre, name in names.items():
+    n = [c for c in controls if c[0].startswith(pre)]
+    out.append(f"- [{name}](#{name.lower()}) · `{n[0][0]}`–`{n[-1][0]}`")
+out.append("")
+for pre, name in names.items():
+    out.append(f"## {name}\n")
+    if pre in reqs: out.append(f"*{reqs[pre]}*\n")
+    for cid, title, req in [c for c in controls if c[0].startswith(pre)]:
+        out.append(f"#### `{cid}` — {title}\n\n{req}\n")
+
+(ROOT / "whitepaper" / "CONTROLS.md").write_text("\n".join(out), encoding="utf-8")
+print(f"wrote whitepaper/CONTROLS.md — {len(controls)} controls")

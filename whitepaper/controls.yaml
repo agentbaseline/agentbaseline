@@ -1,4 +1,4 @@
-# Agent Baseline — canonical control catalogue
+# Agent Baseline — the controls
 #
 # THIS FILE IS THE SOURCE OF TRUTH. The paper, the landing page and every
 # figure render from it. Where prose and this file disagree, this file wins
@@ -13,7 +13,7 @@ version: "1.0-draft"
 status: draft            # every control is `draft` until the v1.0 freeze
 source: >-
   Derived from Appendix A of the working draft, which is the later and
-  tighter of the paper's two catalogue passes. Section 5 of the prose has
+  tighter of the paper's two controls passes. Section 5 of the prose has
   not yet been reconciled against it — tracked publicly as issue #1.
 
 outcomes:

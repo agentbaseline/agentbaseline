@@ -1,4 +1,4 @@
-{{- $cat := hugo.Data.catalogue -}}
+{{- $cat := hugo.Data.controls -}}
 {{- $people := hugo.Data.contributors -}}
 <!doctype html>
 <html lang="en">
@@ -6,23 +6,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent Baseline — security outcomes for enterprise AI agents</title>
-<meta name="description" content="An open reference architecture and control catalogue for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
+<meta name="description" content="An open reference architecture and controls for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
 <link rel="canonical" href="{{ .Site.BaseURL }}">
 <style>
   :root {
-    --paper:#FFFFFF; --ink:#222422; --soft:#5C605C; --faint:#909490;
+    --paper:#FFFFFF; --ink:#222422; --soft:#5C605C; --faint:#6E726E;
     --line:#E6E7E4; --link:#0B57D0; --visited:#55349B; --mark:#B3541E;
+    --wash:#F7F7F5; --accent:#1A4D8F;
     --serif: Charter,"Iowan Old Style",Georgia,"Times New Roman",serif;
     --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8; --faint:#7C807C;
-      --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050; }
+    :root { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8; --faint:#8A8E8A;
+      --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050;
+      --wash:#212321; --accent:#8AB4F8; }
   }
-  :root[data-theme="light"] { --paper:#FFFFFF; --ink:#222422; --soft:#5C605C;
-    --faint:#909490; --line:#E6E7E4; --link:#0B57D0; --visited:#55349B; --mark:#B3541E; }
-  :root[data-theme="dark"] { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8;
-    --faint:#7C807C; --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050; }
+  :root[data-theme="light"] { --wash:#F7F7F5; --accent:#1A4D8F; --paper:#FFFFFF; --ink:#222422; --soft:#5C605C;
+    --faint:#6E726E; --line:#E6E7E4; --link:#0B57D0; --visited:#55349B; --mark:#B3541E; }
+  :root[data-theme="dark"] { --wash:#212321; --accent:#8AB4F8; --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8;
+    --faint:#8A8E8A; --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050; }
 
   *,*::before,*::after { box-sizing: border-box; }
   body { margin:0; background:var(--paper); color:var(--ink);
@@ -37,6 +39,8 @@
     display:flex; gap:18px; flex-wrap:wrap; }
   .utility a { color:var(--soft); text-decoration:none; }
   .utility a:hover { color:var(--link); text-decoration:underline; }
+  .utility .mast { color:var(--ink); letter-spacing:.14em;
+    text-transform:uppercase; font-weight:600; }
   .utility .right { margin-left:auto; color:var(--faint); }
 
   .page { max-width:640px; margin:0 auto; padding:72px 24px 96px; }
@@ -86,6 +90,26 @@
     line-height:1.6; max-width:592px; margin-inline:auto; }
 
   ol.factors + .prose { margin-top:28px; }
+  nav.toc { display:flex; flex-wrap:wrap; gap:0 26px; margin:56px 0 -18px;
+    padding-top:20px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:12.5px; }
+  nav.toc a { color:var(--soft); text-decoration:none; padding:4px 0; }
+  nav.toc a:hover { color:var(--link); text-decoration:underline; }
+  nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
+  ol.factors li { scroll-margin-top:20px; }
+
+  ol.controls { list-style:none; margin:18px 0 4px; padding:0; grid-column:2;
+    border-top:1px solid var(--line); }
+  ol.controls li { padding:14px 0; border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:82px 1fr; gap:2px 14px; scroll-margin-top:24px; }
+  ol.controls li:target { background:var(--wash); box-shadow:-10px 0 0 var(--wash),10px 0 0 var(--wash); }
+  ol.controls .cid { grid-row:1/3; font-family:var(--mono); font-size:12px; font-weight:700;
+    color:var(--accent); text-decoration:none; padding-top:3px;
+    font-variant-numeric:tabular-nums; }
+  ol.controls .cid:hover { text-decoration:underline; }
+  ol.controls .ctitle { font-size:16px; font-weight:700; }
+  ol.controls .creq { font-size:15px; color:var(--soft); line-height:1.6; }
+
   .prose p { margin:0 0 18px; }
   .prose .note { color:var(--soft); font-size:16px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
@@ -106,6 +130,7 @@
 
 <nav class="utility">
   <div class="in">
+    <span class="mast">Agent Baseline</span>
     <a href="{{ .Site.Params.repo }}">Source</a>
     <a href="{{ .Site.Params.repo }}/issues">Comment</a>
     <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>
@@ -119,12 +144,13 @@
   <h1>Security outcomes for enterprise AI agents</h1>
 
   <p class="metaline">
-    Draft for public comment · v{{ .Site.Params.version }}<br>
+    Draft for public comment · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
     {{ with resources.Get "whitepaper.pdf" }}<a href="{{ .RelPermalink }}">PDF</a> · {{ end }}
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
     <a href="{{ .Site.Params.repo }}">repository</a>
   </p>
 
+  <h2>Abstract</h2>
   <div class="intro">
     <p>An enterprise deploying an AI agent is not provisioning fixed-function software.
     It is provisioning a programmable actor: an end user can reprogram it at runtime in
@@ -132,7 +158,7 @@
     data. Existing controls still matter, but they were not built for that combination of
     runtime programmability, access and autonomy.</p>
 
-    <p>This catalogue defines what an enterprise must achieve, by <strong>outcome</strong>
+    <p>These controls defines what an enterprise must achieve, by <strong>outcome</strong>
     rather than by product category. Each outcome carries controls with stable identifiers,
     written to be cited.</p>
 
@@ -142,15 +168,31 @@
     before citing.</p>
   </div>
 
+  <nav class="toc" aria-label="Contents">
+    {{- range $cat.outcomes }}
+    {{- $ids := where $cat.controls "outcome" .prefix }}
+    <a href="#{{ .prefix }}">{{ .name }}<span class="n">{{ len $ids }}</span></a>
+    {{- end }}
+  </nav>
+
   <h2>The six outcomes</h2>
   <ol class="factors">
     {{- range $cat.outcomes }}
     {{- $prefix := .prefix }}
     {{- $ids := where $cat.controls "outcome" $prefix }}
     {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
-    <li>
+    <li id="{{ $prefix }}">
       <span class="name">{{ .name }}<span class="ids">{{ $prefix }}-01…{{ $last }}</span></span>
       <span class="req">{{ .requirement }}</span>
+      <ol class="controls">
+        {{- range $ids }}
+        <li id="{{ .id }}">
+          <a class="cid" href="#{{ .id }}">{{ .id }}</a>
+          <span class="ctitle">{{ .title }}</span>
+          <span class="creq">{{ .requirement }}</span>
+        </li>
+        {{- end }}
+      </ol>
     </li>
     {{- end }}
   </ol>
@@ -175,7 +217,7 @@
     <p>{{ $people.statement }}</p>
   </div>
   <ul class="people">
-    {{- range $people.contributors }}
+    {{- range where $people.contributors "confirmed" true }}
     <li>
       <span class="who">{{ .name }}<span class="org">{{ with .affiliation }}{{ . }}{{ else }}⟡ affiliation to confirm{{ end }}</span></span>
       <span class="wrote">{{ with .sections }}{{ delimit . " · " }}{{ else }}⟡ sections to confirm{{ end }}</span>
@@ -185,7 +227,7 @@
   </ul>
 
   <h2>How to cite</h2>
-  <div class="cite">DIS-01 (agentbaseline.org, v{{ .Site.Params.version }})</div>
+  <div class="cite">Agent Baseline, “Security outcomes for enterprise AI agents”,<br>v{{ .Site.Params.version }}, DIS-01, agentbaseline.org, {{ .Site.Params.published }}</div>
   <div class="prose" style="margin-top:16px">
     <p class="note">Identifiers are bare and permanent — superseded, never renumbered, never
     reused. They carry no project name so that a rename, or a transfer to a community body,
