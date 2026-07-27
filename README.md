@@ -53,7 +53,7 @@ under which an agent and each material action may proceed.
 
 Cite the bare identifier and the release tag:
 
-> `DIS-01` (agentcontrols.org, v1.0-draft)
+> `DIS-01` (agentbaseline.org, v1.0-draft)
 
 Identifiers are **superseded, never renumbered, and never reused**. They carry no project name
 so that a rename — or a donation to a community body — never breaks a citation you have

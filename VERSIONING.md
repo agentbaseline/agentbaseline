@@ -21,8 +21,8 @@ Where a bare identifier could be ambiguous — a crosswalk table sitting alongsi
 identifiers, for example — **qualify by namespace, never by mutating the identifier**:
 
 ```
-DIS-01 (agentcontrols.org)
-agentcontrols.org/DIS-01
+DIS-01 (agentbaseline.org)
+agentbaseline.org/DIS-01
 ```
 
 The identifier stays byte-stable. The namespace is metadata and may change; a citation written

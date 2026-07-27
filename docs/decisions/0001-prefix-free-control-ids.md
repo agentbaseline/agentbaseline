@@ -38,7 +38,7 @@ artifact whose entire value is citability.
   and it is presentation, not identity.
 - Where disambiguation is genuinely required — a crosswalk table sitting alongside NIST and
   ISO identifiers, say — **qualify by namespace, never by mutating the ID**:
-  `DIS-01 (agentcontrols.org)` or `agentcontrols.org/DIS-01`. The identifier stays byte-stable;
+  `DIS-01 (agentbaseline.org)` or `agentbaseline.org/DIS-01`. The identifier stays byte-stable;
   the namespace is metadata that can change without breaking a citation.
 
 The mock landing page already does exactly this. This decision makes it the rule.
