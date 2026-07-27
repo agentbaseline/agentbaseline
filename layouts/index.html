@@ -57,15 +57,15 @@
     margin:60px 0 20px; }
 
   ol.factors { list-style:none; margin:0; padding:0; counter-reset:f; }
-  ol.factors li { counter-increment:f; padding:18px 0; border-top:1px solid var(--line);
+  ol.factors > li { counter-increment:f; padding:18px 0; border-top:1px solid var(--line);
     display:grid; grid-template-columns:52px 1fr; gap:0 8px; }
-  ol.factors li:last-child { border-bottom:1px solid var(--line); }
-  ol.factors li::before { content:counter(f,upper-roman) "."; font-family:var(--serif);
+  ol.factors > li:last-child { border-bottom:1px solid var(--line); }
+  ol.factors > li::before { content:counter(f,upper-roman) "."; font-family:var(--serif);
     font-size:19px; color:var(--faint); padding-top:1px; }
-  ol.factors .name { font-size:21px; font-weight:700; }
-  ol.factors .name .ids { font-family:var(--mono); font-size:12px; font-weight:400;
+  ol.factors > li > .name { font-size:21px; font-weight:700; }
+  ol.factors > li > .name .ids { font-family:var(--mono); font-size:12px; font-weight:400;
     color:var(--faint); margin-left:10px; white-space:nowrap; }
-  ol.factors .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
+  ol.factors > li > .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
 
   ul.people { list-style:none; margin:0; padding:0; }
   ul.people li { padding:14px 0; border-top:1px solid var(--line);
@@ -96,7 +96,7 @@
   nav.toc a { color:var(--soft); text-decoration:none; padding:4px 0; }
   nav.toc a:hover { color:var(--link); text-decoration:underline; }
   nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
-  ol.factors li { scroll-margin-top:20px; }
+  ol.factors > li { scroll-margin-top:20px; }
 
   ol.controls { list-style:none; margin:18px 0 4px; padding:0; grid-column:2;
     border-top:1px solid var(--line); }
@@ -158,7 +158,7 @@
     data. Existing controls still matter, but they were not built for that combination of
     runtime programmability, access and autonomy.</p>
 
-    <p>These controls defines what an enterprise must achieve, by <strong>outcome</strong>
+    <p>The baseline defines what an enterprise must achieve, by <strong>outcome</strong>
     rather than by product category. Each outcome carries controls with stable identifiers,
     written to be cited.</p>
 
