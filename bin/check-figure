@@ -16,8 +16,10 @@ Run after every figure change. bin/snapshot does it automatically.
 import json, re, sys, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parents[1] / "whitepaper"
-BOXES = HERE / "figures" / ".figure-1.boxes.json"
-SVG = HERE / "figures" / "figure-1.svg"
+import sys as _s
+NAME = _s.argv[1] if len(_s.argv) > 1 and not _s.argv[1].startswith("-") else "figure-1"
+BOXES = HERE / "figures" / f".{NAME}.boxes.json"
+SVG = HERE / "figures" / f"{NAME}.svg"
 CAT = HERE / "controls.yaml"
 
 if not BOXES.exists():
@@ -95,6 +97,16 @@ for cx, cy, cw, ch in cells:
         errors.append(f"cell at x={cx:.0f}..{cx+cw:.0f} has under 8px clearance "
                       f"inside its band ({bx:.0f}..{bx+bw:.0f})")
 
+# 3c. no horizontal rule may cut through a text run — this is how the closing
+#     rule ended up drawn above the last row's glosses.
+hrules = [(float(x1), float(y), float(x2)) for x1, y, x2 in
+          re.findall(r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"', svg)]
+for a in boxes:
+    for rx1, ry, rx2 in hrules:
+        if a["y"] + 1 < ry < a["y"] + a["h"] - 1 and rx1 < a["x"] + a["w"] and a["x"] < rx2:
+            errors.append(f"a rule crosses text: y={ry:.0f} cuts {a['tag']!r} "
+                          f"({a['y']:.0f}..{a['y']+a['h']:.0f})")
+
 # 4. identifier ranges agree with the source of truth
 cat = CAT.read_text(encoding="utf-8")
 hi = {}
@@ -105,7 +117,7 @@ for fam, n in hi.items():
     if want not in svg:
         errors.append(f"identifier range missing or stale: expected {want}")
 
-print(f"figure {W}×{H} · {len(boxes)} text runs · {len(rects)} boxes")
+print(f"{NAME}: {W}×{H} · {len(boxes)} text runs · {len(rects)} boxes")
 for e in errors:
     print(f"  ERROR  {e}")
 print(f"\n{len(errors)} error(s)")

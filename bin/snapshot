@@ -4,8 +4,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 N="${1:?usage: bin/snapshot <n> <label>}"; shift
 LABEL="${*:-untitled}"
-python3 whitepaper/figures/build-figure-1.py >/dev/null
-python3 bin/check-figure >/dev/null
+(cd whitepaper/figures && python3 build-a-flow.py >/dev/null && python3 build-b-scope.py >/dev/null)
+for v in figure-1a-flow figure-1b-scope; do
+  python3 bin/check-figure "$v" >/dev/null || { echo "figure gate failed: $v"; exit 1; }
+  python3 - "$v" <<'SY'
+import re,sys,pathlib
+v=sys.argv[1]; s=pathlib.Path(f"whitepaper/figures/{v}.svg").read_text(encoding="utf-8")
+pathlib.Path(f"layouts/partials/{v}.svg").write_text(re.sub(r'\swidth="\d+"\s+height="\d+"','',s,count=1),encoding="utf-8")
+SY
+done
 python3 - <<'P'
 import re,pathlib
 s=pathlib.Path("whitepaper/figures/figure-1.svg").read_text()
@@ -15,7 +22,8 @@ hugo --gc --minify --quiet
 mkdir -p "docs/passes/v$N"
 cp public/index.html "docs/passes/v$N/index.html"
 cp public/controls/index.html "docs/passes/v$N/controls.html" 2>/dev/null || true
-cp whitepaper/figures/figure-1.svg "docs/passes/v$N/figure-1.svg"
+cp whitepaper/figures/figure-1a-flow.svg "docs/passes/v$N/figure-1.svg"
+cp whitepaper/figures/figure-1b-scope.svg "docs/passes/v$N/figure-1b.svg" 2>/dev/null || true
 printf '%s\n' "$LABEL" > "docs/passes/v$N/LABEL"
 echo "pass v$N — $LABEL"
 echo "  page   $(wc -c < docs/passes/v$N/index.html | tr -d ' ') bytes"

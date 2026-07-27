@@ -1,0 +1,242 @@
+[
+ {
+  "tag": "l1",
+  "x": 32,
+  "y": 48.59,
+  "w": 219.184,
+  "h": 9.69,
+  "text": "ESTABLISH THE OPERATING ENVELOPE"
+ },
+ {
+  "tag": "nDIS",
+  "x": 32,
+  "y": 71.18,
+  "w": 76.456,
+  "h": 19.38,
+  "text": "Discover"
+ },
+ {
+  "tag": "iDIS",
+  "x": 32,
+  "y": 97.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "DIS-01\u202607"
+ },
+ {
+  "tag": "e1",
+  "x": 332,
+  "y": 76.25,
+  "w": 383.53749999999997,
+  "h": 12.75,
+  "text": "Every agent and component, its owner, and what it can reach \u2014"
+ },
+ {
+  "tag": "e2",
+  "x": 332,
+  "y": 94.25,
+  "w": 358.3875,
+  "h": 12.75,
+  "text": "reconciled continuously against what is actually running."
+ },
+ {
+  "tag": "l2",
+  "x": 32,
+  "y": 166.59,
+  "w": 191.786,
+  "h": 9.69,
+  "text": "CONTROL EACH MATERIAL ACTION"
+ },
+ {
+  "tag": "bi",
+  "x": 32,
+  "y": 189.08,
+  "w": 105.63,
+  "h": 14.280000000000001,
+  "text": "Business intent"
+ },
+ {
+  "tag": "bi2",
+  "x": 32,
+  "y": 208.64,
+  "w": 102.612,
+  "h": 12.24,
+  "text": "a person, service"
+ },
+ {
+  "tag": "bi3",
+  "x": 32,
+  "y": 224.64,
+  "w": 102.612,
+  "h": 12.24,
+  "text": "or business event"
+ },
+ {
+  "tag": "nAUT",
+  "x": 218,
+  "y": 185.18,
+  "w": 86.013,
+  "h": 19.38,
+  "text": "Authorize"
+ },
+ {
+  "tag": "iAUT",
+  "x": 218,
+  "y": 211.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "AUT-01\u202606"
+ },
+ {
+  "tag": "gAUT",
+  "x": 218,
+  "y": 235.25,
+  "w": 119.46249999999999,
+  "h": 12.75,
+  "text": "may this actor act?"
+ },
+ {
+  "tag": "nCON",
+  "x": 390,
+  "y": 185.18,
+  "w": 86.013,
+  "h": 19.38,
+  "text": "Constrain"
+ },
+ {
+  "tag": "iCON",
+  "x": 390,
+  "y": 211.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "CON-01\u202607"
+ },
+ {
+  "tag": "gCON",
+  "x": 390,
+  "y": 235.25,
+  "w": 100.6,
+  "h": 12.75,
+  "text": "with what reach?"
+ },
+ {
+  "tag": "nVAL",
+  "x": 562,
+  "y": 185.18,
+  "w": 76.456,
+  "h": 19.38,
+  "text": "Validate"
+ },
+ {
+  "tag": "iVAL",
+  "x": 562,
+  "y": 211.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "VAL-01\u202605"
+ },
+ {
+  "tag": "gVAL",
+  "x": 562,
+  "y": 235.25,
+  "w": 125.75,
+  "h": 12.75,
+  "text": "is the result sound?"
+ },
+ {
+  "tag": "ea",
+  "x": 764,
+  "y": 189.08,
+  "w": 119.714,
+  "h": 14.280000000000001,
+  "text": "Enterprise action"
+ },
+ {
+  "tag": "ea2",
+  "x": 764,
+  "y": 208.64,
+  "w": 114.684,
+  "h": 12.24,
+  "text": "a tool, API, record"
+ },
+ {
+  "tag": "ea3",
+  "x": 764,
+  "y": 224.64,
+  "w": 84.50399999999999,
+  "h": 12.24,
+  "text": "or transaction"
+ },
+ {
+  "tag": "l3",
+  "x": 32,
+  "y": 306.59,
+  "w": 226.0335,
+  "h": 9.69,
+  "text": "MAINTAIN EVIDENCE AND CONTAINMENT"
+ },
+ {
+  "tag": "nOBS",
+  "x": 32,
+  "y": 329.18,
+  "w": 66.899,
+  "h": 19.38,
+  "text": "Observe"
+ },
+ {
+  "tag": "iOBS",
+  "x": 32,
+  "y": 355.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "OBS-01\u202604"
+ },
+ {
+  "tag": "gOBS",
+  "x": 32,
+  "y": 379.25,
+  "w": 119.46249999999999,
+  "h": 12.75,
+  "text": "prove what happened"
+ },
+ {
+  "tag": "nRES",
+  "x": 332,
+  "y": 329.18,
+  "w": 66.899,
+  "h": 19.38,
+  "text": "Respond"
+ },
+ {
+  "tag": "iRES",
+  "x": 332,
+  "y": 355.42,
+  "w": 62.468999999999994,
+  "h": 11.22,
+  "text": "RES-01\u202604"
+ },
+ {
+  "tag": "gRES",
+  "x": 332,
+  "y": 379.25,
+  "w": 157.1875,
+  "h": 12.75,
+  "text": "stop it, scope the damage"
+ },
+ {
+  "tag": "v1",
+  "x": 652,
+  "y": 334.25,
+  "w": 169.7625,
+  "h": 12.75,
+  "text": "Across every run, including"
+ },
+ {
+  "tag": "v2",
+  "x": 652,
+  "y": 352.25,
+  "w": 163.475,
+  "h": 12.75,
+  "text": "delegated work downstream."
+ }
+]

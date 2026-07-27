@@ -13,8 +13,9 @@ jobs:
         run: python3 bin/check-controls
       - name: Figure geometry — no overlaps, no escaping text, ranges match
         run: |
-          python3 whitepaper/figures/build-figure-1.py
-          python3 bin/check-figure
+          (cd whitepaper/figures && python3 build-a-flow.py && python3 build-b-scope.py)
+          python3 bin/check-figure figure-1a-flow
+          python3 bin/check-figure figure-1b-scope
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls
@@ -23,5 +24,5 @@ jobs:
       - name: Rebuild Figure 1 and fail on drift
         run: |
           python3 whitepaper/figures/build-figure-1.py
-          git diff --exit-code whitepaper/figures/figure-1.svg \
+          git diff --exit-code whitepaper/figures/*.svg \
             || { echo "::error::figure-1.svg is stale — regenerate it from controls.yaml"; exit 1; }

@@ -247,7 +247,7 @@
   </div>
 
   <figure class="fig1">
-    {{ partial "figure-1.svg" . }}
+    {{ partial (printf "%s.svg" .Site.Params.figure) . }}
     <figcaption><strong>Figure 1.</strong> The same six, by scope. One is a standing inventory, three are gates in the path of a single action, and two span every run.</figcaption>
   </figure>
 

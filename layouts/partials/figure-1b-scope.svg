@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 396" role="img" aria-labelledby="ft fd">
+  <title id="ft">Where the six outcomes operate</title>
+  <desc id="fd">The six operate at three scopes. Discover is a standing inventory of the whole estate. Authorize, Constrain and Validate are gates in the path of a single action. Observe and Respond span every run, during and after.</desc>
+  <rect width="900" height="396" fill="#FFFFFF"/>
+  <line x1="32" y1="38" x2="868" y2="38" stroke="#CBCDC8" stroke-width="1"/>
+  <text x="32" y="70" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#797D79" font-weight="600" letter-spacing="0.12em">BEFORE ANY RUN</text>
+  <text x="32" y="90" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">the whole estate</text>
+  <text x="212" y="74" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Discover</text>
+  <text x="212" y="94" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">DIS-01…07</text>
+  <text x="212" y="119" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">what exists, who owns it, what it reaches</text>
+  <line x1="32" y1="150" x2="868" y2="150" stroke="#E4E5E1" stroke-width="1"/>
+  <text x="32" y="182" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#797D79" font-weight="600" letter-spacing="0.12em">PER ACTION</text>
+  <text x="32" y="202" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">in-line, every time</text>
+  <text x="212" y="186" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Authorize</text>
+  <text x="212" y="206" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">AUT-01…06</text>
+  <text x="212" y="231" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">may this actor act?</text>
+  <text x="430" y="186" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Constrain</text>
+  <text x="430" y="206" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">CON-01…07</text>
+  <text x="430" y="231" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">with what reach?</text>
+  <text x="648" y="186" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Validate</text>
+  <text x="648" y="206" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">VAL-01…05</text>
+  <text x="648" y="231" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">is the result sound?</text>
+  <line x1="32" y1="262" x2="868" y2="262" stroke="#E4E5E1" stroke-width="1"/>
+  <text x="32" y="294" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="9.5" fill="#797D79" font-weight="600" letter-spacing="0.12em">EVERY RUN</text>
+  <text x="32" y="314" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">during and after</text>
+  <text x="212" y="298" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Observe</text>
+  <text x="212" y="318" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">OBS-01…04</text>
+  <text x="212" y="343" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">prove what happened</text>
+  <text x="540" y="298" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Respond</text>
+  <text x="540" y="318" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1A4D8F" font-weight="700" letter-spacing="0.03em">RES-01…04</text>
+  <text x="540" y="343" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="12.5" fill="#5A5E5A" font-weight="400">stop it, scope the damage</text>
+  <line x1="32" y1="374" x2="868" y2="374" stroke="#CBCDC8" stroke-width="1"/>
+  </svg>
