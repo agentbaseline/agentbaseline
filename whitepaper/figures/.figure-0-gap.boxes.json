@@ -1,0 +1,114 @@
+[
+ {
+  "tag": "l1",
+  "x": 0,
+  "y": 20.64,
+  "w": 112.476,
+  "h": 12.24,
+  "text": "WHAT HAPPENED"
+ },
+ {
+  "tag": "np",
+  "x": 0,
+  "y": 58.74,
+  "w": 78.19999999999999,
+  "h": 17.34,
+  "text": "A person"
+ },
+ {
+  "tag": "sp",
+  "x": 0,
+  "y": 82.3,
+  "w": 147.96,
+  "h": 15.3,
+  "text": "asks for something"
+ },
+ {
+  "tag": "na",
+  "x": 216,
+  "y": 58.74,
+  "w": 78.19999999999999,
+  "h": 17.34,
+  "text": "An agent"
+ },
+ {
+  "tag": "sa",
+  "x": 216,
+  "y": 82.3,
+  "w": 213.72000000000003,
+  "h": 15.3,
+  "text": "model, instructions, tools"
+ },
+ {
+  "tag": "nr",
+  "x": 536,
+  "y": 58.74,
+  "w": 175.95,
+  "h": 17.34,
+  "text": "A system of record"
+ },
+ {
+  "tag": "sr",
+  "x": 536,
+  "y": 82.3,
+  "w": 189.06,
+  "h": 15.3,
+  "text": "money, data, production"
+ },
+ {
+  "tag": "l2",
+  "x": 0,
+  "y": 208.64,
+  "w": 311.472,
+  "h": 12.24,
+  "text": "WHAT YOUR IDENTITY PROVIDER RECORDED"
+ },
+ {
+  "tag": "log",
+  "x": 0,
+  "y": 243.52,
+  "w": 397.44,
+  "h": 16.32,
+  "text": "svc-automation-07 called POST /transfers"
+ },
+ {
+  "tag": "m0",
+  "x": 0,
+  "y": 294.3,
+  "w": 90.42,
+  "h": 15.3,
+  "text": "which agent"
+ },
+ {
+  "tag": "m1",
+  "x": 220,
+  "y": 294.3,
+  "w": 82.2,
+  "h": 15.3,
+  "text": "which task"
+ },
+ {
+  "tag": "m2",
+  "x": 440,
+  "y": 294.3,
+  "w": 73.98,
+  "h": 15.3,
+  "text": "who asked"
+ },
+ {
+  "tag": "m3",
+  "x": 660,
+  "y": 294.3,
+  "w": 164.4,
+  "h": 15.3,
+  "text": "under what authority"
+ },
+ {
+  "tag": "pay",
+  "x": 0,
+  "y": 327.52,
+  "w": 763.5999999999999,
+  "h": 16.32,
+  "text": "The person can deny they authorised it, and nothing in the record contradicts them."
+ }
+]
