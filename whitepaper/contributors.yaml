@@ -49,22 +49,25 @@ contributors:
       - Controls
     confirmed: true
 
-  # ⟡ Named in the drafting record by first name only. Wrote three sections,
-  #   all mapped to Keycard-owned rows in the band-ownership table, so the
-  #   affiliation below is INFERRED. Confirm surname, affiliation and email.
+  # Confirmed by Kamil in the partner channel: "Jelmer is founding engineer at
+  #   Keycard, and he will join instead to run the technical alignment."
+  #   ⟡ Surname still unknown — ask before publishing a full name.
   - name: Jelmer
     affiliation: Keycard
-    role: Section author
+    role: Founding engineer
     sections:
       - Identity and attribution
       - Delegated authorization and policy
       - Accountability
-    confirmed: false
+    confirmed: true
 
-  # ⟡ Appears as a second reviewer on supply-chain, paired with Ranti.
-  #   Affiliation and surname unknown. Confirm whether this is authorship or review.
-  - name: William
-    affiliation: ~
-    role: Reviewer — supply-chain and tool verification
-    sections: []
-    confirmed: false
+  # Confirmed from the partner channel: Docker's DRI line names "@ranti.familusi
+  #   for Docker (with participation of @William Manning and @jrack)", and he
+  #   submitted the Executive Summary revision himself.
+  - name: William Manning
+    affiliation: Docker
+    role: Section author
+    sections:
+      - Executive summary
+      - Supply-chain and tool verification
+    confirmed: true
