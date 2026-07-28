@@ -213,11 +213,15 @@
     letter-spacing:-0.005em; line-height:1.4; color:var(--soft);
     position:relative; background:var(--wash); border:1px solid var(--line);
     border-radius:4px; padding:9px 12px; }
-  ul.tenets li::before { content:""; position:absolute; left:12px; bottom:-26px;
+  ul.tenets li::before { content:""; position:absolute;
+    left:calc(50% - 4.5px); bottom:-26px;
     width:9px; height:9px; border-radius:50%;
     border:1.5px solid var(--accent); background:var(--paper); }
+  /* The connector runs centre to centre: from just right of this card's pip
+     to just left of the next card's (half a card, plus the 24px gap). */
   ul.tenets li:not(:last-child)::after { content:""; position:absolute;
-    left:27px; right:-38px; bottom:-22px; height:1px; background:var(--baseline); }
+    left:calc(50% + 10px); right:calc(-50% - 14px); bottom:-22px;
+    height:1px; background:var(--baseline); }
   @media (max-width:719px) {
     ul.tenets { grid-template-columns:1fr 1fr; gap:40px 24px; }
     /* on the 2×2 arrangement a connector may not run off the row's end */
