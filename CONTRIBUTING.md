@@ -1,7 +1,7 @@
 # Contributing
 
-This is a draft for public comment. **Disagreement is the point.** The most useful thing you
-can do is tell us where a control is wrong, unimplementable, or missing.
+This is a draft for public comment. **Disagreement is the point.** What follows is how to
+file it so that it lands somewhere useful.
 
 ## Read this first
 
