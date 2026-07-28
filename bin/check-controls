@@ -96,6 +96,10 @@ if PAPER.exists():
     ptext = PAPER.read_text(encoding="utf-8")
     if re.search(rf"\b[A-Z]{{2,5}}-(?:{fam_alt})-\d{{2}}\b", ptext):
         err("whitepaper.md: prefixed identifiers present — ADR-0001 forbids this")
+    ver = (re.search(r'^version: "(.+)"$', src, re.M) or [None, ""])[1]
+    if ver and ver not in ptext:
+        err(f"whitepaper.md does not state version {ver} — controls.yaml, the site and "
+            f"the paper must agree on what this release is")
     if "NOTE (internal" in ptext or "GTM" in ptext:
         err("whitepaper.md: an internal note is present in a published document")
     paper_ids = set(re.findall(rf"\b(({fam_alt})-\d{{2}})\b", ptext))

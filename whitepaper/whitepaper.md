@@ -1,8 +1,13 @@
-# CISO WHITE PAPER — The Enterprise Control Plane for AI Agents
+# The Enterprise Control Plane for AI Agents
 
-A vendor-neutral reference architecture for safely building, deploying and operating AI agents.
-Identify the agent. Bound its authority. Control its actions. Prove its outcomes.
-Working draft for partner review — Version 0.2 | July 2026
+A vendor-neutral reference architecture for safely building, deploying and operating
+AI agents, written for the CISO who has to decide about them.
+
+**Identify the agent. Bound its authority. Control its actions. Prove its outcomes.**
+
+Published as **Agent Baseline** · v1.0-draft · 30 July 2026 · agentbaseline.org
+Draft for public comment until 30 September 2026. Controls are cited by bare
+identifier — `DIS-01` — and are not yet frozen; see VERSIONING.
 
 ## Executive summary
 
