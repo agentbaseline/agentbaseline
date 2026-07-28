@@ -78,15 +78,34 @@ for _m in re.finditer(r'<line[^>]*stroke="url\(#([^)]+)\)"', svg):
         errors.append(f"gradient #{_gid} strokes a <line> without userSpaceOnUse — "
                       f"a line's bounding box has zero height, so it will not render")
 
+# 3e. arrows must point forward and be long enough to read as arrows. A line
+#     whose end is left of its start renders a reversed marker; a 12px one
+#     collapses to a triangle. Both are correct geometry and wrong drawings.
+for _m in re.finditer(r'<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="\2"'
+                      r'[^>]*marker-end', svg):
+    _x1, _x2 = float(_m.group(1)), float(_m.group(3))
+    if _x2 < _x1:
+        errors.append(f"arrow points backwards: {_x1:.0f} to {_x2:.0f}")
+    elif _x2 - _x1 < 18:
+        errors.append(f"arrow is {_x2-_x1:.0f}px — too short to read as an arrow")
+
 # 4. identifier ranges agree with the source of truth
 cat = CAT.read_text(encoding="utf-8")
 hi = {}
 for m in re.finditer(r"^  - id: (\w+)-(\d+)$", cat, re.M):
     hi[m.group(1)] = max(hi.get(m.group(1), 0), int(m.group(2)))
-for fam, n in hi.items():
-    want = f"{fam}-01…{n:02d}"
-    if want not in svg:
-        errors.append(f"identifier range missing or stale: expected {want}")
+# A figure may legitimately carry no identifiers — they live on /controls/. What
+# it may not do is carry one that disagrees with the source of truth.
+present = re.findall(r"\b([A-Z]{3})-01…(\d{2})\b", svg)
+for fam, shown in present:
+    if fam in hi and int(shown) != hi[fam]:
+        errors.append(f"{fam}-01…{shown} is stale — controls.yaml has "
+                      f"{hi[fam]:02d} as the highest identifier")
+if present:
+    for fam in hi:
+        if fam not in {f for f, _ in present}:
+            errors.append(f"{fam} range missing — a figure carries all identifier "
+                          f"ranges or none, not some")
 
 print(f"{NAME}: {W}×{H} · {len(boxes)} text runs")
 for e in errors:

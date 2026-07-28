@@ -236,6 +236,19 @@
       <span class="a"><a href="/controls/#observe">Observe</a><a href="/controls/#respond">Respond</a></span></li>
   </ol>
 
+  <h2>The six outcomes</h2>
+  <ol class="factors">
+    {{- range $cat.outcomes }}
+    {{- $prefix := .prefix }}
+    {{- $ids := where $cat.controls "outcome" $prefix }}
+    {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
+    <li id="{{ $prefix }}">
+      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
+      <span class="req">{{ .requirement }}</span>
+    </li>
+    {{- end }}
+  </ol>
+
   <div class="prose">
     <p>No single enforcement point delivers all six. They are logically one system and
     physically scattered across identity, runtime, tooling, data and evidence — which is what

@@ -1,74 +1,97 @@
 #!/usr/bin/env python3
 """Figure 1 — the six outcomes as one control system.
 
-Faithful to the paper's own Figure 1: Discover sets the operating envelope
-above the action path; business intent passes through Authorize, Constrain and
-Validate to become an enterprise action; Observe and Respond hold evidence and
-containment below. The paper's caption verbatim: "The six required outcomes
-operate as one control system across enterprise intent, action, evidence and
-containment."
+Faithful to the paper's own Figure 1: Discover sets the operating envelope above
+the action path; business intent passes through Authorize, Constrain and Validate
+to become an enterprise action; Observe and Respond hold evidence and containment
+below. The paper's caption verbatim: "The six required outcomes operate as one
+control system across enterprise intent, action, evidence and containment."
 
-Only the drawing is changed: no fills, no nested boxes, one accent, structure
-from position and hairlines. A scope-based alternative was drawn and rejected —
-see launch/docs/figure-options.html for the comparison.
+Refined from the v1 composition, which had something a later revision lost — you
+can see the path. Everything that made v1 loud is gone: no fills, no nested boxes,
+page ink, hairlines at the prose's own weight.
 
-Generated from controls.yaml so the identifier ranges cannot drift, and
-geometry-checked by bin/check-figure.
+One idea carries the drawing: what you pass through is enclosed, what surrounds it
+is open. The control band is the only closed shape here, because it is the only
+thing every material action must go through. Discover and the evidence band are
+held by rules alone.
+
+Type is taken from the page rather than approximated — 21px names, 16px
+descriptions, 12px mono labels — because close-but-not-equal type is what makes a
+figure read as an embedded object instead of part of the document. Same reason the
+one radius here is 3px, matching the outcome chips.
+
+Identifier ranges are omitted deliberately: they live on /controls/, and carrying
+them here cost the room this composition needs.
+
+Generated from controls.yaml. Geometry-checked by bin/check-figure.
 """
 from figkit import Fig, C, catalogue
-names, hi = catalogue()
 
-W, M = 900, 0
-R = W - M
-TOP = 34
-BAND_H, ROW_H, EV_H = 104, 126, 128
+names, _ = catalogue()
+
+# ── grid ──────────────────────────────────────────────────────────────────────
+W = 880
+R = W
+TOP = 30
+B1_H, ROW_H, B3_H = 82, 138, 84
 GAP = 22
 Y1 = TOP
-Y2 = Y1 + BAND_H + GAP
+Y2 = Y1 + B1_H + GAP
 Y3 = Y2 + ROW_H + GAP
-H = Y3 + EV_H + 16
+H = Y3 + B3_H + 12
+
+TERM = 168                  # intent / action columns
+GATE_L, GATE_R = 196, 656   # the enclosure
+
+NAME, DESC, LABEL, TERM_N = 21, 16, 12, 16   # the page's own values
 
 f = Fig(W, H, "The six outcomes as one control system",
-        "Discover establishes the operating envelope. Business intent passes through "
-        "Authorize, Constrain and Validate to become an enterprise action. Observe and "
-        "Respond maintain evidence and containment across every run.")
+        "Discover establishes the operating envelope above the action path. Business "
+        "intent passes through Authorize, Constrain and Validate — the only enclosed "
+        "stage, because every material action must go through it — and becomes an "
+        "enterprise action. Observe and Respond hold evidence and containment beneath.")
 
-# envelope
-f.rule(Y1, M, R, C["rule"])
-f.label(M, Y1 + 22, "Establish the operating envelope", tag="l1")
-f.outcome(M, Y1 + 52, "DIS", "", names, hi)
-f.text(M + 320, Y1 + 52, "Every agent and component, its owner, and what it can reach —",
-       12.5, C["soft"], tag="e1")
-f.text(M + 320, Y1 + 74, "reconciled continuously against what is actually running.",
-       12.5, C["soft"], tag="e2")
 
-# the action path
-f.rule(Y2, M, R, C["hair"])
-f.label(M, Y2 + 22, "Control each material action", tag="l2")
-f.text(M, Y2 + 50, "Business intent", 15, C["ink"], "700", tag="bi")
-f.text(M, Y2 + 70, "a person, service", 13, C["soft"], tag="bi2")
-f.text(M, Y2 + 88, "or business event", 13, C["soft"], tag="bi3")
-f.arrow(M + 138, Y2 + 64, M + 174, Y2 + 64)
+def outcome(x, y, pre):
+    """Just the name. The list above carries the requirement; this places it."""
+    f.text(x, y, names[pre], NAME, C["ink"], "700", tag=f"n{pre}")
 
-gx, gw = M + 190, 168
-for i, (pre, gloss) in enumerate([("AUT", "may this actor act?"),
-                                  ("CON", "with what reach?"),
-                                  ("VAL", "is the result sound?")]):
-    f.outcome(gx + i * gw, Y2 + 48, pre, gloss, names, hi)
 
-f.arrow(R - 204, Y2 + 66, R - 172, Y2 + 66)
-f.text(R - 158, Y2 + 50, "Enterprise action", 15, C["ink"], "700", tag="ea")
-f.text(R - 158, Y2 + 70, "a tool, API, record", 13, C["soft"], tag="ea2")
-f.text(R - 158, Y2 + 88, "or transaction", 13, C["soft"], tag="ea3")
+def band_label(x, y, s, tag):
+    f.text(x, y, s.upper(), LABEL, C["soft"], "400", True, 0.12, tag=tag)
 
-# evidence and containment
-f.rule(Y3, M, R, C["hair"])
-f.label(M, Y3 + 22, "Maintain evidence and containment", tag="l3")
-for i, (pre, gloss) in enumerate([("OBS", "prove what happened"),
-                                  ("RES", "stop it, scope the damage")]):
-    f.outcome(M + i * 320, Y3 + 52, pre, gloss, names, hi)
-f.text(M + 660, Y3 + 52, "Across every run, including", 12.5, C["soft"], tag="v1")
-f.text(M + 660, Y3 + 74, "delegated work downstream.", 12.5, C["soft"], tag="v2")
 
-f.rule(Y3 + EV_H, M, R, C["rule"])
+# ── envelope · open ───────────────────────────────────────────────────────────
+f.rule(Y1, 0, R, C["rule"])
+band_label(0, Y1 + 24, "Establish the operating envelope", "l1")
+outcome(0, Y1 + 58, "DIS")
+
+# ── the action path · one enclosure ───────────────────────────────────────────
+SY = Y2 + ROW_H / 2
+
+f.text(0, SY - 6, "Business intent", TERM_N, C["ink"], "700", tag="bi")
+f.text(0, SY + 16, "a person, service", DESC, C["soft"], tag="bi2")
+f.text(0, SY + 37, "or business event", DESC, C["soft"], tag="bi3")
+f.arrow(150, SY, GATE_L - 14, SY)
+
+f.parts.append(f'<rect x="{GATE_L}" y="{Y2}" width="{GATE_R - GATE_L}" height="{ROW_H}" '
+               f'rx="3" fill="none" stroke="{C["hair"]}" stroke-width="1"/>')
+band_label(GATE_L + 24, Y2 + 30, "Control each material action", "l2")
+gw = (GATE_R - GATE_L - 48) // 3
+for i, pre in enumerate(["AUT", "CON", "VAL"]):
+    outcome(GATE_L + 24 + i * gw, Y2 + 78, pre)
+
+f.arrow(GATE_R + 14, SY, R - TERM - 12, SY)
+f.text(R - TERM, SY - 6, "Enterprise action", TERM_N, C["ink"], "700", tag="ea")
+f.text(R - TERM, SY + 16, "a tool, API,", DESC, C["soft"], tag="ea2")
+f.text(R - TERM, SY + 37, "record or message", DESC, C["soft"], tag="ea3")
+
+# ── evidence · open ───────────────────────────────────────────────────────────
+f.rule(Y3, 0, R, C["hair"])
+band_label(0, Y3 + 24, "Maintain evidence and containment", "l3")
+outcome(0, Y3 + 58, "OBS")
+outcome(GATE_L + 24, Y3 + 58, "RES")
+f.rule(Y3 + B3_H, 0, R, C["rule"])
+
 f.write("figure-1")
