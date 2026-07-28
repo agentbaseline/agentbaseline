@@ -33,13 +33,13 @@ names, _ = catalogue()
 # ── grid ──────────────────────────────────────────────────────────────────────
 W = 880
 R = W
-TOP = 30
+TOP = 8
 B1_H, ROW_H, B3_H = 100, 152, 102
 GAP = 22
 Y1 = TOP
 Y2 = Y1 + B1_H + GAP
 Y3 = Y2 + ROW_H + GAP
-H = Y3 + B3_H - 8
+H = Y3 + B3_H - 14
 
 TERM = 168                  # intent / action columns
 GATE_L, GATE_R = 196, 656   # the enclosure
@@ -72,9 +72,10 @@ def band_label(x, y, s, tag):
 
 
 # ── envelope · open ───────────────────────────────────────────────────────────
-f.rule(Y1, 0, R, C["rule"])
 band_label(0, Y1 + 24, "Establish the operating envelope", "l1")
 outcome(0, Y1 + 58, "DIS")
+
+f.rule(Y1 + B1_H, 0, R, C["hair"])
 
 # ── the action path · one enclosure ───────────────────────────────────────────
 SY = Y2 + ROW_H / 2
