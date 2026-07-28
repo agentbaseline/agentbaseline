@@ -304,8 +304,9 @@
   /* One accent, matching the figure. Punch comes from scale, the rail and the
      chips — not from three hues, which would be the loudest thing on the page
      now that the figure is monochrome. */
-  ol.questions { list-style:none; margin:44px 0 40px; padding:0; counter-reset:q;
-    display:flex; flex-direction:column; gap:2px; }
+  ol.questions { list-style:none; margin:44px 0 40px; counter-reset:q;
+    display:flex; flex-direction:column; gap:2px;
+    background:var(--wash); border-radius:8px; padding:16px 28px 16px 0; }
   ol.questions li { counter-increment:q; padding:20px 0 20px 24px;
     border-left:3px solid var(--accent); }
   @media (min-width:900px) {
