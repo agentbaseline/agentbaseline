@@ -179,6 +179,7 @@
   aside.inperson p { font-size:18px; line-height:1.6; margin:0; max-width:62ch; }
 
   .allcontrols { font-family:var(--mono); font-size:13px; margin:2px 0 0; }
+  .prose .note.src { font-size:15px; margin:10px 0 0; }
   .allcontrols a { color:var(--accent); text-decoration:none;
     border-bottom:1px solid var(--accent); padding-bottom:1px; }
   .allcontrols a::after { content:" \2192"; }
@@ -239,8 +240,8 @@
     <p>Your existing controls still do their job: they were built for software whose
     behaviour is settled before it ships. An agent's is not. An end user reprograms it at
     runtime, in natural language, changing what it does and which approved tools and data it
-    reaches for. Agents hold credentials, call tools, and act at machine speed
-    against systems of record. Buying the gap closed is its own problem:
+    reaches for. You are provisioning a programmable actor. It holds credentials,
+    calls tools, and acts at machine speed against systems of record. Buying the gap closed is its own problem:
     “agent governance” can mean almost anything, and no datasheet explains how the parts fit
     together.</p>
 
@@ -281,6 +282,9 @@
     six are addressed.
     Take them into a vendor conversation and ask which they cover.</p>
     <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
+    <p class="note src">Each one is defined once, in
+    <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a>.
+    This page, the PDF and the figure are rendered from it.</p>
 
   </div>
 
