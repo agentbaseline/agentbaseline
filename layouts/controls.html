@@ -14,31 +14,9 @@
 {{/* CDN during the design pass; self-host the woff2 files before v1.0 so the
      site goes back to making zero external requests. */}}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600;700&family=Chakra+Petch:wght@400;500;600&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap">
-<script>
-  (function () {
-    var r = document.documentElement, s;
-    try { s = localStorage.getItem('ab-theme'); } catch (e) {}
-    if (s === 'light' || s === 'dark') r.dataset.theme = s;
-    window.__abTheme = function () {
-      var dark = r.dataset.theme
-        ? r.dataset.theme === 'dark'
-        : matchMedia('(prefers-color-scheme: dark)').matches;
-      r.dataset.theme = dark ? 'light' : 'dark';
-      try { localStorage.setItem('ab-theme', r.dataset.theme); } catch (e) {}
-    };
-    document.addEventListener('click', function (e) {
-      document.querySelectorAll('details.menu[open]').forEach(function (d) {
-        if (!d.contains(e.target)) d.removeAttribute('open');
-      });
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      document.querySelectorAll('details.menu[open]').forEach(function (d) {
-        d.removeAttribute('open');
-      });
-    });
-  })();
-</script>
+{{/* External and synchronous: the deployment CSP allows script-src 'self'
+     only, and the stored theme must apply before first paint. */}}
+<script src="/js/theme.js"></script>
 <style>
   /* Same sheet language as the front page: title block, hairline frame,
      registration marks, mono structure around serif prose. See index.html for
@@ -255,8 +233,7 @@
       </ul>
     </details>
     <span class="ver">v{{ .Site.Params.version }}</span>
-    <button class="themebtn" onclick="__abTheme()"
-      aria-label="Switch between light and dark theme">
+    <button class="themebtn" aria-label="Switch between light and dark theme">
       <span class="tb-sun">{{ partial "icons/sun.svg" . }}</span>
       <span class="tb-moon">{{ partial "icons/moon.svg" . }}</span>
     </button>

@@ -26,31 +26,9 @@
 {{/* CDN during the design pass; self-host the woff2 files before v1.0 so the
      site goes back to making zero external requests. */}}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600;700&family=Chakra+Petch:wght@400;500;600&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap">
-<script>
-  (function () {
-    var r = document.documentElement, s;
-    try { s = localStorage.getItem('ab-theme'); } catch (e) {}
-    if (s === 'light' || s === 'dark') r.dataset.theme = s;
-    window.__abTheme = function () {
-      var dark = r.dataset.theme
-        ? r.dataset.theme === 'dark'
-        : matchMedia('(prefers-color-scheme: dark)').matches;
-      r.dataset.theme = dark ? 'light' : 'dark';
-      try { localStorage.setItem('ab-theme', r.dataset.theme); } catch (e) {}
-    };
-    document.addEventListener('click', function (e) {
-      document.querySelectorAll('details.menu[open]').forEach(function (d) {
-        if (!d.contains(e.target)) d.removeAttribute('open');
-      });
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      document.querySelectorAll('details.menu[open]').forEach(function (d) {
-        d.removeAttribute('open');
-      });
-    });
-  })();
-</script>
+{{/* External and synchronous: the deployment CSP allows script-src 'self'
+     only, and the stored theme must apply before first paint. */}}
+<script src="/js/theme.js"></script>
 <style>
   /* The visual language is the engineering drawing sheet: a title block instead
      of a masthead, datum rules the type rests on, registration marks at the
@@ -326,7 +304,7 @@
   /* One accent, matching the figure. Punch comes from scale, the rail and the
      chips — not from three hues, which would be the loudest thing on the page
      now that the figure is monochrome. */
-  ol.questions { list-style:none; margin:36px 0 34px; padding:0; counter-reset:q;
+  ol.questions { list-style:none; margin:44px 0 40px; padding:0; counter-reset:q;
     display:flex; flex-direction:column; gap:2px; }
   ol.questions li { counter-increment:q; padding:20px 0 20px 24px;
     border-left:3px solid var(--accent); }
@@ -343,10 +321,13 @@
     margin-right:11px; }
   ol.questions .a { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
   ol.questions .a a { font-family:var(--labelfont); font-weight:500;
-    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--accent); text-decoration:none; border:1px solid var(--accent);
-    border-radius:3px; padding:4px 10px; }
-  ol.questions .a a:hover { background:var(--accent); color:var(--paper); }
+    font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--accent); text-decoration:none; border-radius:3px;
+    padding:4px 9px;
+    background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  ol.questions .a a:hover {
+    background:color-mix(in srgb, var(--accent) 20%, transparent);
+    color:var(--accent); }
 
   aside.inperson { margin:34px 0; padding:22px 0 4px;
     border-top:1px solid var(--accent); }
@@ -397,8 +378,7 @@
       </ul>
     </details>
     <span class="ver">v{{ .Site.Params.version }}</span>
-    <button class="themebtn" onclick="__abTheme()"
-      aria-label="Switch between light and dark theme">
+    <button class="themebtn" aria-label="Switch between light and dark theme">
       <span class="tb-sun">{{ partial "icons/sun.svg" . }}</span>
       <span class="tb-moon">{{ partial "icons/moon.svg" . }}</span>
     </button>
@@ -439,7 +419,7 @@
     be true. <strong>There are six, and between them they answer three questions:</strong></p>
   </div>
 
-  <ol class="questions">
+  <ol class="questions wide">
     <li><span class="q">What is operating, and under whose authority?</span>
       <span class="a"><a href="/controls#discover">Discover</a><a href="/controls#authorize">Authorize</a></span></li>
     <li><span class="q">Is it staying inside approved boundaries?</span>
