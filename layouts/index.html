@@ -172,12 +172,13 @@
   /* Break the prose measure for the figure only — centred on the viewport and
      never wider than it, so the body never scrolls sideways. Declared last:
      an earlier `margin` shorthand on .fig1 would otherwise reset margin-inline. */
-  /* The figure shares the prose's left edge and runs into the right margin.
-     Centring it put its hairlines on a different vertical than the list above,
-     which is what made it read as an embedded object rather than part of the
-     document. */
-  @media (min-width:900px) {
-    figure.fig1 { width:min(900px, calc((100vw + 640px) / 2 - 48px)); }
+  /* The figure hangs into both margins equally. Bleeding one way only reads as
+     something that did not fit; symmetric bleed reads as a plate set into the
+     text. It shares the page's centre line with the prose even though it does
+     not share its measure. */
+  @media (min-width:960px) {
+    figure.fig1 { width:min(880px, calc(100vw - 64px));
+      margin-inline-start:calc(50% - min(440px, calc(50vw - 32px))); }
   }
 </style>
 </head>
