@@ -65,7 +65,13 @@
     font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
     text-transform:uppercase; }
   .utility a:hover { color:var(--link); }
-  .utility a.mast { color:var(--ink); letter-spacing:.14em; font-weight:600; }
+  .utility a.mast { color:var(--ink); letter-spacing:.12em; font-weight:600; }
+  .utility .crumb { font-family:var(--labelfont); font-size:12px;
+    letter-spacing:.07em; text-transform:uppercase; }
+  .utility .crumb .sep { color:var(--faint); margin:0 2px; }
+  .utility .crumb .here { color:var(--soft); }
+  .nav-menu summary svg.ph { width:18px; height:18px; }
+  details.menu ul.dd.left { left:-8px; right:auto; }
   .utility .right { margin-left:auto; color:var(--faint); }
   .utility .pub { font-family:var(--labelfont); font-size:11.5px;
     letter-spacing:.07em; text-transform:uppercase; color:var(--soft); }
@@ -167,6 +173,31 @@
 
   nav.toc { display:flex; flex-wrap:wrap; gap:0 26px; margin:0 0 8px;
     font-family:var(--mono); font-size:12.5px; }
+  /* The catalogue's own nav: every identifier, in a rail that keeps pace with
+     the reader. Wide viewports only — it lives in the sheet's left column;
+     narrower ones keep the horizontal contents line above. */
+  nav.sidenav { display:none; }
+  @media (min-width:1200px) {
+    nav.toc { display:none; }
+    /* A grid item in the sheet's left column, spanning every content row —
+       the title block above is .wide, so the rail starts beneath it and the
+       sticky inner tracks the whole catalogue. */
+    nav.sidenav { display:block; grid-column:1; grid-row:2 / span 999;
+      width:190px; justify-self:start; }
+    nav.sidenav .sn { position:sticky; top:76px;
+      max-height:calc(100vh - 100px); overflow:auto; padding:4px 12px 12px 0; }
+    .sn-g { margin-bottom:18px; }
+    .sn-o { display:block; font-family:var(--labelfont); font-size:11px;
+      letter-spacing:.08em; text-transform:uppercase; color:var(--soft);
+      margin-bottom:7px; }
+    .sn-o .pfx { color:var(--accent); font-weight:600; }
+    .sn-o:hover { color:var(--link); }
+    .sn-ids { display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; }
+    .sn-ids a { font-family:var(--mono); font-size:11px; color:var(--faint);
+      font-variant-numeric:tabular-nums; }
+    .sn-ids a:hover, .sn-ids a:visited:hover { color:var(--link); }
+    .sn-ids a:visited { color:var(--faint); }
+  }
   nav.toc a { color:var(--soft); text-decoration:none; padding:4px 0; }
   nav.toc a:hover { color:var(--link); }
   nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
@@ -217,11 +248,17 @@
 
 <nav class="utility">
   <div class="in">
-    <a class="mast" href="/">Agent Baseline</a>
-    <a href="{{ .Site.Params.repo }}">Source</a>
-    <a href="{{ .Site.Params.repo }}/issues">Comment</a>
-    <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>
-    <a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a>
+    <details class="menu nav-menu">
+      <summary aria-label="Site menu">{{ partial "icons/list.svg" . }}</summary>
+      <ul class="dd left">
+        <li><a href="{{ .Site.Params.repo }}">Source</a></li>
+        <li><a href="{{ .Site.Params.repo }}/issues">Comment</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a></li>
+      </ul>
+    </details>
+    <span class="crumb"><a class="mast" href="/">Agent Baseline</a>
+      <span class="sep">/</span> <span class="here">Controls</span></span>
     <span class="right pub"><span class="k">Published</span> {{ .Site.Params.published }}</span>
     <a class="closes" href="{{ .Site.Params.repo }}/issues">Comment closes {{ .Site.Params.commentsUntil }}</a>
     <details class="menu">
@@ -254,6 +291,22 @@
       </dd></div>
     </dl>
   </header>
+
+  <nav class="sidenav" aria-label="All controls">
+    <div class="sn">
+      {{- range $cat.outcomes }}
+      {{- $ids := where $cat.controls "outcome" .prefix }}
+      <div class="sn-g">
+        <a class="sn-o" href="#{{ lower .name }}"><span class="pfx">{{ .prefix }}</span> {{ .name }}</a>
+        <div class="sn-ids">
+          {{- range $ids }}
+          <a href="#{{ .id }}">{{ .id }}</a>
+          {{- end }}
+        </div>
+      </div>
+      {{- end }}
+    </div>
+  </nav>
 
   <nav class="toc" aria-label="Contents">
     {{- range $cat.outcomes }}

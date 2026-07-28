@@ -91,6 +91,17 @@
     text-transform:uppercase; }
   .utility a:hover { color:var(--link); }
   .utility .right { margin-left:auto; color:var(--faint); }
+  /* The title steps into the bar when its big form scrolls away (a JS class;
+     without JS the mast simply never appears, and nothing is lost). Collapsed
+     via max-width so the nav links slide rather than jump. */
+  .utility a.mast { color:var(--ink); font-weight:600; letter-spacing:.12em; }
+  .utility a.home-mast { max-width:0; opacity:0; overflow:hidden;
+    white-space:nowrap; margin-right:-18px; padding:0;
+    transition:max-width .3s ease, opacity .25s ease, margin-right .3s ease; }
+  .utility.mast-on a.home-mast { max-width:220px; opacity:1; margin-right:0; }
+  @media (prefers-reduced-motion:reduce) {
+    .utility a.home-mast { transition:none; }
+  }
   .utility .pub { font-family:var(--labelfont); font-size:11.5px;
     letter-spacing:.07em; text-transform:uppercase; color:var(--soft); }
   .utility .pub .k { color:var(--faint); margin-right:2px; }
@@ -385,6 +396,7 @@
 
 <nav class="utility">
   <div class="in">
+    <a class="mast home-mast" href="/">Agent Baseline</a>
     <a href="{{ .Site.Params.repo }}">Source</a>
     <a href="{{ .Site.Params.repo }}/issues">Comment</a>
     <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>

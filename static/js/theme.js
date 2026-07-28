@@ -28,4 +28,18 @@
       d.removeAttribute('open');
     });
   });
+
+  /* On pages with a .home-mast in the bar, the title steps into the sticky
+     header once its big form scrolls away. */
+  document.addEventListener('DOMContentLoaded', function () {
+    var bar = document.querySelector('.utility');
+    var h1 = document.querySelector('main h1');
+    if (!bar || !h1 || !bar.querySelector('.home-mast')) return;
+    if (!('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      bar.classList.toggle('mast-on',
+        !e.isIntersecting && e.boundingClientRect.top < 0);
+    }, { rootMargin: '-56px 0px 0px 0px' }).observe(h1);
+  });
 })();
