@@ -60,15 +60,25 @@ class Fig:
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     def text(self, x, y, s, size=13, fill=None, weight="400", mono=False,
-             ls=0.0, tag=""):
+             ls=0.0, tag="", href=""):
+        """Draw one run. `href` wraps it in a link.
+
+        A figure whose parts are links is navigation rather than illustration —
+        the reader who wants the controls behind an outcome clicks the outcome
+        instead of scrolling back to find the roster. The style stays quiet: no
+        link colour, only an underline on hover, because six accented names
+        would make the drawing louder than the prose around it.
+        """
         width = len(s) * self._adv(size, mono, weight) + len(s) * ls * size
         self.boxes.append({"tag": tag or s[:20], "x": x, "y": y - size * 0.78,
                            "w": width, "h": size * 1.02, "text": s})
         sp = f' letter-spacing="{ls}em"' if ls else ""
-        self.parts.append(
-            f'<text x="{x}" y="{y}" font-family="{C["mono"] if mono else C["serif"]}" '
-            f'font-size="{size}" fill="{fill or C["ink"]}" font-weight="{weight}"{sp}>'
-            f'{self._esc(s)}</text>')
+        run = (f'<text x="{x}" y="{y}" font-family="{C["mono"] if mono else C["serif"]}" '
+               f'font-size="{size}" fill="{fill or C["ink"]}" font-weight="{weight}"{sp}>'
+               f'{self._esc(s)}</text>')
+        if href:
+            run = f'<a href="{self._esc(href)}">{run}</a>'
+        self.parts.append(run)
         return width
 
     def label(self, x, y, s, tag=""):

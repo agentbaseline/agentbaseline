@@ -122,8 +122,19 @@
     figure.fig1 .wide { display:block; }
     figure.fig1 .narrow { display:none; }
   }
-  figure.fig1 svg a text { fill:var(--fig-accent); }
-  figure.fig1 svg a:hover text { text-decoration:underline; }
+  /* The six names in the figure link to their controls, so the drawing is
+     navigation and not only illustration — the reader who wants the controls
+     behind an outcome clicks the outcome. Deliberately NOT link-coloured: six
+     accented names would make the figure louder than the prose it sits in. The
+     affordance is the cursor and the hover underline.
+     This rule set previously styled links the generator never emitted. */
+  figure.fig1 svg a { cursor:pointer; }
+  figure.fig1 svg a text { fill:var(--fig-ink); }
+  figure.fig1 svg a:hover text { text-decoration:underline;
+    text-decoration-thickness:1px; text-underline-offset:3px; }
+  figure.fig1 svg a:focus-visible text { text-decoration:underline; }
+  figure.fig1 svg a:focus-visible { outline:2px solid var(--fig-accent);
+    outline-offset:2px; }
 
   ol.factors + .prose { margin-top:28px; }
   ol.questions + .prose { margin-top:30px; }

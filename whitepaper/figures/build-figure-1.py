@@ -69,9 +69,15 @@ ROLE = {"DIS": "find what exists",   "AUT": "bind authority",
         "OBS": "prove what happened", "RES": "stop and contain"}
 
 
+def anchor(pre):
+    """Every outcome name links to its controls. /controls uses the lowercase
+    outcome name as its anchor, the same target the roster chips point at."""
+    return f"/controls#{names[pre].lower()}"
+
+
 def outcome(x, y, pre):
     """Name, then its role beneath — the shape the page uses for the six."""
-    f.text(x, y, names[pre], NAME, C["ink"], "700", tag=f"n{pre}")
+    f.text(x, y, names[pre], NAME, C["ink"], "700", tag=f"n{pre}", href=anchor(pre))
     f.text(x, y + 26, ROLE[pre], DESC, C["soft"], tag=f"g{pre}")
 
 
@@ -134,7 +140,8 @@ def stack(y, label, pre, big=True):
         n.text(0, y, label.upper(), 11, C["soft"], "400", True, 0.12, tag=f"nl{pre}")
         y += 22
     n.text(0, y, names[pre] if pre in names else pre, 21 if big else 16,
-           C["ink"], "700", tag=f"nn{pre}")
+           C["ink"], "700", tag=f"nn{pre}",
+           href=anchor(pre) if pre in names else "")
     n.text(0, y + 24, ROLE.get(pre, ""), 15, C["soft"], tag=f"ng{pre}")
     return y + 24
 
@@ -157,7 +164,8 @@ ny += 18
 n.text(18, ny, "CONTROL EACH MATERIAL ACTION", 11, C["soft"], "400", True, 0.12, tag="nl2")
 ny += 26
 for pre in ["AUT", "CON", "VAL"]:
-    n.text(18, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}")
+    n.text(18, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}",
+           href=anchor(pre))
     n.text(18, ny + 36, ROLE[pre], 15, C["soft"], tag=f"ng{pre}")
     ny += 54
 ny += 8
@@ -173,7 +181,8 @@ ny += 74
 n.text(0, ny, "MAINTAIN EVIDENCE AND CONTAINMENT", 11, C["soft"], "400", True, 0.12, tag="nl3")
 ny += 26
 for i, pre in enumerate(["OBS", "RES"]):
-    n.text(i * 180, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}")
+    n.text(i * 180, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}",
+           href=anchor(pre))
     n.text(i * 180, ny + 36, ROLE[pre], 15, C["soft"], tag=f"ng{pre}")
 ny += 46
 
