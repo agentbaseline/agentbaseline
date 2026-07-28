@@ -200,6 +200,13 @@
     font-weight:600; line-height:1.02; margin:0; letter-spacing:-0.02em;
     text-wrap:balance; }
   h1 em { font-style:normal; }
+  /* "Agent" is drawn in outline, "Baseline" set solid — the unfilled word is
+     the one still being defined. Guarded so browsers without text-stroke keep
+     solid ink rather than vanishing. */
+  @supports (-webkit-text-stroke: 1px black) {
+    h1 { -webkit-text-stroke:1.5px var(--ink); color:transparent; }
+    h1 em { -webkit-text-stroke:0; color:var(--ink); }
+  }
   /* The title rests on a baseline — the typographic sense of the word, drawn.
      The rule sits at the h1's baseline (0.79em: half the leading, plus
      Instrument Serif's ascent) and dissolves toward both margins, so it reads
