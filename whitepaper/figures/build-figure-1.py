@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Variant A — faithful to the paper's own Figure 1.
+"""Figure 1 — the six outcomes as one control system.
 
-Kamil's structure, unchanged in substance: Discover sets the operating envelope
+Faithful to the paper's own Figure 1: Discover sets the operating envelope
 above the action path; business intent passes through Authorize, Constrain and
 Validate to become an enterprise action; Observe and Respond hold evidence and
 containment below. The paper's caption verbatim: "The six required outcomes
 operate as one control system across enterprise intent, action, evidence and
 containment."
 
-Only the drawing is changed — quieter, generated from controls.yaml so the
-identifier ranges cannot drift, and geometry-checked.
+Only the drawing is changed: no fills, no nested boxes, one accent, structure
+from position and hairlines. A scope-based alternative was drawn and rejected —
+see launch/docs/figure-options.html for the comparison.
+
+Generated from controls.yaml so the identifier ranges cannot drift, and
+geometry-checked by bin/check-figure.
 """
 from figkit import Fig, C, catalogue
 names, hi = catalogue()
@@ -67,4 +71,4 @@ f.text(M + 620, Y3 + 52, "Across every run, including", 12.5, C["soft"], tag="v1
 f.text(M + 620, Y3 + 70, "delegated work downstream.", 12.5, C["soft"], tag="v2")
 
 f.rule(Y3 + EV_H, M, R, C["rule"])
-f.write("figure-1a-flow")
+f.write("figure-1")

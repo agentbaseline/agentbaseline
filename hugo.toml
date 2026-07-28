@@ -23,8 +23,5 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
 [params]
   version       = "1.0-draft"
   published     = "30 July 2026"
-  # "figure-1a-flow" is faithful to the paper's own Figure 1.
-  # "figure-1b-scope" is the proposed shift. Swap to compare.
-  figure        = "figure-1a-flow"
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"

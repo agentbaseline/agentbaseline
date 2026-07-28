@@ -7,10 +7,7 @@ scale they are illegible, and shipping unreadable type is worse than omitting it
 import re, pathlib, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-cfg = (ROOT / "hugo.toml").read_text(encoding="utf-8")
-variant = (re.search(r'figure\s*=\s*"([^"]+)"', cfg) or [None, "figure-1a-flow"])[1]
-
-src = ROOT / "whitepaper" / "figures" / f"{variant}.svg"
+src = ROOT / "whitepaper" / "figures" / "figure-1.svg"
 if not src.exists():
     sys.exit(f"{src.name} not found")
 fig = src.read_text(encoding="utf-8")
@@ -47,5 +44,5 @@ subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
                 "--default-background-color=FFFFFFFF", tmp.as_uri()],
                capture_output=True)
 tmp.unlink(missing_ok=True)
-print(f"wrote static/social-card.png from {variant}  ({out.stat().st_size:,} bytes)"
+print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)"
       if out.exists() else "social card FAILED")

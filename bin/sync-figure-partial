@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Emit layouts/partials/figure-1.svg from the standalone figure.
+
+The standalone file keeps fixed ink so the PDF, the social card and any slide
+export are byte-identical. The inlined partial swaps ink for CSS custom
+properties, so on the web the figure takes the page's colours instead of
+sitting on it as a bright plate. One source, two renderings, both generated.
+"""
+import re, pathlib
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+s = (ROOT / "whitepaper/figures/figure-1.svg").read_text(encoding="utf-8")
+
+s = re.sub(r'\swidth="\d+"\s+height="\d+"', '', s, count=1)
+for fixed, token in [("#1A1C1A", "--fig-ink"), ("#5A5E5A", "--fig-soft"),
+                     ("#797D79", "--fig-faint"), ("#E4E5E1", "--fig-hair"),
+                     ("#CBCDC8", "--fig-rule"), ("#1A4D8F", "--fig-accent")]:
+    s = s.replace(f'"{fixed}"', f'"var({token})"')
+# the page supplies the ground; a painted background is what made it a slab
+s = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\n?\s*', "", s, count=1)
+
+(ROOT / "layouts/partials/figure-1.svg").write_text(s, encoding="utf-8")
+print("wrote layouts/partials/figure-1.svg (theme-aware)")

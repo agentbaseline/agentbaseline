@@ -13,9 +13,8 @@ jobs:
         run: python3 bin/check-controls
       - name: Figure geometry — no overlaps, no escaping text, ranges match
         run: |
-          (cd whitepaper/figures && python3 build-a-flow.py && python3 build-b-scope.py)
-          python3 bin/check-figure figure-1a-flow
-          python3 bin/check-figure figure-1b-scope
+          (cd whitepaper/figures && python3 build-figure-1.py)
+          python3 bin/check-figure
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls
