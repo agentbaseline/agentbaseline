@@ -7,6 +7,13 @@
 # ⟡ Entries marked `confirmed: false` are inferred from the drafting record and
 #   MUST be verified with the person before publication. Do not publish an
 #   affiliation or an email that person has not agreed to.
+#
+# `sortkey` is the surname, and the page renders in that order. The axis matters
+# with a list this small: sorting on first name — Chris, David, Jelmer, Kamil,
+# Ranti, William — groups the six into three company pairs, the one arrangement
+# that makes a joint document read as three separate delegations. Surname order
+# interleaves them (Docker, Snyk, Docker, Keycard, Snyk, Keycard), so nobody is
+# first because of their employer, and the order holds as the list grows.
 ---
 statement: >-
   Drafted jointly by engineers at Docker, Snyk and Keycard. Sections are
@@ -14,6 +21,7 @@ statement: >-
 
 contributors:
   - name: Ranti Familusi
+    sortkey: Familusi
     affiliation: Docker
     role: Technical DRI
     sections:
@@ -23,6 +31,7 @@ contributors:
     confirmed: true
 
   - name: Chris Huszcza
+    sortkey: Huszcza
     affiliation: Snyk
     email: chris.huszcza@snyk.io
     role: Technical DRI
@@ -35,12 +44,14 @@ contributors:
     confirmed: true
 
   - name: David Schott
+    sortkey: Schott
     affiliation: Snyk
     role: Technical DRI
     sections: []
     confirmed: true
 
   - name: Kamil Potrec
+    sortkey: Potrec
     affiliation: Keycard
     email: kamil@keycard.ai
     role: Technical DRI · editor
@@ -52,6 +63,7 @@ contributors:
   # Confirmed by Kamil in the partner channel: "Jelmer is founding engineer at
   #   Keycard, and he will join instead to run the technical alignment."
   - name: Jelmer Snoeck
+    sortkey: Snoeck
     affiliation: Keycard
     role: Founding engineer
     sections:
@@ -64,6 +76,7 @@ contributors:
   #   for Docker (with participation of @William Manning and @jrack)", and he
   #   submitted the Executive Summary revision himself.
   - name: William Manning
+    sortkey: Manning
     affiliation: Docker
     role: Section author
     sections:

@@ -359,8 +359,12 @@
   <h2>Who wrote it, and what they sell</h2>
   <div class="prose">
     <p>Drafted by&#32;
-    {{- $n := len (where $people.contributors "confirmed" true) }}
-    {{- range $i, $c := where $people.contributors "confirmed" true }}
+    {{- /* Surname order — see the note in contributors.yaml. First-name order
+           clusters these six into three company pairs, which is the one
+           arrangement that makes a joint document read as three delegations. */ -}}
+    {{- $authors := sort (where $people.contributors "confirmed" true) "sortkey" }}
+    {{- $n := len $authors }}
+    {{- range $i, $c := $authors }}
     {{- if $i }}{{ if eq (add $i 1) $n }} and {{ else }}, {{ end }}{{ end }}
     {{- .name }} <span class="aff">({{ .affiliation }})</span>
     {{- end }}.</p>

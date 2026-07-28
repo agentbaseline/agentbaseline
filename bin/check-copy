@@ -139,6 +139,24 @@ if _y.exists() and _r.exists():
             findings.append(("contra", f"README: {_f} range is stale — controls.yaml has "
                                        f"{_f}-{_n:02d} as the highest identifier"))
 
+# ── 3d · no two consecutive authors from the same organization ────────────────
+# A jointly published document is read for whose document it really is, and the
+# author order is the first evidence. Surname order interleaves the current six
+# (Docker, Snyk, Docker, Keycard, Snyk, Keycard); a seventh author, or a change
+# of affiliation, can silently cluster two of one employer and undo it. Checking
+# the rendered order rather than the YAML, because the template does the sort.
+_ix = ROOT / "public" / "index.html"
+if _ix.exists():
+    _h = _ix.read_text(encoding="utf-8")
+    _m = re.search(r"Drafted by(.*?)</p>", _h, re.S)
+    if _m:
+        _affs = re.findall(r'class=["\']?aff["\']?>\((.*?)\)', _m.group(1))
+        for _a, _b in zip(_affs, _affs[1:]):
+            if _a == _b:
+                findings.append(("order", f"two consecutive authors from {_a} — "
+                                          f"author order reads as a delegation, not a "
+                                          f"joint document (see contributors.yaml)"))
+
 # ── 4 · the tic list ─────────────────────────────────────────────────────────
 TICS = ["which is what makes", "it is worth noting", "in order to", "leverage",
         "seamless", "robust", "cutting-edge", "at the end of the day",
@@ -149,7 +167,8 @@ for name, text in corpus.items():
         if tic in low:
             findings.append(("tic", f"{name}: “{tic}”"))
 
-order = {"contra": 0, "repeat": 1, "near": 2, "title": 3, "dash": 4, "tic": 5}
+order = {"contra": 0, "order": 1, "repeat": 2, "near": 3, "title": 4,
+         "dash": 5, "tic": 6}
 findings.sort(key=lambda f: order[f[0]])
 print(f"copy: {len(corpus)} sources · {len(allsent)} sentences")
 for kind, msg in findings:
