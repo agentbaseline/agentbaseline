@@ -249,11 +249,11 @@
 
   <ol class="questions">
     <li><span class="q">What is operating, and under whose authority?</span>
-      <span class="a"><a href="/controls/#discover">Discover</a><a href="/controls/#authorize">Authorize</a></span></li>
+      <span class="a"><a href="/controls#discover">Discover</a><a href="/controls#authorize">Authorize</a></span></li>
     <li><span class="q">Is it staying inside approved boundaries?</span>
-      <span class="a"><a href="/controls/#constrain">Constrain</a><a href="/controls/#validate">Validate</a></span></li>
+      <span class="a"><a href="/controls#constrain">Constrain</a><a href="/controls#validate">Validate</a></span></li>
     <li><span class="q">Can you prove what happened — and stop it?</span>
-      <span class="a"><a href="/controls/#observe">Observe</a><a href="/controls/#respond">Respond</a></span></li>
+      <span class="a"><a href="/controls#observe">Observe</a><a href="/controls#respond">Respond</a></span></li>
   </ol>
 
   <div class="prose">
@@ -268,7 +268,7 @@
     {{- $ids := where $cat.controls "outcome" $prefix }}
     {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
     <li id="{{ $prefix }}">
-      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
+      <span class="name"><a href="/controls#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
       <span class="req">{{ .requirement }}</span>
     </li>
     {{- end }}
@@ -279,7 +279,7 @@
     A product may cover one or more; an enterprise architecture is complete only when all
     six are addressed.
     Take them into a vendor conversation and ask which they cover.</p>
-    <p class="allcontrols"><a href="/controls/">Browse all {{ len $cat.controls }} controls</a></p>
+    <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
 
   </div>
 
@@ -300,7 +300,7 @@
     <p>Identifiers are not yet frozen. At v1.0 they freeze, and from then on a control is
     superseded rather than renumbered, so a citation you publish keeps meaning what it
     meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before you cite, and <a href="/controls/">the controls</a> for the reference form.</p>
+    before you cite, and <a href="/controls">the controls</a> for the reference form.</p>
   </div>
 
   <h2>How the outcomes work together</h2>

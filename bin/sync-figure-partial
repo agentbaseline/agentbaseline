@@ -30,6 +30,6 @@ for name in ("figure-1", "figure-1-narrow"):
         s = s.replace(f'"{fixed}"', f'"var({token})"')
     s = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\n?\s*', "", s, count=1)
     s = re.sub(r'<text[^>]*>((?:DIS|AUT|CON|VAL|OBS|RES))-01…\d\d</text>',
-               lambda m: f'<a href="/controls/#{NAMES[m.group(1)]}">{m.group(0)}</a>', s)
+               lambda m: f'<a href="/controls#{NAMES[m.group(1)]}">{m.group(0)}</a>', s)
     (ROOT / "layouts" / "partials" / f"{name}.svg").write_text(s, encoding="utf-8")
     print(f"wrote layouts/partials/{name}.svg")
