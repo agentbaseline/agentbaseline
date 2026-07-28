@@ -125,6 +125,20 @@ for name, text in corpus.items():
         for m in re.finditer(pat, text, re.I):
             findings.append(("contra", f"{name}: “{m.group(0)}” — {why}"))
 
+# ── 3c · README ranges must track controls.yaml ──────────────────────────────
+_y = (ROOT / "whitepaper" / "controls.yaml")
+_r = (ROOT / "README.md")
+if _y.exists() and _r.exists():
+    _hi = {}
+    for _m in re.finditer(r"^  - id: (\w+)-(\d+)$", _y.read_text(encoding="utf-8"), re.M):
+        _f, _n = _m.group(1), int(_m.group(2))
+        _hi[_f] = max(_hi.get(_f, 0), _n)
+    _rt = _r.read_text(encoding="utf-8")
+    for _f, _n in sorted(_hi.items()):
+        if f"`{_f}-01`–`{_f}-{_n:02d}`" not in _rt:
+            findings.append(("contra", f"README: {_f} range is stale — controls.yaml has "
+                                       f"{_f}-{_n:02d} as the highest identifier"))
+
 # ── 4 · the tic list ─────────────────────────────────────────────────────────
 TICS = ["which is what makes", "it is worth noting", "in order to", "leverage",
         "seamless", "robust", "cutting-edge", "at the end of the day",

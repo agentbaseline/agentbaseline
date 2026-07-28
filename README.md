@@ -1,43 +1,114 @@
 # Agent Baseline
 
-**A baseline of security outcomes for running AI agents in the enterprise.**
-A draft for public comment, versioned in the open, and intended for donation to a
-community body as it matures.
+**Six security outcomes an enterprise must achieve to run AI agents, and the 33 controls
+that evidence them.**
 
-> ⟡ **Working draft.** Names, scope and identifiers on this page are not yet final. See
-> [VERSIONING.md](VERSIONING.md) for what is and is not safe to cite today.
+A draft for public comment, versioned in the open, and intended for donation to a community
+body as it matures.
 
-Enterprises are provisioning a programmable actor, not fixed-function software. An agent's
-effective behaviour is not fully defined before deployment: an end user can reprogram it at
-runtime in natural language, changing what it does and how it uses approved tools and data.
-Existing controls still matter, but they were not built for that combination of runtime
-programmability, access and autonomy.
+| | |
+|---|---|
+| **Status** | `v1.0-draft` — not a standard, no conformance programme |
+| **Identifiers** | not yet frozen; they freeze at `v1.0`. See [VERSIONING.md](VERSIONING.md) before citing |
+| **Comment closes** | 30 September 2026 |
+| **Source of truth** | [`whitepaper/controls.yaml`](whitepaper/controls.yaml) |
 
-The baseline defines the security outcomes an enterprise must achieve, by outcome rather
-than by product category.
+An agent's behaviour is not settled before it ships: an end user reprograms it at runtime,
+in natural language. This baseline defines what has to be true to run one safely, by outcome
+rather than by product category.
+
+**The argument, in full: [agentbaseline.org](https://enterprise-control-plane-mock.vercel.app)**
+— why product categories do not map to the problem, and the three questions the six answer.
 
 ## The six outcomes
 
-| | Outcome | Requirement |
-|---|---|---|
-| **DIS** | Discover | Discover every agent and its dependencies |
-| **AUT** | Authorize | Bind identity, task, target and authority |
-| **CON** | Constrain | Limit components, runtime, data and reach |
-| **VAL** | Validate | Admit the system and verify outcomes |
-| **OBS** | Observe | Correlate activity and prove what happened |
-| **RES** | Respond | Stop, revoke, quarantine, scope impact |
+| | Outcome | Requirement | Controls |
+|---|---|---|---|
+| **DIS** | Discover | Discover every agent and its dependencies | `DIS-01`–`DIS-07` |
+| **AUT** | Authorize | Bind identity, task, target and authority | `AUT-01`–`AUT-06` |
+| **CON** | Constrain | Limit components, runtime, data and reach | `CON-01`–`CON-07` |
+| **VAL** | Validate | Admit the system and verify outcomes | `VAL-01`–`VAL-05` |
+| **OBS** | Observe | Correlate activity and prove what happened | `OBS-01`–`OBS-04` |
+| **RES** | Respond | Stop, revoke, quarantine, scope impact | `RES-01`–`RES-04` |
 
-The six are the **minimum category test**. A product may implement one or more; end-to-end
-control requires all six through an integrated architecture. By the baseline's own test, no single
-vendor is a complete implementation — including the ones who wrote it.
+A **category test, not a certification scheme** — and by it, none of the three organizations
+that convened this is a complete implementation.
+
+Full text: [`whitepaper/CONTROLS.md`](whitepaper/CONTROLS.md) ·
+machine-readable: [`whitepaper/controls.yaml`](whitepaper/controls.yaml)
+
+## Using it
+
+**Reference a control** in an audit finding, a policy document or an RFP response:
+
+```
+DIS-01 (Agent Baseline v1.0-draft)
+```
+
+Identifiers are bare and permanent: **superseded, never renumbered, never reused.** Where one
+could be ambiguous, qualify by namespace rather than mutating it — `DIS-01 (agentbaseline.org)`.
+[VERSIONING.md](VERSIONING.md) has the full contract, including what changes force a new
+identifier.
+
+**Consume the controls.** One file, one shape:
+
+```yaml
+version: "1.0-draft"
+outcomes:
+  - prefix: DIS
+    name: Discover
+    requirement: "Discover every agent and its dependencies."
+controls:
+  - id: DIS-01              # bare, permanent, never reused
+    outcome: DIS            # matches an outcomes[].prefix
+    title: "Authoritative agent registry"
+    status: draft           # draft | stable | superseded | withdrawn
+    requirement: >-
+      The organization shall maintain an authoritative record with a stable
+      identifier for every agent proposed for corporate use…
+```
+
+A withdrawn control stays in the file forever, marked, because somebody's audit report cites
+it and they have to be able to resolve what it meant.
+
+⟡ **Not yet in the schema:** an `evidence` line per control, and crosswalk references.
+[CONTRIBUTING.md](CONTRIBUTING.md) requires evidence of every contributor, and the founding
+authors have not yet met their own rule. Tracked as issue #1.
 
 ## What's here
 
 | Path | |
 |---|---|
-| [`whitepaper/`](whitepaper/) | The paper, the controls (`controls.yaml`), and figures |
-| [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO, OWASP and CIS — wanted, and best written from outside |
-| [`docs/decisions/`](docs/decisions/) | Architecture decision records |
+| [`whitepaper/`](whitepaper/) | The paper, the controls, and the figure |
+| [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO, OWASP and CIS — wanted, and better written from outside |
+| [`docs/decisions/`](docs/decisions/) | Decision records, including why identifiers carry no prefix |
+| [`bin/`](bin/) | Generators, and the checks that keep them honest |
+| `layouts/`, `content/` | The site, which renders from `controls.yaml` |
+
+## Working on this
+
+Everything a reader sees is generated. Edit `controls.yaml`; never edit a derived file.
+
+```sh
+python3 whitepaper/figures/build-figure-1.py   # the figure, from controls.yaml
+python3 bin/sync-figure-partial                # theme-aware copy for the site
+python3 bin/render-controls                    # CONTROLS.md
+hugo --gc --minify                             # the site, into public/
+python3 bin/build-pdf                          # the PDF, via pandoc and Chrome
+python3 bin/build-social                       # the 1200x630 card
+```
+
+Three checks run in CI and are worth running before you push. Each one exists because
+something broke and nothing caught it:
+
+```sh
+python3 bin/check-controls   # identifiers, required fields, paper/controls agreement
+python3 bin/check-figure     # figure geometry: overlaps, containment, arrows, stale ranges
+python3 bin/check-copy       # repeated phrasing, dead titles, self-contradictions
+```
+
+`bin/snapshot <n> "<label>"` freezes a build into `docs/passes/`, so a visual regression is
+visible rather than inferred.
 
 ## Scope and non-goals
 
@@ -45,35 +116,27 @@ vendor is a complete implementation — including the ones who wrote it.
 sensitive data, invoking an internal API, updating a system of record.
 
 **Not in scope:** a generic AI ethics framework, a model-development standard, or a product
-comparison. The baseline does not prescribe how a model reasons. It governs the conditions
-under which an agent and each material action may proceed.
-
-## How to cite
-
-Cite the bare identifier and the release tag:
-
-> `DIS-01` (agentbaseline.org, v1.0-draft)
-
-Identifiers are **superseded, never renumbered, and never reused**. They carry no project name
-so that a rename — or a donation to a community body — never breaks a citation you have
-already published. Read [VERSIONING.md](VERSIONING.md) before citing.
+comparison.
 
 ## Contributing
 
-Read → comment → contribute. Open an issue against a specific control identifier, or a pull
-request for a crosswalk, a test method, or a correction. See
-[CONTRIBUTING.md](CONTRIBUTING.md) and [GOVERNANCE.md](GOVERNANCE.md).
+What is wanted most is a crosswalk to a framework you already run: a mapping written from
+outside carries more weight than another control written from inside.
 
-**Public comment is open until 30 September 2026.** Working-group membership is earned through sustained
-contribution, not a form.
+[CONTRIBUTING.md](CONTRIBUTING.md) has the format and how to file. [GOVERNANCE.md](GOVERNANCE.md)
+has who decides, and how you become one of them.
 
 ## Provenance
 
-This work was convened by commercially interested parties. Who they are, what they sell, and
-which outcomes they sell into is disclosed in [PROVENANCE.md](PROVENANCE.md) — read it before
-you weigh anything here.
+Convened by Docker, Keycard and Snyk, all of which sell into the area this document describes.
+[PROVENANCE.md](PROVENANCE.md) discloses the commercial interests; [MAINTAINERS.md](MAINTAINERS.md)
+names the authors individually.
 
 ## License
 
 Prose and figures: [CC BY 4.0](LICENSE). Schemas and `controls.yaml`:
-[Apache-2.0](LICENSE-schemas). ⟡ pending legal confirmation.
+[Apache-2.0](LICENSE-schemas).
+
+⟡ Pending legal confirmation. If this is donated to CNCF, its charter requires the Community
+Specification License for a specification not tied to an implementation — worth settling
+before publication rather than retro-licensing across three legal teams.
