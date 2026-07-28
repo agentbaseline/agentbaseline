@@ -51,8 +51,7 @@ contributors:
 
   # Confirmed by Kamil in the partner channel: "Jelmer is founding engineer at
   #   Keycard, and he will join instead to run the technical alignment."
-  #   ⟡ Surname still unknown — ask before publishing a full name.
-  - name: Jelmer
+  - name: Jelmer Snoeck
     affiliation: Keycard
     role: Founding engineer
     sections:

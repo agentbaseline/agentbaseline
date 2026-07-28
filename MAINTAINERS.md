@@ -13,10 +13,8 @@ Confirmed from the drafting record, with the sections each wrote.
 | Chris Huszcza | Snyk | Discover · Constrain · Validate · supply-chain and tool verification · agent-native observability |
 | David Schott | Snyk | Technical DRI |
 | Kamil Potrec | Keycard | Editorial integration · the controls |
-| Jelmer | Keycard | Identity and attribution · delegated authorization and policy · accountability |
+| Jelmer Snoeck | Keycard | Identity and attribution · delegated authorization and policy · accountability |
 | William Manning | Docker | Executive summary · supply-chain and tool verification |
-
-⟡ Jelmer's surname is not yet recorded. Ask before publishing a full name.
 
 ## Write access
 
