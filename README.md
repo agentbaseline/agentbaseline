@@ -36,7 +36,7 @@ vendor is a complete implementation — including the ones who wrote it.
 | Path | |
 |---|---|
 | [`whitepaper/`](whitepaper/) | The paper, the controls (`controls.yaml`), and figures |
-| [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO and OWASP ⟡ *committed, not yet written* |
+| [`crosswalks/`](crosswalks/) | Mappings to NIST, ISO, OWASP and CIS — wanted, and best written from outside |
 | [`docs/decisions/`](docs/decisions/) | Architecture decision records |
 
 ## Scope and non-goals
@@ -64,7 +64,7 @@ Read → comment → contribute. Open an issue against a specific control identi
 request for a crosswalk, a test method, or a correction. See
 [CONTRIBUTING.md](CONTRIBUTING.md) and [GOVERNANCE.md](GOVERNANCE.md).
 
-**Public comment is open until ⟡ (date).** Working-group membership is earned through sustained
+**Public comment is open until 30 September 2026.** Working-group membership is earned through sustained
 contribution, not a form.
 
 ## Provenance

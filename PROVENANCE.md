@@ -16,7 +16,7 @@ than being distributed into footnotes.
 
 **Keycard convened this work and produced the first draft.** Keycard also owns and operates the
 podcast on which the launch panel is recorded, and the host of that podcast is a Keycard
-employee. ⟡ *See the disclosure note below.*
+employee.
 
 ## What this means for how you should read it
 
