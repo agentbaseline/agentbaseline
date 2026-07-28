@@ -11,10 +11,18 @@ Refined from the v1 composition, which had something a later revision lost — y
 can see the path. Everything that made v1 loud is gone: no fills, no nested boxes,
 page ink, hairlines at the prose's own weight.
 
-One idea carries the drawing: what you pass through is enclosed, what surrounds it
-is open. The control band is the only closed shape here, because it is the only
-thing every material action must go through. Discover and the evidence band are
-held by rules alone.
+Every mark is meant to assert something true.
+
+The action path is the only sequence, so it is the only thing drawn with arrows.
+The three gates are the only thing an action must pass through, so they are the
+only closed shape.
+
+Nothing separates Discover, or Observe and Respond, from the path. A rule between
+them would say "this section ends here", which is sequence — and that is wrong:
+Discover runs before deployment *and continuously*, and Observe and Respond span
+every run, during and after. Brackets were tried and are too faint to read at this
+width. So the honest mark is no mark: whitespace groups them and the labels name
+them, and nothing on the drawing claims a sequence that does not exist.
 
 Type is taken from the page rather than approximated — 21px names, 16px
 descriptions, 12px mono labels — because close-but-not-equal type is what makes a
@@ -34,12 +42,12 @@ names, _ = catalogue()
 W = 880
 R = W
 TOP = 8
-B1_H, ROW_H, B3_H = 100, 152, 102
+B1_H, ROW_H, B3_H = 106, 158, 102
 GAP = 22
 Y1 = TOP
 Y2 = Y1 + B1_H + GAP
 Y3 = Y2 + ROW_H + GAP
-H = Y3 + B3_H - 14
+H = Y3 + B3_H + 4
 
 TERM = 168                  # intent / action columns
 GATE_L, GATE_R = 196, 656   # the enclosure
@@ -75,8 +83,6 @@ def band_label(x, y, s, tag):
 band_label(0, Y1 + 24, "Establish the operating envelope", "l1")
 outcome(0, Y1 + 58, "DIS")
 
-f.rule(Y1 + B1_H, 0, R, C["hair"])
-
 # ── the action path · one enclosure ───────────────────────────────────────────
 SY = Y2 + ROW_H / 2
 
@@ -98,9 +104,8 @@ f.text(R - TERM, SY + 16, "a tool, API,", DESC, C["soft"], tag="ea2")
 f.text(R - TERM, SY + 37, "record or message", DESC, C["soft"], tag="ea3")
 
 # ── evidence · open ───────────────────────────────────────────────────────────
-f.rule(Y3, 0, R, C["hair"])
-band_label(0, Y3 + 24, "Maintain evidence and containment", "l3")
-outcome(0, Y3 + 58, "OBS")
-outcome(GATE_L + 24, Y3 + 58, "RES")
+band_label(0, Y3 + 28, "Maintain evidence and containment", "l3")
+outcome(0, Y3 + 62, "OBS")
+outcome(GATE_L + 24, Y3 + 62, "RES")
 
 f.write("figure-1")

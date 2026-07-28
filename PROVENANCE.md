@@ -37,8 +37,6 @@ Applied honestly:
 > implementation.** Each covers part of the problem. Any of them telling you otherwise is
 > contradicting a document they co-authored.
 
-That sentence exists so that you can use it on us.
-
 ## What we do not claim
 
 We do not describe this work, this group, or this property as independent. It is not. It is a

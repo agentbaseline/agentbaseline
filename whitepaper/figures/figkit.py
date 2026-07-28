@@ -108,6 +108,19 @@ class Fig:
         self.parts.append(f'<line x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" '
                           f'stroke="url(#{key})" stroke-width="1"/>')
 
+    def bracket(self, y, x1, x2, depth=7, down=True, colour=None):
+        """A span marker: a rule with a return at each end.
+
+        A plain rule between two groups says "this section ends here", which is
+        sequence. A bracket says "this covers all of that", which is span — and
+        span is what Discover, Observe and Respond actually do relative to the
+        action path.
+        """
+        c = colour or C["hair"]
+        d = depth if down else -depth
+        self.parts.append(f'<path d="M{x1} {y + d} L{x1} {y} L{x2} {y} L{x2} {y + d}" '
+                          f'fill="none" stroke="{c}" stroke-width="1"/>')
+
     def vrule(self, x, y1, y2, colour=None):
         self.parts.append(f'<line x1="{x}" y1="{y1}" x2="{x}" y2="{y2}" '
                           f'stroke="{colour or C["hair"]}" stroke-width="1"/>')

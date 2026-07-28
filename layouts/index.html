@@ -265,9 +265,6 @@
   </div>
 
   <div class="prose">
-    <p class="note">{{ len $cat.controls }} controls across the six. By this test, none of
-    the three organizations that convened this document is a complete implementation.
-    Use it on us.</p>
   </div>
 
   <figure class="fig1">
@@ -299,7 +296,7 @@
 
   <aside class="inperson">
     <span class="when">In person · Black Hat, August</span>
-    <p>A panel on the Insecure Agents podcast — which is ours — on <strong>3 August</strong>,
+    <p>A panel on the Insecure Agents podcast on <strong>3 August</strong>,
     and a session at the Snyk booth on <strong>5 August</strong>. Both are for arguing with
     this rather than presenting it. Come and disagree with us.</p>
   </aside>
@@ -314,7 +311,7 @@
     {{- range $i, $c := where $people.contributors "confirmed" true }}
     {{- if $i }}{{ if eq (add $i 1) $n }} and {{ else }}, {{ end }}{{ end }}
     {{- .name }} <span class="aff">({{ .affiliation }})</span>
-    {{- end }}. Section-level attribution is in the paper.</p>
+    {{- end }}.</p>
 
     <p class="note">All three sell into the area this document describes. Which outcomes
     each sells into is set out once, plainly, in
