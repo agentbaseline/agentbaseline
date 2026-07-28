@@ -74,6 +74,9 @@
   a svg.ph { color:inherit; }
   a:visited { color:var(--visited); }
   a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* Text selection carries the accent — a translucent wash so the ink beneath
+     stays its own colour. */
+  ::selection { background:color-mix(in srgb, var(--accent) 30%, transparent); }
 
   .utility { font-family:var(--mono); font-size:12px;
     border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;

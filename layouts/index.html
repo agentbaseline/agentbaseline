@@ -99,6 +99,9 @@
   a svg.ph { color:inherit; }
   a:visited { color:var(--visited); }
   a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* Text selection carries the accent — a translucent wash so the ink beneath
+     stays its own colour. */
+  ::selection { background:color-mix(in srgb, var(--accent) 30%, transparent); }
 
   .utility { font-family:var(--mono); font-size:12px;
     border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;
@@ -204,8 +207,11 @@
      the one still being defined. Guarded so browsers without text-stroke keep
      solid ink rather than vanishing. */
   @supports (-webkit-text-stroke: 1px black) {
-    h1 { -webkit-text-stroke:1.5px var(--ink); color:transparent; }
+    h1 { -webkit-text-stroke:1px var(--ink); color:transparent; }
     h1 em { -webkit-text-stroke:0; color:var(--ink); }
+    /* Selected text repaints with the element's colour and loses the stroke,
+       which would erase the transparent word — selection fills the outline. */
+    h1::selection, h1 em::selection { color:var(--ink); }
   }
   /* The title rests on a baseline — the typographic sense of the word, drawn.
      The rule sits at the h1's baseline (0.79em: half the leading, plus
