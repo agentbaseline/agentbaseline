@@ -59,8 +59,8 @@ founding maintainers too.
 - Renumbering identifiers.
 - A requirement with no evidence line.
 
-Rejections are explained in the thread. If you think a rejection is self-serving, say so
-publicly — that is a legitimate use of this repository.
+If you think a rejection is self-serving, say so publicly — that is a legitimate use
+of this repository.
 
 ## Working-group membership
 

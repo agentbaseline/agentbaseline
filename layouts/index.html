@@ -115,8 +115,6 @@
   figure.fig1 svg { display:block; width:100%; max-width:100%; height:auto; }
   figure.fig1 svg a text { fill:var(--fig-accent); }
   figure.fig1 svg a:hover text { text-decoration:underline; }
-  figure.fig1 figcaption { font-size:14px; color:var(--soft); margin-top:14px;
-    line-height:1.6; max-width:592px; margin-inline:auto; }
 
   ol.factors + .prose { margin-top:28px; }
   ol.questions + .prose { margin-top:30px; }
@@ -168,9 +166,6 @@
   .prose .note { color:var(--soft); font-size:16px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
     border:1px solid var(--line); padding:12px 14px; overflow-x:auto; }
-  .close { margin:64px 0 0; padding-top:28px; border-top:1px solid var(--line);
-    font-size:17px; color:var(--soft); text-wrap:balance; }
-  .close + footer { margin-top:44px; border-top:none; padding-top:0; }
   footer { margin-top:72px; padding-top:20px; border-top:1px solid var(--line);
     font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9; }
 
@@ -257,10 +252,7 @@
   </ol>
 
   <div class="prose">
-    <p>No single enforcement point delivers all six. They are logically one system and
-    physically scattered across identity, runtime, tooling, data and evidence — which is what
-    makes the list useful. Take it into a vendor conversation and ask which of the six they
-    cover.</p>
+    <p>Take them into a vendor conversation and ask which they cover.</p>
 
   </div>
 
@@ -272,7 +264,6 @@
 
   <figure class="fig1">
     {{ partial "figure-1.svg" . }}
-    <figcaption><strong>Figure 1.</strong> The six operate as one control system. Discover sets the envelope before anything runs; Authorize, Constrain and Validate govern each material action; Observe and Respond hold the evidence and the stop.</figcaption>
   </figure>
 
   <h2>What this is</h2>
@@ -295,6 +286,11 @@
     works for a vendor in the space, so a mapping from outside is worth more than another
     control from inside. See
     <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+
+    <p>Or in person, if you are at Black Hat. There is a panel on the Insecure Agents
+    podcast on 3 August and a session at the Snyk booth on 5 August, both for arguing
+    with this rather than presenting it. The podcast is owned by Keycard and hosted by a
+    Keycard employee; the booth is Snyk's. Neither drives anywhere but here.</p>
   </div>
 
   <h2>Who wrote it, and what they sell</h2>
@@ -306,14 +302,11 @@
     {{- .name }} <span class="aff">({{ .affiliation }})</span>
     {{- end }}. Section-level attribution is in the paper.</p>
 
-    <p class="note">All three companies sell products in the area this document describes.
-    Which outcomes each sells into is set out once, plainly, in
+    <p class="note">All three sell into the area this document describes. Which outcomes
+    each sells into is set out once, plainly, in
     <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a> — read it before
     you weigh anything here.</p>
   </div>
-
-  <p class="close">Identify the agent. Bound its authority.
-  Control its actions. Prove its outcomes.</p>
 
   <footer>
     Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at

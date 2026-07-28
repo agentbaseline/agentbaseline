@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""
+Find repeated phrasing across everything a reader sees.
+
+Written because the same sentence shipped twice on one page, a caption described
+a rejected variant, and a citation quoted a title that no longer existed. All
+three were prose referring to prose, which nothing checked.
+
+Reports:
+  1. sentences that appear more than once across the corpus
+  2. long phrases repeated in different places
+  3. quoted titles that match no title in the corpus
+  4. the tic list — phrases this project overuses
+
+Advisory by default; --strict makes repeats an error.
+"""
+import re, sys, pathlib, collections, difflib, html
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+STRICT = "--strict" in sys.argv
+
+SOURCES = [
+    ROOT / "public" / "index.html",
+    ROOT / "public" / "controls" / "index.html",
+    ROOT / "README.md", ROOT / "VERSIONING.md", ROOT / "GOVERNANCE.md",
+    ROOT / "PROVENANCE.md", ROOT / "CONTRIBUTING.md",
+]
+
+def prose(path):
+    t = path.read_text(encoding="utf-8")
+    if path.suffix == ".html":
+        t = re.sub(r"<(script|style|svg)[^>]*>.*?</\1>", " ", t, flags=re.S)
+        t = re.sub(r"<[^>]+>", " ", t)
+        t = html.unescape(t)
+    else:
+        t = re.sub(r"```.*?```", " ", t, flags=re.S)
+        t = re.sub(r"^\s*[|#>\-*].*$", " ", t, flags=re.M)   # tables, headings, lists
+        t = re.sub(r"[*`_\[\]()]", " ", t)
+    return " ".join(t.split())
+
+def sentences(t):
+    """Sentences, plus short runs of them glued together.
+
+    A four-sentence refrain of three words each slipped through a five-word
+    minimum entirely — every part was too short to compare, and the whole was
+    never assembled. Short sentences are now also emitted in runs of three.
+    """
+    parts = [s.strip() for s in re.split(r"(?<=[.?!])\s+", t) if s.strip()]
+    for s in parts:
+        if 5 <= len(s.split()) and len(s) < 400:
+            yield s
+    short = [(i, s) for i, s in enumerate(parts) if len(s.split()) < 5]
+    for j in range(len(short) - 2):
+        (i0, a), (i1, b), (i2, cc) = short[j:j + 3]
+        if i1 == i0 + 1 and i2 == i1 + 1:
+            yield f"{a} {b} {cc}"
+
+corpus = {}
+for p in SOURCES:
+    if p.exists():
+        corpus[p.relative_to(ROOT).as_posix()] = prose(p)
+
+findings = []
+
+# ── 1 · the same sentence twice ───────────────────────────────────────────────
+seen = collections.defaultdict(list)
+for name, text in corpus.items():
+    for s in sentences(text):
+        seen[s.lower().rstrip(".")].append(name)
+for s, where in seen.items():
+    if len(where) > 1:
+        findings.append(("repeat", f"“{s[:78]}…” appears in {', '.join(sorted(set(where)))}"
+                                   if len(s) > 78 else
+                                   f"“{s}” appears in {', '.join(sorted(set(where)))}"))
+
+# ── 2 · near-duplicate sentences, which is how the split went wrong ───────────
+allsent = [(n, s) for n, t in corpus.items() for s in sentences(t)]
+for i, (n1, s1) in enumerate(allsent):
+    for n2, s2 in allsent[i + 1:]:
+        if s1.lower() == s2.lower():
+            continue
+        if abs(len(s1) - len(s2)) > max(len(s1), len(s2)) * 0.6:
+            continue
+        # the roster and /controls/ render the same outcome from one source —
+        # that is one fact shown twice, not prose written twice
+        if {n1, n2} == {"public/index.html", "public/controls/index.html"}:
+            continue
+        r = difflib.SequenceMatcher(None, s1.lower(), s2.lower()).ratio()
+        if r > 0.72:
+            findings.append(("near", f"{r:.0%} alike — {n1}: “{s1[:58]}…” / "
+                                     f"{n2}: “{s2[:58]}…”"))
+
+# ── 3 · a quoted title must be a title that exists ───────────────────────────
+titles = set()
+for p in [ROOT / "whitepaper" / "whitepaper.md", ROOT / "README.md"]:
+    if p.exists():
+        m = re.search(r"^#\s+(.+)$", p.read_text(encoding="utf-8"), re.M)
+        if m: titles.add(m.group(1).strip().lower())
+idx = ROOT / "public" / "index.html"
+if idx.exists():
+    h = re.sub(r"<style[^>]*>.*?</style>", " ", idx.read_text(encoding="utf-8"), flags=re.S)
+    m = re.search(r"<h1>(.*?)</h1>", h, re.S)
+    if m: titles.add(re.sub(r"<[^>]+>", "", m.group(1)).strip().lower())
+    for q in re.findall(r"[“\"]([^”\"]{12,90})[”\"]", html.unescape(re.sub(r"<[^>]+>", " ", h))):
+        if q.lower().strip() not in titles and q[0].isupper():
+            findings.append(("title", f"quoted “{q}” matches no title in the corpus"))
+
+# ── 4 · the tic list ─────────────────────────────────────────────────────────
+TICS = ["which is what makes", "it is worth noting", "in order to", "leverage",
+        "seamless", "robust", "cutting-edge", "at the end of the day",
+        "that being said", "delve"]
+for name, text in corpus.items():
+    low = text.lower()
+    for tic in TICS:
+        if tic in low:
+            findings.append(("tic", f"{name}: “{tic}”"))
+
+order = {"repeat": 0, "near": 1, "title": 2, "tic": 3}
+findings.sort(key=lambda f: order[f[0]])
+print(f"copy: {len(corpus)} sources · {len(allsent)} sentences")
+for kind, msg in findings:
+    print(f"  {kind.upper():<7}{msg}")
+print(f"\n{len(findings)} finding(s)")
+sys.exit(1 if findings and STRICT else 0)

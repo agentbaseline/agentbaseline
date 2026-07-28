@@ -39,7 +39,7 @@ GAP = 22
 Y1 = TOP
 Y2 = Y1 + B1_H + GAP
 Y3 = Y2 + ROW_H + GAP
-H = Y3 + B3_H + 12
+H = Y3 + B3_H - 8
 
 TERM = 168                  # intent / action columns
 GATE_L, GATE_R = 196, 656   # the enclosure
@@ -101,6 +101,5 @@ f.rule(Y3, 0, R, C["hair"])
 band_label(0, Y3 + 24, "Maintain evidence and containment", "l3")
 outcome(0, Y3 + 58, "OBS")
 outcome(GATE_L + 24, Y3 + 58, "RES")
-f.rule(Y3 + B3_H, 0, R, C["rule"])
 
 f.write("figure-1")
