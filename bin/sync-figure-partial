@@ -1,32 +1,35 @@
 #!/usr/bin/env python3
-"""Emit layouts/partials/figure-1.svg from the standalone figure.
+"""Emit the inlined partials from the standalone figures.
 
-The standalone file keeps fixed ink so the PDF, the social card and any slide
-export are byte-identical. The inlined partial swaps ink for CSS custom
-properties, so on the web the figure takes the page's colours instead of
-sitting on it as a bright plate. One source, two renderings, both generated.
+The standalone files keep fixed ink so the PDF, the social card and any slide
+export are byte-identical. The partials swap ink for CSS custom properties, so
+on the web the figures take the page's colours instead of sitting on it as
+plates. One source, two renderings, both generated.
+
+Two variants: the wide composition and a vertical one for narrow viewports.
+Scaling the wide drawing down makes every label microscopic, so the narrow
+version is a different composition of the same relationships, generated from the
+same names and roles.
 """
 import re, pathlib
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-s = (ROOT / "whitepaper/figures/figure-1.svg").read_text(encoding="utf-8")
-
-s = re.sub(r'\swidth="\d+"\s+height="\d+"', '', s, count=1)
-for fixed, token in [("#1A1C1A", "--fig-ink"), ("#5A5E5A", "--fig-soft"),
-                     ("#797D79", "--fig-faint"), ("#E4E5E1", "--fig-hair"),
-                     ("#CBCDC8", "--fig-rule"), ("#1A4D8F", "--fig-accent")]:
-    s = s.replace(f'"{fixed}"', f'"var({token})"')
-# the page supplies the ground; a painted background is what made it a slab
-s = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\n?\s*', "", s, count=1)
-
-# identifier ranges become links, so a reference in the figure resolves like any
-# other reference on the page
 NAMES = {"DIS": "discover", "AUT": "authorize", "CON": "constrain",
          "VAL": "validate", "OBS": "observe", "RES": "respond"}
-def linkify(m):
-    fam = m.group(1)
-    return (f'<a href="/controls/#{NAMES[fam]}" class="figref">{m.group(0)}</a>')
-s = re.sub(r'<text[^>]*>((?:DIS|AUT|CON|VAL|OBS|RES))-01…\d\d</text>',
-           lambda m: f'<a href="/controls/#{NAMES[m.group(1)]}">{m.group(0)}</a>', s)
+TOKENS = [("#1A1C1A", "--fig-ink"), ("#5A5E5A", "--fig-soft"),
+          ("#797D79", "--fig-faint"), ("#E4E5E1", "--fig-hair"),
+          ("#CBCDC8", "--fig-rule"), ("#1A4D8F", "--fig-accent")]
 
-(ROOT / "layouts/partials/figure-1.svg").write_text(s, encoding="utf-8")
-print("wrote layouts/partials/figure-1.svg (theme-aware)")
+for name in ("figure-1", "figure-1-narrow"):
+    src = ROOT / "whitepaper" / "figures" / f"{name}.svg"
+    if not src.exists():
+        continue
+    s = src.read_text(encoding="utf-8")
+    s = re.sub(r'\swidth="\d+"\s+height="\d+"', "", s, count=1)
+    for fixed, token in TOKENS:
+        s = s.replace(f'"{fixed}"', f'"var({token})"')
+    s = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\n?\s*', "", s, count=1)
+    s = re.sub(r'<text[^>]*>((?:DIS|AUT|CON|VAL|OBS|RES))-01…\d\d</text>',
+               lambda m: f'<a href="/controls/#{NAMES[m.group(1)]}">{m.group(0)}</a>', s)
+    (ROOT / "layouts" / "partials" / f"{name}.svg").write_text(s, encoding="utf-8")
+    print(f"wrote layouts/partials/{name}.svg")

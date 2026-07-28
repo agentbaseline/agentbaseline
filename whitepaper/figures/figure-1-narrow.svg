@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 364 618" width="360" height="618" role="img" aria-labelledby="ft fd">
+  <title id="ft">The six outcomes as one control system</title>
+  <desc id="fd">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate to become an enterprise action. Observe and Respond hold evidence and containment across every run.</desc>
+  <rect width="360" height="640" fill="#FFFFFF"/>
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#797D79"/></marker></defs>
+  <text x="0" y="26" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#5A5E5A" font-weight="400" letter-spacing="0.12em">ESTABLISH THE OPERATING ENVELOPE</text>
+  <rect x="0" y="212" width="360" height="214" rx="3" fill="none" stroke="#E4E5E1" stroke-width="1"/>
+  <text x="0" y="48" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="21" fill="#1A1C1A" font-weight="700">Discover</text>
+  <text x="0" y="72" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">find what exists</text>
+  <path d="M8 88 L8 114" stroke="#797D79" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="0" y="126" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="16" fill="#1A1C1A" font-weight="700">Business intent</text>
+  <text x="0" y="148" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">a person, service or business event</text>
+  <path d="M8 166 L8 194" stroke="#797D79" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="18" y="230" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#5A5E5A" font-weight="400" letter-spacing="0.12em">CONTROL EACH MATERIAL ACTION</text>
+  <text x="18" y="270" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Authorize</text>
+  <text x="18" y="292" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">bind authority</text>
+  <text x="18" y="324" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Constrain</text>
+  <text x="18" y="346" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">limit reach</text>
+  <text x="18" y="378" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Validate</text>
+  <text x="18" y="400" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">verify outcomes</text>
+  <path d="M8 428 L8 454" stroke="#797D79" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="0" y="486" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="16" fill="#1A1C1A" font-weight="700">Enterprise action</text>
+  <text x="0" y="508" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">a tool, API, record or message</text>
+  <text x="0" y="546" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#5A5E5A" font-weight="400" letter-spacing="0.12em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <text x="0" y="586" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Observe</text>
+  <text x="0" y="608" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">prove what happened</text>
+  <text x="180" y="586" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="19" fill="#1A1C1A" font-weight="700">Respond</text>
+  <text x="180" y="608" font-family="Charter,'Iowan Old Style',Georgia,serif" font-size="15" fill="#5A5E5A" font-weight="400">stop and contain</text>
+  </svg>

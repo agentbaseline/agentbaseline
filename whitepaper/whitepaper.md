@@ -49,7 +49,7 @@ The six outcomes are the minimum category test for an Agentic Control Plane. A p
 | 5. Observe | Observe every material decision, action and dependency. | Correlated telemetry that joins intent, actor, task, policy, action, target, outcome and cost. |
 | 6. Respond | Stop, revoke, quarantine and contain unsafe agent activity. | Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping. |
 
-**Category test.** The six outcomes are a category test, not a certification scheme. A product may cover one or more; an enterprise architecture must address all six. A control plane must do more than inventory or observe agents. It must preserve policy and evidence from approved purpose through execution and outcome, and it must be able to stop, contain and investigate unsafe activity.
+**Category test.** The six outcomes are a category test, not a certification scheme. A product may cover one or more; an enterprise architecture is complete only when all six are addressed. A control plane must do more than inventory or observe agents. It must preserve policy and evidence from approved purpose through execution and outcome, and it must be able to stop, contain and investigate unsafe activity.
 
 ## Six-outcome Agentic Control Plane
 

@@ -112,7 +112,16 @@
   figure.fig1 { min-width:0; }
   .prose + figure.fig1 { margin-block-start:40px; }
   figure.fig1 + h2 { margin-top:72px; }
+  /* Two compositions, not one scaled. At 342px the wide drawing's labels are
+     microscopic, so narrow viewports get a vertical arrangement of the same
+     relationships, generated from the same source. */
   figure.fig1 svg { display:block; width:100%; max-width:100%; height:auto; }
+  figure.fig1 .wide { display:none; }
+  figure.fig1 .narrow { display:block; max-width:380px; }
+  @media (min-width:720px) {
+    figure.fig1 .wide { display:block; }
+    figure.fig1 .narrow { display:none; }
+  }
   figure.fig1 svg a text { fill:var(--fig-accent); }
   figure.fig1 svg a:hover text { text-decoration:underline; }
 
@@ -267,7 +276,8 @@
 
   <div class="prose">
     <p><strong>The six outcomes are a category test, not a certification scheme.</strong>
-    A product may cover one or more; an enterprise architecture must address all six.
+    A product may cover one or more; an enterprise architecture is complete only when all
+    six are addressed.
     Take them into a vendor conversation and ask which they cover.</p>
     <p class="allcontrols"><a href="/controls/">Browse all {{ len $cat.controls }} controls</a></p>
 
@@ -278,6 +288,12 @@
 
   <h2>What this is</h2>
   <div class="prose">
+    <p>Written for the security, platform and architecture engineers who have to make
+    a decision about agents. <strong>It extends the identity providers, policy engines
+    and SIEM platforms you already run rather than replacing them</strong>, and it does
+    not prescribe how a model reasons — only the conditions under which an agent, and
+    each of its material actions, may proceed.</p>
+
     <p>A draft, open for comment until {{ .Site.Params.commentsUntil }}.
     <strong>It is not a standard, and no conformance programme exists.</strong> Nothing
     here certifies anyone, including the people who wrote it.</p>
@@ -286,6 +302,13 @@
     meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
     before you cite, and <a href="/controls/">the controls</a> for the reference form.</p>
   </div>
+
+  <h2>How the outcomes work together</h2>
+
+  <figure class="fig1">
+    <span class="wide">{{ partial "figure-1.svg" . }}</span>
+    <span class="narrow">{{ partial "figure-1-narrow.svg" . }}</span>
+  </figure>
 
   <h2>Contributing</h2>
   <div class="prose">
@@ -322,12 +345,6 @@
     <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a> sets out
     which outcomes each of them sells into.</p>
   </div>
-
-  <h2>How the outcomes work together</h2>
-
-  <figure class="fig1">
-    {{ partial "figure-1.svg" . }}
-  </figure>
 
   <footer>
     Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at

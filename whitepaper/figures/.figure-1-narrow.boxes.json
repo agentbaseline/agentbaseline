@@ -1,0 +1,154 @@
+[
+ {
+  "tag": "nlDIS",
+  "x": 0,
+  "y": 17.42,
+  "w": 253.79199999999997,
+  "h": 11.22,
+  "text": "ESTABLISH THE OPERATING ENVELOPE"
+ },
+ {
+  "tag": "nnDIS",
+  "x": 0,
+  "y": 31.62,
+  "w": 96.6,
+  "h": 21.42,
+  "text": "Discover"
+ },
+ {
+  "tag": "ngDIS",
+  "x": 0,
+  "y": 60.3,
+  "w": 131.52,
+  "h": 15.3,
+  "text": "find what exists"
+ },
+ {
+  "tag": "nbi",
+  "x": 0,
+  "y": 113.52,
+  "w": 138.0,
+  "h": 16.32,
+  "text": "Business intent"
+ },
+ {
+  "tag": "nbi2",
+  "x": 0,
+  "y": 136.3,
+  "w": 287.70000000000005,
+  "h": 15.3,
+  "text": "a person, service or business event"
+ },
+ {
+  "tag": "nl2",
+  "x": 18,
+  "y": 221.42,
+  "w": 222.068,
+  "h": 11.22,
+  "text": "CONTROL EACH MATERIAL ACTION"
+ },
+ {
+  "tag": "nnAUT",
+  "x": 18,
+  "y": 255.18,
+  "w": 98.32499999999999,
+  "h": 19.38,
+  "text": "Authorize"
+ },
+ {
+  "tag": "ngAUT",
+  "x": 18,
+  "y": 280.3,
+  "w": 115.08000000000001,
+  "h": 15.3,
+  "text": "bind authority"
+ },
+ {
+  "tag": "nnCON",
+  "x": 18,
+  "y": 309.18,
+  "w": 98.32499999999999,
+  "h": 19.38,
+  "text": "Constrain"
+ },
+ {
+  "tag": "ngCON",
+  "x": 18,
+  "y": 334.3,
+  "w": 90.42,
+  "h": 15.3,
+  "text": "limit reach"
+ },
+ {
+  "tag": "nnVAL",
+  "x": 18,
+  "y": 363.18,
+  "w": 87.39999999999999,
+  "h": 19.38,
+  "text": "Validate"
+ },
+ {
+  "tag": "ngVAL",
+  "x": 18,
+  "y": 388.3,
+  "w": 123.30000000000001,
+  "h": 15.3,
+  "text": "verify outcomes"
+ },
+ {
+  "tag": "nea",
+  "x": 0,
+  "y": 473.52,
+  "w": 156.39999999999998,
+  "h": 16.32,
+  "text": "Enterprise action"
+ },
+ {
+  "tag": "nea2",
+  "x": 0,
+  "y": 496.3,
+  "w": 246.60000000000002,
+  "h": 15.3,
+  "text": "a tool, API, record or message"
+ },
+ {
+  "tag": "nl3",
+  "x": 0,
+  "y": 537.42,
+  "w": 261.72299999999996,
+  "h": 11.22,
+  "text": "MAINTAIN EVIDENCE AND CONTAINMENT"
+ },
+ {
+  "tag": "nnOBS",
+  "x": 0,
+  "y": 571.18,
+  "w": 76.475,
+  "h": 19.38,
+  "text": "Observe"
+ },
+ {
+  "tag": "ngOBS",
+  "x": 0,
+  "y": 596.3,
+  "w": 156.18,
+  "h": 15.3,
+  "text": "prove what happened"
+ },
+ {
+  "tag": "nnRES",
+  "x": 180,
+  "y": 571.18,
+  "w": 76.475,
+  "h": 19.38,
+  "text": "Respond"
+ },
+ {
+  "tag": "ngRES",
+  "x": 180,
+  "y": 596.3,
+  "w": 131.52,
+  "h": 15.3,
+  "text": "stop and contain"
+ }
+]

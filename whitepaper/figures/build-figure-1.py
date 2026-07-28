@@ -109,3 +109,75 @@ outcome(0, Y3 + 62, "OBS")
 outcome(GATE_L + 24, Y3 + 62, "RES")
 
 f.write("figure-1")
+
+
+# ── narrow variant ────────────────────────────────────────────────────────────
+# Not the desktop drawing scaled down — at 342px wide every label in it is
+# microscopic. This is a vertical composition of the same relationships, built
+# from the same names and roles so the two cannot say different things.
+
+NW = 360
+STEP, GAP_A = 54, 26
+ny = 26
+n = Fig(NW, 640, "The six outcomes as one control system",
+        "Discover establishes the operating envelope. Business intent passes through "
+        "Authorize, Constrain and Validate to become an enterprise action. Observe and "
+        "Respond hold evidence and containment across every run.")
+
+n._def("ar", f'<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" '
+              f'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+              f'<path d="M0 0 L10 5 L0 10 z" fill="{C["faint"]}"/></marker>')
+
+
+def stack(y, label, pre, big=True):
+    if label:
+        n.text(0, y, label.upper(), 11, C["soft"], "400", True, 0.12, tag=f"nl{pre}")
+        y += 22
+    n.text(0, y, names[pre] if pre in names else pre, 21 if big else 16,
+           C["ink"], "700", tag=f"nn{pre}")
+    n.text(0, y + 24, ROLE.get(pre, ""), 15, C["soft"], tag=f"ng{pre}")
+    return y + 24
+
+def down(y):
+    n.arrow_v(14, y + 12, y + 34) if hasattr(n, "arrow_v") else None
+    return y + 40
+
+ny = stack(ny, "Establish the operating envelope", "DIS") + 40
+n.parts.append(f'<path d="M8 {ny-24} L8 {ny+2}" stroke="{C["faint"]}" stroke-width="1.1" '
+               f'marker-end="url(#ar)"/>')
+n.text(0, ny + 14, "Business intent", 16, C["ink"], "700", tag="nbi")
+n.text(0, ny + 36, "a person, service or business event", 15, C["soft"], tag="nbi2")
+ny += 60
+n.parts.append(f'<path d="M8 {ny-6} L8 {ny+22}" stroke="{C["faint"]}" stroke-width="1.1" '
+               f'marker-end="url(#ar)"/>')
+ny += 40
+
+gate_top = ny
+ny += 18
+n.text(18, ny, "CONTROL EACH MATERIAL ACTION", 11, C["soft"], "400", True, 0.12, tag="nl2")
+ny += 26
+for pre in ["AUT", "CON", "VAL"]:
+    n.text(18, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}")
+    n.text(18, ny + 36, ROLE[pre], 15, C["soft"], tag=f"ng{pre}")
+    ny += 54
+ny += 8
+n.parts.insert(5, f'<rect x="0" y="{gate_top}" width="{NW}" height="{ny-gate_top}" rx="3" '
+                  f'fill="none" stroke="{C["hair"]}" stroke-width="1"/>')
+n.parts.append(f'<path d="M8 {ny+2} L8 {ny+28}" stroke="{C["faint"]}" stroke-width="1.1" '
+               f'marker-end="url(#ar)"/>')
+ny += 46
+n.text(0, ny + 14, "Enterprise action", 16, C["ink"], "700", tag="nea")
+n.text(0, ny + 36, "a tool, API, record or message", 15, C["soft"], tag="nea2")
+ny += 74
+
+n.text(0, ny, "MAINTAIN EVIDENCE AND CONTAINMENT", 11, C["soft"], "400", True, 0.12, tag="nl3")
+ny += 26
+for i, pre in enumerate(["OBS", "RES"]):
+    n.text(i * 180, ny + 14, names[pre], 19, C["ink"], "700", tag=f"nn{pre}")
+    n.text(i * 180, ny + 36, ROLE[pre], 15, C["soft"], tag=f"ng{pre}")
+ny += 46
+
+n.H = ny
+n.parts[0] = n.parts[0].replace('viewBox="0 0 360 640"', f'viewBox="-2 0 {NW+4} {ny}"')
+n.parts[0] = n.parts[0].replace('height="640"', f'height="{ny}"')
+n.write("figure-1-narrow")
