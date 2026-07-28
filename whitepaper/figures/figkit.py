@@ -61,16 +61,16 @@ class Fig:
         return width
 
     def label(self, x, y, s, tag=""):
-        return self.text(x, y, s.upper(), 9.5, C["faint"], "600", True, 0.12, tag=tag)
+        return self.text(x, y, s.upper(), 11, C["soft"], "400", True, 0.12, tag=tag)
 
     def outcome(self, x, y, pre, gloss, names, hi, tag=None):
         """Name, identifier range, one-line gloss. No box."""
         tag = tag or pre
-        self.text(x, y, names[pre], 19, C["ink"], "700", tag=f"n{tag}")
-        self.text(x, y + 20, f"{pre}-01…{hi[pre]:02d}", 11, C["accent"], "700",
+        self.text(x, y, names[pre], 21, C["ink"], "700", tag=f"n{tag}")
+        self.text(x, y + 21, f"{pre}-01…{hi[pre]:02d}", 12, C["accent"], "700",
                   True, 0.03, tag=f"i{tag}")
         if gloss:
-            self.text(x, y + 45, gloss, 12.5, C["soft"], tag=f"g{tag}")
+            self.text(x, y + 46, gloss, 15, C["soft"], tag=f"g{tag}")
 
     def rule(self, y, x1, x2, colour=None):
         self.parts.append(f'<line x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" '

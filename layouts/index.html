@@ -5,19 +5,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent Baseline — security outcomes for enterprise AI agents</title>
+<title>Agent Baseline — six security outcomes for enterprise AI agents</title>
 <meta name="description" content="An open reference architecture and controls for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
 <link rel="canonical" href="{{ .Site.BaseURL }}">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Agent Baseline">
-<meta property="og:title" content="Security outcomes for enterprise AI agents">
+<meta property="og:title" content="Agent Baseline">
 <meta property="og:description" content="Six outcomes, because together they answer the three questions you are already being asked. A draft for public comment.">
 <meta property="og:url" content="{{ .Site.BaseURL }}">
 <meta property="og:image" content="{{ .Site.BaseURL }}social-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Security outcomes for enterprise AI agents">
+<meta name="twitter:title" content="Agent Baseline">
 <meta name="twitter:description" content="Six outcomes, because together they answer the three questions you are already being asked.">
 <meta name="twitter:image" content="{{ .Site.BaseURL }}social-card.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -60,15 +60,15 @@
     display:flex; gap:18px; flex-wrap:wrap; }
   .utility a { color:var(--soft); text-decoration:none; }
   .utility a:hover { color:var(--link); text-decoration:underline; }
-  .utility .mast { color:var(--ink); letter-spacing:.14em;
-    text-transform:uppercase; font-weight:600; }
   .utility .right { margin-left:auto; color:var(--faint); }
 
   .page { max-width:640px; margin:0 auto; padding:72px 24px 96px; }
   h1 { font-size:clamp(30px,5vw,40px); font-weight:700; line-height:1.18;
     margin:0 0 10px; letter-spacing:-0.008em; text-wrap:balance; }
+  .standfirst { font-size:21px; line-height:1.45; margin:14px 0 0;
+    max-width:34ch; text-wrap:balance; }
   .metaline { font-family:var(--mono); font-size:12.5px; color:var(--faint);
-    margin:0 0 44px; line-height:1.9; }
+    margin:20px 0 44px; line-height:1.9; }
   .metaline a { color:var(--soft); }
   .intro p { margin:0 0 22px; }
   .intro .status-line { color:var(--soft); font-size:16.5px; }
@@ -148,6 +148,9 @@
   .prose .note { color:var(--soft); font-size:16px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
     border:1px solid var(--line); padding:12px 14px; overflow-x:auto; }
+  .close { margin:64px 0 0; padding-top:28px; border-top:1px solid var(--line);
+    font-size:17px; color:var(--soft); text-wrap:balance; }
+  .close + footer { margin-top:44px; border-top:none; padding-top:0; }
   footer { margin-top:72px; padding-top:20px; border-top:1px solid var(--line);
     font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9; }
 
@@ -164,7 +167,6 @@
 
 <nav class="utility">
   <div class="in">
-    <span class="mast">Agent Baseline</span>
     <a href="{{ .Site.Params.repo }}">Source</a>
     <a href="{{ .Site.Params.repo }}/issues">Comment</a>
     <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>
@@ -175,7 +177,10 @@
 
 <main class="page">
 
-  <h1>Security outcomes for enterprise AI agents</h1>
+  <h1>Agent Baseline</h1>
+
+  <p class="standfirst">Identify the agent. Bound its authority.<br>
+  Control its actions. Prove its outcomes.</p>
 
   <p class="metaline">
     Draft for public comment · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
@@ -284,6 +289,9 @@
     <a href="{{ .Site.Params.repo }}/blob/main/PROVENANCE.md">PROVENANCE</a> — read it before
     you weigh anything here.</p>
   </div>
+
+  <p class="close">Identify the agent. Bound its authority.
+  Control its actions. Prove its outcomes.</p>
 
   <footer>
     Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
