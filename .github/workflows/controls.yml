@@ -9,12 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.164.0'
+          extended: true
       - name: Enforce the controls's own rules
         run: python3 bin/check-controls
       - name: Figure geometry — no overlaps, no escaping text, ranges match
         run: |
           (cd whitepaper/figures && python3 build-figure-1.py)
           python3 bin/check-figure
+      - name: Copy — repeated phrasing, dead titles, contradictions
+        run: |
+          hugo --gc --minify
+          python3 bin/check-copy --strict
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls
