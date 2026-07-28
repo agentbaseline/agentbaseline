@@ -49,7 +49,7 @@ The six outcomes are the minimum category test for an Agentic Control Plane. A p
 | 5. Observe | Observe every material decision, action and dependency. | Correlated telemetry that joins intent, actor, task, policy, action, target, outcome and cost. |
 | 6. Respond | Stop, revoke, quarantine and contain unsafe agent activity. | Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping. |
 
-**Category test.** A conforming control plane must do more than inventory or observe agents. It must preserve policy and evidence from approved purpose through execution and outcome, and it must be able to stop, contain and investigate unsafe activity.
+**Category test.** The six outcomes are a category test, not a certification scheme. A product may cover one or more; an enterprise architecture must address all six. A control plane must do more than inventory or observe agents. It must preserve policy and evidence from approved purpose through execution and outcome, and it must be able to stop, contain and investigate unsafe activity.
 
 ## Six-outcome Agentic Control Plane
 
@@ -151,7 +151,7 @@ Control requirements: RES-01 Immediate stop and authority revocation; RES-02 Ver
 
 Enterprise agents change the object of security from a model or software pipeline to a dynamic action system. The central risk is not only an incorrect response; it is the transformation of intent into consequential action through changing components, identities, tools, data and trust boundaries.
 
-The Agentic Control Plane governs that transformation. Its six outcomes establish the minimum standard: discover every agent, assign ownership, authorize purpose and delegated authority, constrain capability, validate the system and outcome, observe material activity, and respond through stop, revocation, quarantine and impact scoping. 
+The Agentic Control Plane governs that transformation. Its six outcomes are the minimum an enterprise architecture must address: discover every agent, assign ownership, authorize purpose and delegated authority, constrain capability, validate the system and outcome, observe material activity, and respond through stop, revocation, quarantine and impact scoping. 
 
 The control plane is not a new agent platform and is not a single mandatory proxy. It is the security and governance layer that allows enterprises to use many agent platforms safely. It remains modular by design, but common identity, policy, action and evidence contracts make the modules operate as one control system from business intent to business outcome.
 
