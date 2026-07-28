@@ -102,6 +102,8 @@
   .prose + figure.fig1 { margin-block-start:40px; }
   figure.fig1 + h2 { margin-top:72px; }
   figure.fig1 svg { display:block; width:100%; max-width:100%; height:auto; }
+  figure.fig1 svg a text { fill:var(--fig-accent); }
+  figure.fig1 svg a:hover text { text-decoration:underline; }
   figure.fig1 figcaption { font-size:14px; color:var(--soft); margin-top:14px;
     line-height:1.6; max-width:592px; margin-inline:auto; }
 
@@ -121,6 +123,11 @@
     display:flex; flex-direction:column; gap:2px; }
   ol.questions li { counter-increment:q; padding:18px 0 18px 22px;
     border-left:3px solid var(--accent); }
+  @media (min-width:900px) {
+    ol.questions li { display:grid; grid-template-columns:1fr auto;
+      align-items:baseline; gap:0 28px; }
+    ol.questions .a { margin-top:0; }
+  }
   ol.questions .q { display:block; font-size:21px; font-weight:700;
     line-height:1.35; text-wrap:balance; }
   ol.questions .q::before { content:counter(q); font-family:var(--mono);
@@ -157,9 +164,12 @@
   /* Break the prose measure for the figure only — centred on the viewport and
      never wider than it, so the body never scrolls sideways. Declared last:
      an earlier `margin` shorthand on .fig1 would otherwise reset margin-inline. */
-  @media (min-width:1000px) {
-    figure.fig1 { width:min(920px, calc(100vw - 48px));
-      margin-inline-start:calc(50% - min(460px, calc(50vw - 24px))); }
+  /* The figure shares the prose's left edge and runs into the right margin.
+     Centring it put its hairlines on a different vertical than the list above,
+     which is what made it read as an embedded object rather than part of the
+     document. */
+  @media (min-width:900px) {
+    figure.fig1 { width:min(900px, calc((100vw + 640px) / 2 - 48px)); }
   }
 </style>
 </head>
@@ -190,21 +200,17 @@
   </p>
 
   <div class="intro">
-    <p>Agents are arriving in your organization on someone else's timeline. Security is
-    often not in the room when that decision is made, and by the time it is, agents already
-    hold access to real data and real systems. You can allow adoption without controls you
-    trust, or you can block it and become the obstacle — while it continues in the shadows
-    anyway.</p>
+    <p>Agents arrive on someone else's timeline. Security is often not in the room when
+    that decision is made, and by the time it is, they already hold access to real data and
+    real systems. You can allow that without controls you trust, or block it and become the
+    obstacle while it continues in the shadows anyway.</p>
 
-    <p>Your existing controls still do their job. They were built for software whose
-    behaviour is settled before it ships. An agent's is not: an end user reprograms it at
+    <p>Your existing controls still do their job — they were built for software whose
+    behaviour is settled before it ships. An agent's is not. An end user reprograms it at
     runtime, in natural language, changing what it does and which approved tools and data it
-    reaches for. The enterprise is provisioning a programmable actor, and it can act at
-    machine speed before a person can intervene.</p>
-
-    <p>Buying the gap closed is its own problem. “Agent governance” can mean almost
-    anything. Every product solves some part of this; few will tell you which part, and no
-    datasheet explains how the parts fit together.</p>
+    reaches for, and it acts at machine speed. Buying the gap closed is its own problem:
+    “agent governance” can mean almost anything, and no datasheet explains how the parts fit
+    together.</p>
 
     <p>So judge by outcome rather than by product category. <strong>Six outcomes, because
     together they answer the three questions you are already being asked:</strong></p>
@@ -226,18 +232,6 @@
     cover.</p>
 
   </div>
-
-  <h2>The six outcomes</h2>
-  <ol class="factors">
-    {{- range $cat.outcomes }}
-    {{- $prefix := .prefix }}
-    {{- $ids := where $cat.controls "outcome" $prefix }}
-    {{- $last := index (last 1 (sort (apply $ids "index" "." "id") "value")) 0 }}
-    <li id="{{ $prefix }}">
-      <span class="name"><a href="/controls/#{{ lower .name }}">{{ .name }}</a><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
-      <span class="req">{{ .requirement }}</span>    </li>
-    {{- end }}
-  </ol>
 
   <div class="prose">
     <p class="note">{{ len $cat.controls }} controls across the six. By this test, none of
