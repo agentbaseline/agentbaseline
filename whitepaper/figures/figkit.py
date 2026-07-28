@@ -33,6 +33,7 @@ class Fig:
     def __init__(self, w, h, title, desc):
         self.W, self.H = w, h
         self.boxes, self.parts = [], []
+        self._defs = {}
         self.parts.append(
             f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
             f'width="{w}" height="{h}" role="img" aria-labelledby="ft fd">')
@@ -82,25 +83,42 @@ class Fig:
         if gloss:
             self.text(x, y + 46, gloss, 15, C["soft"], tag=f"g{tag}")
 
+    def _def(self, key, markup):
+        self._defs.setdefault(key, markup)
+
     def rule(self, y, x1, x2, colour=None):
+        """A horizontal rule that dissolves at both ends.
+
+        Solid across the content and fading toward the margins, matching the
+        hairline under the page's title. A rule that stops dead at the measure
+        is one of the things that made the figure read as a separate object.
+        """
+        c = colour or C["hair"]
+        key = "fade" + c.lstrip("#")
+        self._def(key, f'<linearGradient id="{key}" x1="0" x2="1">'
+                       f'<stop offset="0" stop-color="{c}" stop-opacity="0"/>'
+                       f'<stop offset="0.06" stop-color="{c}" stop-opacity="1"/>'
+                       f'<stop offset="0.82" stop-color="{c}" stop-opacity="1"/>'
+                       f'<stop offset="1" stop-color="{c}" stop-opacity="0"/>'
+                       f'</linearGradient>')
         self.parts.append(f'<line x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" '
-                          f'stroke="{colour or C["hair"]}" stroke-width="1"/>')
+                          f'stroke="url(#{key})" stroke-width="1"/>')
 
     def vrule(self, x, y1, y2, colour=None):
         self.parts.append(f'<line x1="{x}" y1="{y1}" x2="{x}" y2="{y2}" '
                           f'stroke="{colour or C["hair"]}" stroke-width="1"/>')
 
     def arrow(self, x1, y1, x2, y2):
-        if "marker" not in "".join(self.parts[:5]):
-            self.parts.insert(4,
-                f'<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" '
-                f'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
-                f'<path d="M0 0 L10 5 L0 10 z" fill="{C["faint"]}"/></marker></defs>')
+        self._def("ar", f'<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" '
+                        f'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+                        f'<path d="M0 0 L10 5 L0 10 z" fill="{C["faint"]}"/></marker>')
         self.parts.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
                           f'stroke="{C["faint"]}" stroke-width="1.1" '
                           f'marker-end="url(#ar)"/>')
 
     def write(self, name):
+        if self._defs:
+            self.parts.insert(4, "<defs>" + "".join(self._defs.values()) + "</defs>")
         self.parts.append("</svg>")
         out = pathlib.Path(__file__).parent / f"{name}.svg"
         out.write_text("\n  ".join(self.parts) + "\n", encoding="utf-8")
