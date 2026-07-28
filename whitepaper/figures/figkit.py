@@ -94,8 +94,12 @@ class Fig:
         is one of the things that made the figure read as a separate object.
         """
         c = colour or C["hair"]
-        key = "fade" + c.lstrip("#")
-        self._def(key, f'<linearGradient id="{key}" x1="0" x2="1">'
+        # userSpaceOnUse is required: a horizontal line has a zero-height bounding
+        # box, so an objectBoundingBox gradient is undefined and the stroke
+        # disappears entirely. Keyed by colour and span so each run gets its own.
+        key = f'fade{c.lstrip("#")}{int(x1)}x{int(x2)}'
+        self._def(key, f'<linearGradient id="{key}" gradientUnits="userSpaceOnUse" '
+                       f'x1="{x1}" y1="0" x2="{x2}" y2="0">'
                        f'<stop offset="0" stop-color="{c}" stop-opacity="0"/>'
                        f'<stop offset="0.06" stop-color="{c}" stop-opacity="1"/>'
                        f'<stop offset="0.82" stop-color="{c}" stop-opacity="1"/>'

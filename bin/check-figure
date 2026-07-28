@@ -65,6 +65,19 @@ for a in boxes:
             errors.append(f"a rule crosses text: y={ry:.0f} cuts {a['tag']!r} "
                           f"({a['y']:.0f}..{a['y']+a['h']:.0f})")
 
+# 3d. a gradient stroke on a <line> must use userSpaceOnUse. A horizontal line
+#     has a zero-height bounding box, so an objectBoundingBox gradient is
+#     undefined and the stroke silently renders as nothing — invisible to every
+#     other check here, because the geometry is still perfectly correct.
+for _m in re.finditer(r'<line[^>]*stroke="url\(#([^)]+)\)"', svg):
+    _gid = _m.group(1)
+    _g = re.search(r'<linearGradient id="%s"([^>]*)>' % re.escape(_gid), svg)
+    if not _g:
+        errors.append(f"stroke references a missing gradient: #{_gid}")
+    elif 'gradientUnits="userSpaceOnUse"' not in _g.group(1):
+        errors.append(f"gradient #{_gid} strokes a <line> without userSpaceOnUse — "
+                      f"a line's bounding box has zero height, so it will not render")
+
 # 4. identifier ranges agree with the source of truth
 cat = CAT.read_text(encoding="utf-8")
 hi = {}
