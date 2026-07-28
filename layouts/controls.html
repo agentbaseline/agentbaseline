@@ -40,7 +40,7 @@
     display:flex; gap:18px; flex-wrap:wrap; }
   .utility a { color:var(--soft); text-decoration:none; }
   .utility a:hover { color:var(--link); text-decoration:underline; }
-  .utility .mast { color:var(--ink); letter-spacing:.14em;
+  .utility a.mast { color:var(--ink); letter-spacing:.14em;
     text-transform:uppercase; font-weight:600; }
   .utility .right { margin-left:auto; color:var(--faint); }
 
@@ -127,6 +127,7 @@
     figure.fig1 { width:min(920px, calc(100vw - 48px));
       margin-inline-start:calc(50% - min(460px, calc(50vw - 24px))); }
   }
+  h2[id] { scroll-margin-top:2rem; }
   .outcome-req { color:var(--soft); font-size:16px; margin:-8px 0 4px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--wash);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px;
@@ -139,7 +140,7 @@
 
 <nav class="utility">
   <div class="in">
-    <span class="mast">Agent Baseline</span>
+    <a class="mast" href="/">Agent Baseline</a>
     <a href="{{ .Site.Params.repo }}">Source</a>
     <a href="{{ .Site.Params.repo }}/issues">Comment</a>
     <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>

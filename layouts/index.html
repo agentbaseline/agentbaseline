@@ -169,6 +169,12 @@
     margin-bottom:10px; }
   aside.inperson p { font-size:18px; line-height:1.6; margin:0; max-width:62ch; }
 
+  .allcontrols { font-family:var(--mono); font-size:13px; margin:2px 0 0; }
+  .allcontrols a { color:var(--accent); text-decoration:none;
+    border-bottom:1px solid var(--accent); padding-bottom:1px; }
+  .allcontrols a::after { content:" \2192"; }
+  .allcontrols a:hover { border-bottom-width:2px; }
+
   .prose p { margin:0 0 18px; }
   .prose .note { color:var(--soft); font-size:16px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
@@ -261,6 +267,7 @@
 
   <div class="prose">
     <p>Take them into a vendor conversation and ask which they cover.</p>
+    <p class="allcontrols"><a href="/controls/">Browse all {{ len $cat.controls }} controls</a></p>
 
   </div>
 
