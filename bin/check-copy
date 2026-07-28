@@ -105,6 +105,26 @@ if idx.exists():
         if q.lower().strip() not in titles and q[0].isupper():
             findings.append(("title", f"quoted “{q}” matches no title in the corpus"))
 
+# ── 3b · the page may not assert what the controls prohibit ──────────────────
+# The page said "it holds credentials" while AUT-04 requires that credentials
+# "shall not be stored in model context, memory or agent-accessible files".
+# Describing the prohibited state as though it were the design is the worst kind
+# of copy error here, because it reads as authoritative.
+CONTRADICTIONS = [
+    (r"\b(?:holds?|stores?|retains?|keeps?) (?:the )?credentials\b",
+     "AUT-04 requires credentials not be stored by the agent"),
+    # negated forms are the page denying these, which is the point — only an
+    # unnegated assertion is a contradiction
+    (r"(?<!no )(?<!not )\bconform(?:ing|ance) (?:control plane|programme)\b",
+     "the page states no conformance programme exists"),
+    (r"(?<!not a )\bminimum standard\b",
+     "the page states this is not a standard"),
+]
+for name, text in corpus.items():
+    for pat, why in CONTRADICTIONS:
+        for m in re.finditer(pat, text, re.I):
+            findings.append(("contra", f"{name}: “{m.group(0)}” — {why}"))
+
 # ── 4 · the tic list ─────────────────────────────────────────────────────────
 TICS = ["which is what makes", "it is worth noting", "in order to", "leverage",
         "seamless", "robust", "cutting-edge", "at the end of the day",
@@ -115,7 +135,7 @@ for name, text in corpus.items():
         if tic in low:
             findings.append(("tic", f"{name}: “{tic}”"))
 
-order = {"repeat": 0, "near": 1, "title": 2, "tic": 3}
+order = {"contra": 0, "repeat": 1, "near": 2, "title": 3, "dash": 4, "tic": 5}
 findings.sort(key=lambda f: order[f[0]])
 print(f"copy: {len(corpus)} sources · {len(allsent)} sentences")
 for kind, msg in findings:
