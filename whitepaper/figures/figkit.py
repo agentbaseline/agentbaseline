@@ -41,8 +41,18 @@ class Fig:
         self.parts.append(f'<rect width="{w}" height="{h}" fill="{C["plate"]}"/>')
 
     @staticmethod
-    def _adv(size, mono):
-        return size * (0.601 if mono else 0.503)
+    def _adv(size, mono, weight="400"):
+        """Mean advance per character.
+
+        Mono is near-exact. The serif figure is deliberately pessimistic: the
+        measured Charter mean is ~0.503, but bold runs are ~4% wider, caps and
+        em dashes are far wider, and on Linux the fallback resolves to DejaVu
+        Serif at ~0.55. Under-measuring makes a real collision read as
+        clearance, so the constant errs high.
+        """
+        if mono:
+            return size * 0.601
+        return size * (0.575 if weight == "700" else 0.548)
 
     @staticmethod
     def _esc(s):
@@ -50,7 +60,7 @@ class Fig:
 
     def text(self, x, y, s, size=13, fill=None, weight="400", mono=False,
              ls=0.0, tag=""):
-        width = len(s) * self._adv(size, mono) + len(s) * ls * size
+        width = len(s) * self._adv(size, mono, weight) + len(s) * ls * size
         self.boxes.append({"tag": tag or s[:20], "x": x, "y": y - size * 0.78,
                            "w": width, "h": size * 1.02, "text": s})
         sp = f' letter-spacing="{ls}em"' if ls else ""

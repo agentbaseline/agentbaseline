@@ -39,10 +39,13 @@ out.parent.mkdir(exist_ok=True)
 if not pathlib.Path(chrome).exists():
     tmp.unlink(missing_ok=True)
     sys.exit("chrome not found — social card not regenerated")
-subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
+before = out.stat().st_mtime if out.exists() else 0
+r = subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
                 f"--screenshot={out}", "--window-size=1200,630",
                 "--default-background-color=FFFFFFFF", tmp.as_uri()],
                capture_output=True)
+if r.returncode != 0:
+    sys.exit(f"chrome failed ({r.returncode}): {r.stderr.decode()[:400]}")
 tmp.unlink(missing_ok=True)
 print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)"
       if out.exists() else "social card FAILED")

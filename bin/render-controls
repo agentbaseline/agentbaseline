@@ -12,6 +12,10 @@ names = dict(re.findall(r"^  - prefix: (\w+)\n    name: (.+)$", src, re.M))
 reqs = dict(re.findall(r'^  - prefix: (\w+)\n    name: .+\n    requirement: "(.*)"$', src, re.M))
 version = (re.search(r'^version: "(.+)"$', src, re.M) or [None, "unversioned"])[1]
 
+if not names:
+    raise SystemExit("could not parse outcomes from controls.yaml — refusing to "
+                     "write an empty CONTROLS.md")
+
 controls = []
 for b in re.split(r"\n(?=  - id: )", src.split("controls:", 1)[1]):
     m = re.search(r"- id: (\S+)", b)
@@ -29,13 +33,16 @@ out = [f"# Controls\n",
        f"See [VERSIONING.md](../VERSIONING.md).\n",
        "## Contents\n"]
 for pre, name in names.items():
-    n = [c for c in controls if c[0].startswith(pre)]
-    out.append(f"- [{name}](#{name.lower()}) · `{n[0][0]}`–`{n[-1][0]}`")
+    fam = sorted(c[0] for c in controls if c[0].split("-")[0] == pre)
+    if not fam:
+        out.append(f"- [{name}](#{name.lower()}) · no controls yet"); continue
+    # lowest and highest in force, not first and last in file order
+    out.append(f"- [{name}](#{name.lower()}) · `{fam[0]}`–`{fam[-1]}`")
 out.append("")
 for pre, name in names.items():
     out.append(f"## {name}\n")
     if pre in reqs: out.append(f"*{reqs[pre]}*\n")
-    for cid, title, req in [c for c in controls if c[0].startswith(pre)]:
+    for cid, title, req in [c for c in controls if c[0].split("-")[0] == pre]:
         out.append(f"#### `{cid}` — {title}\n\n{req}\n")
 
 (ROOT / "whitepaper" / "CONTROLS.md").write_text("\n".join(out), encoding="utf-8")

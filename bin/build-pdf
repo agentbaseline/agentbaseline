@@ -43,7 +43,8 @@ subprocess.run(["pandoc", str(SRC), "-o", str(TMP), "--standalone",
 
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 OUT.parent.mkdir(exist_ok=True)
-subprocess.run([chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
+before = OUT.stat().st_mtime if OUT.exists() else 0
+r = subprocess.run([chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
                 f"--print-to-pdf={OUT}", TMP.as_uri()], capture_output=True)
 TMP.unlink(missing_ok=True); (ROOT / "whitepaper" / ".paper.css").unlink(missing_ok=True)
 print(f"wrote static/whitepaper.pdf  ({OUT.stat().st_size:,} bytes)" if OUT.exists()

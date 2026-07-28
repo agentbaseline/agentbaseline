@@ -7,8 +7,8 @@ passes = sorted([d for d in P.iterdir() if d.is_dir() and re.fullmatch(r"v\d+", 
                 key=lambda d: int(d.name[1:]), reverse=True)
 cards = []
 for d in passes:
-    label = (d / "LABEL").read_text().strip() if (d / "LABEL").exists() else ""
-    svg = (d / "figure-1.svg").read_text() if (d / "figure-1.svg").exists() else ""
+    label = (d / "LABEL").read_text(encoding="utf-8").strip() if (d / "LABEL").exists() else ""
+    svg = (d / "figure-1.svg").read_text(encoding="utf-8") if (d / "figure-1.svg").exists() else ""
     svg = re.sub(r'\swidth="\d+"\s+height="\d+"', ' width="100%"', svg, count=1)
     size = (d / "index.html").stat().st_size if (d / "index.html").exists() else 0
     ctl = re.search(r'(\d+) controls', svg)
@@ -51,8 +51,8 @@ out = f'''<meta charset="utf-8">
 <div class="wrap">
 <h1>Design passes</h1>
 <p class="sub">Every build kept, newest first — so a regression is visible rather than inferred.<br>
-Generated {datetime.date(2026,7,27)} · figures render from <code>whitepaper/controls.yaml</code></p>
+{len(passes)} passes · figures render from <code>whitepaper/controls.yaml</code></p>
 {''.join(cards)}
 </div>'''
-(P / "index.html").write_text(out)
+(P / "index.html").write_text(out, encoding="utf-8")
 print(f"wrote docs/passes/index.html — {len(passes)} pass(es)")

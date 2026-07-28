@@ -16,8 +16,7 @@ Run after every figure change. bin/snapshot does it automatically.
 import json, re, sys, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parents[1] / "whitepaper"
-import sys as _s
-NAME = _s.argv[1] if len(_s.argv) > 1 and not _s.argv[1].startswith("-") else "figure-1"
+NAME = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "figure-1"
 BOXES = HERE / "figures" / f".{NAME}.boxes.json"
 SVG = HERE / "figures" / f"{NAME}.svg"
 CAT = HERE / "controls.yaml"
@@ -52,50 +51,9 @@ for a in boxes:
         errors.append(f"text outside canvas: {a['tag']!r} at "
                       f"({a['x']:.0f},{a['y']:.0f}) {a['w']:.0f}×{a['h']:.0f}, canvas {W}×{H}")
 
-# 3. containment — a text run that visually sits in a box must be fully inside it.
-#    Earlier versions only caught text LEAVING a box horizontally, and missed both
-#    text entering from outside (the scope rail running into the band) and text
-#    falling out of the bottom (the Observe gloss).
-rects = [(float(a), float(b), float(w), float(h)) for a, b, w, h in
-         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
-                    r'[^>]*class="(?:band|cell)', svg)]
-
-def spans(a, lo, hi, key, size):
-    return a[key] < hi and a[key] + a[size] > lo
-
-for a in boxes:
-    cy = a["y"] + a["h"] / 2
-    for rx, ry, rw, rh in rects:
-        touches_v = ry < cy < ry + rh
-        touches_h = spans(a, rx, rx + rw, "x", "w")
-        if not (touches_v and touches_h):
-            continue
-        if a["x"] < rx - 0.5:
-            errors.append(f"text enters a box from outside: {a['tag']!r} starts "
-                          f"{rx - a['x']:.0f}px left of a box at x={rx:.0f}")
-        if a["x"] + a["w"] > rx + rw + 0.5:
-            errors.append(f"text leaves a box: {a['tag']!r} runs to {a['x']+a['w']:.0f}, "
-                          f"box ends {rx+rw:.0f}")
-        if a["y"] < ry - 0.5 or a["y"] + a["h"] > ry + rh + 0.5:
-            errors.append(f"text overflows a box vertically: {a['tag']!r} spans "
-                          f"{a['y']:.0f}..{a['y']+a['h']:.0f}, box {ry:.0f}..{ry+rh:.0f}")
-
-# 3b. cells must nest inside their band, with clearance
-bands = [(float(a),float(b),float(w),float(h)) for a,b,w,h in
-         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
-                    r'[^>]*class="band', svg)]
-cells = [(float(a),float(b),float(w),float(h)) for a,b,w,h in
-         re.findall(r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"'
-                    r'[^>]*class="cell', svg)]
-for cx, cy, cw, ch in cells:
-    parent = next((b for b in bands if b[1] <= cy and cy + ch <= b[1] + b[3]), None)
-    if parent is None:
-        errors.append(f"cell at ({cx:.0f},{cy:.0f}) sits in no band")
-        continue
-    bx, by, bw, bh = parent
-    if cx < bx + 8 or cx + cw > bx + bw - 8:
-        errors.append(f"cell at x={cx:.0f}..{cx+cw:.0f} has under 8px clearance "
-                      f"inside its band ({bx:.0f}..{bx+bw:.0f})")
+# NOTE: containment and cell-in-band checks lived here. They were removed with
+# the "no fills, no nested boxes" rewrite, which left them matching nothing while
+# still printing a reassuring pass. If boxed elements return, so must they.
 
 # 3c. no horizontal rule may cut through a text run — this is how the closing
 #     rule ended up drawn above the last row's glosses.
@@ -117,7 +75,7 @@ for fam, n in hi.items():
     if want not in svg:
         errors.append(f"identifier range missing or stale: expected {want}")
 
-print(f"{NAME}: {W}×{H} · {len(boxes)} text runs · {len(rects)} boxes")
+print(f"{NAME}: {W}×{H} · {len(boxes)} text runs")
 for e in errors:
     print(f"  ERROR  {e}")
 print(f"\n{len(errors)} error(s)")
