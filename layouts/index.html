@@ -235,8 +235,15 @@
   <p class="standfirst">Identify the agent. Bound its authority.<br>
   Control its actions. Prove its outcomes.</p>
 
+  {{/* Three facts, no framing. "Draft for public comment" used to lead this line,
+       which said draft twice in six words — once as a warning and once in the
+       version — and said "not ready" both times. The version already carries it.
+       The comment deadline moves up here because a named close date reads as a
+       schedule where "draft" reads as a caveat; the framing that belongs with it
+       ("not a standard, no conformance programme") is in What this is, below. */}}
   <p class="metaline">
-    Draft for public comment · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
+    v{{ .Site.Params.version }} · {{ .Site.Params.published }} ·
+    comment closes {{ .Site.Params.commentsUntil }}<br>
     {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">PDF</a> · {{ end }}
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
     <a href="{{ .Site.Params.repo }}">repository</a>
