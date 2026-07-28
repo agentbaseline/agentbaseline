@@ -34,7 +34,7 @@ names, _ = catalogue()
 W = 880
 R = W
 TOP = 30
-B1_H, ROW_H, B3_H = 82, 138, 84
+B1_H, ROW_H, B3_H = 100, 152, 102
 GAP = 22
 Y1 = TOP
 Y2 = Y1 + B1_H + GAP
@@ -53,9 +53,18 @@ f = Fig(W, H, "The six outcomes as one control system",
         "enterprise action. Observe and Respond hold evidence and containment beneath.")
 
 
+# Two or three words each: the role in the flow, not the requirement. The roster
+# above carries the requirement in full; these give each name weight and say what
+# the outcome does at this point in the path.
+ROLE = {"DIS": "find what exists",   "AUT": "bind authority",
+        "CON": "limit reach",        "VAL": "verify outcomes",
+        "OBS": "prove what happened", "RES": "stop and contain"}
+
+
 def outcome(x, y, pre):
-    """Just the name. The list above carries the requirement; this places it."""
+    """Name, then its role beneath — the shape the page uses for the six."""
     f.text(x, y, names[pre], NAME, C["ink"], "700", tag=f"n{pre}")
+    f.text(x, y + 26, ROLE[pre], DESC, C["soft"], tag=f"g{pre}")
 
 
 def band_label(x, y, s, tag):

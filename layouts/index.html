@@ -119,6 +119,8 @@
     line-height:1.6; max-width:592px; margin-inline:auto; }
 
   ol.factors + .prose { margin-top:28px; }
+  ol.questions + .prose { margin-top:30px; }
+  .prose + h2 { margin-top:52px; }
   nav.toc { display:flex; flex-wrap:wrap; gap:0 26px; margin:56px 0 -18px;
     padding-top:20px; border-top:1px solid var(--line);
     font-family:var(--mono); font-size:12.5px; }
@@ -236,6 +238,11 @@
       <span class="a"><a href="/controls/#observe">Observe</a><a href="/controls/#respond">Respond</a></span></li>
   </ol>
 
+  <div class="prose">
+    <p>No single enforcement point delivers all six. They are one system, scattered
+    across identity, runtime, tooling, data and evidence.</p>
+  </div>
+
   <h2>The six outcomes</h2>
   <ol class="factors">
     {{- range $cat.outcomes }}
@@ -276,11 +283,8 @@
     <p>Identifiers are not yet frozen. At v1.0 they freeze, and from then on a control is
     superseded rather than renumbered — so a citation you publish keeps meaning what it
     meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before you cite.</p>
+    before you cite, and <a href="/controls/">the controls</a> for the reference form.</p>
   </div>
-
-  <h2>How to cite</h2>
-  <div class="cite">Agent Baseline, “Security outcomes for enterprise AI agents”,<br>v{{ .Site.Params.version }}, DIS-01, agentbaseline.org, {{ .Site.Params.published }}</div>
 
   <h2>Contributing</h2>
   <div class="prose">
