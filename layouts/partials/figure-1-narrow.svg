@@ -1,28 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 364 618" role="img" aria-labelledby="ft fd">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 364 596" role="img" aria-labelledby="ft fd">
   <title id="ft">The six outcomes as one control system</title>
   <desc id="fd">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate to become an enterprise action. Observe and Respond hold evidence and containment across every run.</desc>
   <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--fig-faint)"/></marker></defs>
-  <text x="0" y="26" font-family="'Chakra Petch','Avenir Next',sans-serif" font-size="11" fill="var(--fig-soft)" font-weight="500" letter-spacing="0.1em">ESTABLISH THE OPERATING ENVELOPE</text>
-  <rect x="0" y="212" width="360" height="214" rx="4" fill="none" stroke="var(--fig-hair)" stroke-width="1"/>
-  <a href="/controls#discover"><text x="0" y="48" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="20" fill="var(--fig-ink)" font-weight="600">Discover</text></a>
-  <text x="0" y="72" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">find what exists</text>
-  <path d="M8 88 L8 114" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
-  <text x="0" y="126" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="16" fill="var(--fig-ink)" font-weight="600">Business intent</text>
-  <text x="0" y="148" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">a person, service or business event</text>
-  <path d="M8 166 L8 194" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
-  <text x="18" y="230" font-family="'Chakra Petch','Avenir Next',sans-serif" font-size="11" fill="var(--fig-soft)" font-weight="500" letter-spacing="0.1em">CONTROL EACH MATERIAL ACTION</text>
-  <a href="/controls#authorize"><text x="18" y="270" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Authorize</text></a>
-  <text x="18" y="292" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">bind authority</text>
-  <a href="/controls#constrain"><text x="18" y="324" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Constrain</text></a>
-  <text x="18" y="346" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">limit reach</text>
-  <a href="/controls#validate"><text x="18" y="378" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Validate</text></a>
-  <text x="18" y="400" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">verify outcomes</text>
-  <path d="M8 428 L8 454" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
-  <text x="0" y="486" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="16" fill="var(--fig-ink)" font-weight="600">Enterprise action</text>
-  <text x="0" y="508" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">a tool, API, record or message</text>
-  <text x="0" y="546" font-family="'Chakra Petch','Avenir Next',sans-serif" font-size="11" fill="var(--fig-soft)" font-weight="500" letter-spacing="0.1em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
-  <a href="/controls#observe"><text x="0" y="586" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Observe</text></a>
-  <text x="0" y="608" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">prove what happened</text>
-  <a href="/controls#respond"><text x="180" y="586" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Respond</text></a>
-  <text x="180" y="608" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">stop and contain</text>
+  <a href="/controls#discover"><text x="0" y="26" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="20" fill="var(--fig-ink)" font-weight="600">Discover</text></a>
+  <rect x="0" y="190" width="360" height="214" rx="4" fill="none" stroke="var(--fig-hair)" stroke-width="1"/>
+  <text x="0" y="50" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">find what exists</text>
+  <path d="M8 66 L8 92" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="0" y="104" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="16" fill="var(--fig-ink)" font-weight="600">Business intent</text>
+  <text x="0" y="126" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">a person, service or business event</text>
+  <path d="M8 144 L8 172" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="18" y="208" font-family="'Chakra Petch','Avenir Next',sans-serif" font-size="11" fill="var(--fig-soft)" font-weight="500" letter-spacing="0.1em">CONTROL EACH MATERIAL ACTION</text>
+  <a href="/controls#constrain"><text x="18" y="248" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Constrain</text></a>
+  <text x="18" y="270" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">limit reach</text>
+  <a href="/controls#authorize"><text x="18" y="302" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Authorize</text></a>
+  <text x="18" y="324" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">bind authority</text>
+  <a href="/controls#validate"><text x="18" y="356" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Validate</text></a>
+  <text x="18" y="378" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">verify outcomes</text>
+  <path d="M8 406 L8 432" stroke="var(--fig-faint)" stroke-width="1.1" marker-end="url(#ar)"/>
+  <text x="0" y="464" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="16" fill="var(--fig-ink)" font-weight="600">Enterprise action</text>
+  <text x="0" y="486" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">a tool, API, record or message</text>
+  <text x="0" y="524" font-family="'Chakra Petch','Avenir Next',sans-serif" font-size="11" fill="var(--fig-soft)" font-weight="500" letter-spacing="0.1em">MAINTAIN EVIDENCE AND CONTAINMENT</text>
+  <a href="/controls#observe"><text x="0" y="564" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Observe</text></a>
+  <text x="0" y="586" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">prove what happened</text>
+  <a href="/controls#respond"><text x="180" y="564" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="18" fill="var(--fig-ink)" font-weight="600">Respond</text></a>
+  <text x="180" y="586" font-family="'IBM Plex Serif',Charter,Georgia,serif" font-size="15" fill="var(--fig-soft)" font-weight="400">stop and contain</text>
   </svg>

@@ -23,18 +23,18 @@ outcomes:
     detail: >-
       Maintain an accurate view of the agents in use, their components, owners, operating status and effective access.
     evidence: "Authoritative inventory reconciled with observed code, cloud, endpoint, identity, SaaS and runtime evidence."
-  - prefix: AUT
-    name: Authorize
-    requirement: "Bind identity, task, target and authority."
-    detail: >-
-      Attribute consequential actions, and limit authority by purpose, task, resource, action and time.
-    evidence: "Every consequential action attributable to an agent, a principal and an approved purpose, under attenuated delegation."
   - prefix: CON
     name: Constrain
     requirement: "Limit components, runtime, data and reach."
     detail: >-
       Limit each agent and component to the environments, capabilities, data and actions its approved purpose requires.
     evidence: "Versioned system manifest, broken toxic flows, isolated execution and confined resources."
+  - prefix: AUT
+    name: Authorize
+    requirement: "Bind identity, task, target and authority."
+    detail: >-
+      Attribute consequential actions, and limit authority by purpose, task, resource, action and time.
+    evidence: "Every consequential action attributable to an agent, a principal and an approved purpose, under attenuated delegation."
   - prefix: VAL
     name: Validate
     requirement: "Admit the system and verify outcomes."

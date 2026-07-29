@@ -9,8 +9,8 @@ See [VERSIONING.md](../VERSIONING.md).
 ## Contents
 
 - [Discover](#discover) · `DIS-01`–`DIS-07`
-- [Authorize](#authorize) · `AUT-01`–`AUT-06`
 - [Constrain](#constrain) · `CON-01`–`CON-07`
+- [Authorize](#authorize) · `AUT-01`–`AUT-06`
 - [Validate](#validate) · `VAL-01`–`VAL-05`
 - [Observe](#observe) · `OBS-01`–`OBS-04`
 - [Respond](#respond) · `RES-01`–`RES-04`
@@ -47,34 +47,6 @@ Every registered agent shall be linked to the components and other agents it use
 
 Every registered agent shall be mapped to the identities and credentials it uses and the data, systems and actions those identities permit, including access obtained through its components.
 
-## Authorize
-
-*Bind identity, task, target and authority.*
-
-#### `AUT-01` — Distinct identity and action attribution
-
-Every consequential action shall be attributable to a distinct agent and deployment identity, the initiating principal or approved autonomous purpose, the run, task, target and time.
-
-#### `AUT-02` — Purpose- and task-bound authority
-
-Authority shall be limited by purpose, task, target resource, action, data scope, limits, jurisdiction, approval conditions and validity period.
-
-#### `AUT-03` — Delegation attenuation
-
-A downstream agent shall receive no more authority than its caller holds, and every delegation hop shall preserve the origin context and be recorded.
-
-#### `AUT-04` — Just-in-time credentialing
-
-Short-lived, resource-scoped credentials or action permits shall be issued only after authorization and shall not be stored in model context, memory or agent-accessible files.
-
-#### `AUT-05` — Independent approval
-
-Actions outside the approved autonomy or impact boundary shall require approval by a person or deterministic control independent of the requesting agent.
-
-#### `AUT-06` — Fail-closed authorization and circuit breaking
-
-Material actions shall be denied or halted when identity, policy, context, evidence, approval or target-state requirements cannot be verified. Constrain
-
 ## Constrain
 
 *Limit components, runtime, data and reach.*
@@ -106,6 +78,34 @@ Agents shall use only registered and policy-approved models, packages, tools, AP
 #### `CON-07` — Runtime component and generated-artifact policy
 
 Runtime enforcement shall prevent component substitution or drift and shall test and scan material generated artifacts before release.
+
+## Authorize
+
+*Bind identity, task, target and authority.*
+
+#### `AUT-01` — Distinct identity and action attribution
+
+Every consequential action shall be attributable to a distinct agent and deployment identity, the initiating principal or approved autonomous purpose, the run, task, target and time.
+
+#### `AUT-02` — Purpose- and task-bound authority
+
+Authority shall be limited by purpose, task, target resource, action, data scope, limits, jurisdiction, approval conditions and validity period.
+
+#### `AUT-03` — Delegation attenuation
+
+A downstream agent shall receive no more authority than its caller holds, and every delegation hop shall preserve the origin context and be recorded.
+
+#### `AUT-04` — Just-in-time credentialing
+
+Short-lived, resource-scoped credentials or action permits shall be issued only after authorization and shall not be stored in model context, memory or agent-accessible files.
+
+#### `AUT-05` — Independent approval
+
+Actions outside the approved autonomy or impact boundary shall require approval by a person or deterministic control independent of the requesting agent.
+
+#### `AUT-06` — Fail-closed authorization and circuit breaking
+
+Material actions shall be denied or halted when identity, policy, context, evidence, approval or target-state requirements cannot be verified. Constrain
 
 ## Validate
 

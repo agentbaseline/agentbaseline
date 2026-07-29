@@ -1,16 +1,8 @@
 [
  {
-  "tag": "nlDIS",
-  "x": 0,
-  "y": 17.42,
-  "w": 267.52000000000004,
-  "h": 11.22,
-  "text": "ESTABLISH THE OPERATING ENVELOPE"
- },
- {
   "tag": "nnDIS",
   "x": 0,
-  "y": 32.4,
+  "y": 10.399999999999999,
   "w": 93.6,
   "h": 20.4,
   "text": "Discover"
@@ -18,7 +10,7 @@
  {
   "tag": "ngDIS",
   "x": 0,
-  "y": 60.3,
+  "y": 38.3,
   "w": 138.0,
   "h": 15.3,
   "text": "find what exists"
@@ -26,7 +18,7 @@
  {
   "tag": "nbi",
   "x": 0,
-  "y": 113.52,
+  "y": 91.52,
   "w": 140.39999999999998,
   "h": 16.32,
   "text": "Business intent"
@@ -34,7 +26,7 @@
  {
   "tag": "nbi2",
   "x": 0,
-  "y": 136.3,
+  "y": 114.3,
   "w": 301.875,
   "h": 15.3,
   "text": "a person, service or business event"
@@ -42,31 +34,15 @@
  {
   "tag": "nl2",
   "x": 18,
-  "y": 221.42,
+  "y": 199.42,
   "w": 234.08000000000004,
   "h": 11.22,
   "text": "CONTROL EACH MATERIAL ACTION"
  },
  {
-  "tag": "nnAUT",
-  "x": 18,
-  "y": 255.96,
-  "w": 94.77,
-  "h": 18.36,
-  "text": "Authorize"
- },
- {
-  "tag": "ngAUT",
-  "x": 18,
-  "y": 280.3,
-  "w": 120.75,
-  "h": 15.3,
-  "text": "bind authority"
- },
- {
   "tag": "nnCON",
   "x": 18,
-  "y": 309.96,
+  "y": 233.96,
   "w": 94.77,
   "h": 18.36,
   "text": "Constrain"
@@ -74,15 +50,31 @@
  {
   "tag": "ngCON",
   "x": 18,
-  "y": 334.3,
+  "y": 258.3,
   "w": 94.875,
   "h": 15.3,
   "text": "limit reach"
  },
  {
+  "tag": "nnAUT",
+  "x": 18,
+  "y": 287.96,
+  "w": 94.77,
+  "h": 18.36,
+  "text": "Authorize"
+ },
+ {
+  "tag": "ngAUT",
+  "x": 18,
+  "y": 312.3,
+  "w": 120.75,
+  "h": 15.3,
+  "text": "bind authority"
+ },
+ {
   "tag": "nnVAL",
   "x": 18,
-  "y": 363.96,
+  "y": 341.96,
   "w": 84.24,
   "h": 18.36,
   "text": "Validate"
@@ -90,7 +82,7 @@
  {
   "tag": "ngVAL",
   "x": 18,
-  "y": 388.3,
+  "y": 366.3,
   "w": 129.375,
   "h": 15.3,
   "text": "verify outcomes"
@@ -98,7 +90,7 @@
  {
   "tag": "nea",
   "x": 0,
-  "y": 473.52,
+  "y": 451.52,
   "w": 159.12,
   "h": 16.32,
   "text": "Enterprise action"
@@ -106,7 +98,7 @@
  {
   "tag": "nea2",
   "x": 0,
-  "y": 496.3,
+  "y": 474.3,
   "w": 258.75,
   "h": 15.3,
   "text": "a tool, API, record or message"
@@ -114,7 +106,7 @@
  {
   "tag": "nl3",
   "x": 0,
-  "y": 537.42,
+  "y": 515.42,
   "w": 275.88,
   "h": 11.22,
   "text": "MAINTAIN EVIDENCE AND CONTAINMENT"
@@ -122,7 +114,7 @@
  {
   "tag": "nnOBS",
   "x": 0,
-  "y": 571.96,
+  "y": 549.96,
   "w": 73.71,
   "h": 18.36,
   "text": "Observe"
@@ -130,7 +122,7 @@
  {
   "tag": "ngOBS",
   "x": 0,
-  "y": 596.3,
+  "y": 574.3,
   "w": 163.875,
   "h": 15.3,
   "text": "prove what happened"
@@ -138,7 +130,7 @@
  {
   "tag": "nnRES",
   "x": 180,
-  "y": 571.96,
+  "y": 549.96,
   "w": 73.71,
   "h": 18.36,
   "text": "Respond"
@@ -146,7 +138,7 @@
  {
   "tag": "ngRES",
   "x": 180,
-  "y": 596.3,
+  "y": 574.3,
   "w": 138.0,
   "h": 15.3,
   "text": "stop and contain"

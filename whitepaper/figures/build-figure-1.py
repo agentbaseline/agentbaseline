@@ -86,7 +86,6 @@ def band_label(x, y, s, tag):
 
 
 # ── envelope · open ───────────────────────────────────────────────────────────
-band_label(0, Y1 + 24, "Establish the operating envelope", "l1")
 card(0, Y1 + 36, 176, "DIS")
 
 # ── the action path · the gate group ─────────────────────────────────────────
@@ -98,7 +97,7 @@ f.text(0, SY + 37, "or business event", ROLE_S, C["soft"], tag="bi3")
 f.arrow(150, SY, GATE_L - 12, SY)
 
 band_label(GATE_L, Y2 + 18, "Control each material action", "l2")
-for i, pre in enumerate(["AUT", "CON", "VAL"]):
+for i, pre in enumerate(["CON", "AUT", "VAL"]):
     card(GATE_L + i * (GW + GGAP), Y2 + 32, GW, pre)
 
 f.arrow(GATE_R + 12, SY, R - TERM - 12, SY)
@@ -143,7 +142,7 @@ def stack(y, label, pre, big=True):
     n.text(0, y + 24, ROLE.get(pre, ""), 15, C["soft"], tag=f"ng{pre}")
     return y + 24
 
-ny = stack(ny, "Establish the operating envelope", "DIS") + 40
+ny = stack(ny, "", "DIS") + 40
 n.parts.append(f'<path d="M8 {ny-24} L8 {ny+2}" stroke="{C["faint"]}" stroke-width="1.1" '
                f'marker-end="url(#ar)"/>')
 n.text(0, ny + 14, "Business intent", 16, C["ink"], "600", tag="nbi", face="head")
@@ -158,7 +157,7 @@ ny += 18
 n.text(18, ny, "CONTROL EACH MATERIAL ACTION", 11, C["soft"], "500", False, 0.1,
        tag="nl2", face="label")
 ny += 26
-for pre in ["AUT", "CON", "VAL"]:
+for pre in ["CON", "AUT", "VAL"]:
     n.text(18, ny + 14, names[pre], 18, C["ink"], "600", tag=f"nn{pre}",
            href=anchor(pre), face="head")
     n.text(18, ny + 36, ROLE[pre], 15, C["soft"], tag=f"ng{pre}")

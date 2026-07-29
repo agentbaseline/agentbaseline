@@ -463,10 +463,10 @@
   </div>
 
   <ol class="questions">
-    <li><span class="q">What is operating, and under whose authority?</span>
-      <span class="a"><a href="/controls#discover">Discover</a><a href="/controls#authorize">Authorize</a></span></li>
+    <li><span class="q">What is operating, with what capabilities?</span>
+      <span class="a"><a href="/controls#discover">Discover</a><a href="/controls#constrain">Constrain</a></span></li>
     <li><span class="q">Is it staying inside approved boundaries?</span>
-      <span class="a"><a href="/controls#constrain">Constrain</a><a href="/controls#validate">Validate</a></span></li>
+      <span class="a"><a href="/controls#authorize">Authorize</a><a href="/controls#validate">Validate</a></span></li>
     <li><span class="q">Can you prove what happened — and stop it?</span>
       <span class="a"><a href="/controls#observe">Observe</a><a href="/controls#respond">Respond</a></span></li>
   </ol>
@@ -504,37 +504,32 @@
   <h2>Read the white paper</h2>
 
   <div class="prose">
-    <p>Six security outcomes for safely building, deploying and operating AI agents. The
-    white paper explains the risks behind the baseline and defines the capabilities,
+    <p>It explains the risks behind the baseline and defines the capabilities,
     implementation requirements and evidence associated with each outcome.</p>
+    {{/* The heading already says "read the white paper"; the link says what you
+         actually get. */}}
     <p class="ctas">
-      {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">Read the white paper</a> · {{ end }}
+      {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">Download the PDF</a> · {{ end }}
       <a href="{{ .Site.Params.repo }}">View the source</a> ·
       <a href="{{ .Site.Params.repo }}/issues">Share feedback</a>
     </p>
   </div>
 
-  {{/* The drawing closes the section rather than opening it: the paper is the
-       ask, and the figure is what you are being asked to read about. */}}
   <figure class="fig1">
     <span class="wide-fig">{{ partial "figure-1.svg" . }}</span>
     <span class="narrow-fig">{{ partial "figure-1-narrow.svg" . }}</span>
   </figure>
 
   <h2>Working draft for community review</h2>
-  <div class="prose">
-    <p>The current six-outcome structure reflects our experience so far. We welcome
-    implementation feedback, uncovered control gaps, and evidence that a control is
-    ineffective or creates disproportionate maintainer burden.
-    See <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
-  </div>
 
-  <aside class="inperson">
-    <span class="when">{{ partial "icons/map-pin.svg" . }}In person · Black Hat, August</span>
-    <p>A panel on the Insecure Agents podcast on <strong>3 August</strong>,
-    and a session at the Snyk booth on <strong>5 August</strong>. Both are for arguing with
-    this rather than presenting it. Come and disagree with us.</p>
-  </aside>
+  <div class="prose">
+    {{/* The heading carries "working draft", so the paragraph does not repeat it. */}}
+    <p>Open for comment until {{ .Site.Params.commentsUntil }}. The current structure
+    reflects our experience so far. We welcome implementation feedback, uncovered control
+    gaps, and evidence that a control is ineffective or creates disproportionate
+    maintainer burden. See
+    <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+  </div>
 
   <h2>Who wrote it, and what they sell</h2>
   <div class="prose">

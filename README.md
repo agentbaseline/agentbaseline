@@ -25,8 +25,8 @@ rather than by product category.
 | | Outcome | Requirement | Controls |
 |---|---|---|---|
 | **DIS** | Discover | Discover every agent and its dependencies | `DIS-01`–`DIS-07` |
-| **AUT** | Authorize | Bind identity, task, target and authority | `AUT-01`–`AUT-06` |
 | **CON** | Constrain | Limit components, runtime, data and reach | `CON-01`–`CON-07` |
+| **AUT** | Authorize | Bind identity, task, target and authority | `AUT-01`–`AUT-06` |
 | **VAL** | Validate | Admit the system and verify outcomes | `VAL-01`–`VAL-05` |
 | **OBS** | Observe | Correlate activity and prove what happened | `OBS-01`–`OBS-04` |
 | **RES** | Respond | Stop, revoke, quarantine, scope impact | `RES-01`–`RES-04` |
