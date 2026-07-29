@@ -372,7 +372,11 @@
   ol.factors > li > .det { grid-column:2; color:var(--faint); font-size:15px;
     margin-top:5px; max-width:62ch; }
 
-  .aff { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
+  /* Affiliations ride each name as a superscript tag — the label layer's
+     voice, quiet as a footnote mark. */
+  sup.aff { font-family:var(--labelfont); font-weight:500; font-size:10px;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--faint);
+    line-height:0; margin-left:3px; }
 
   ol.factors + .prose { margin-top:28px; }
   /* The three ways out of the page, on one line, in the label voice. */
@@ -588,7 +592,7 @@
     {{- $n := len $authors }}
     {{- range $i, $c := $authors }}
     {{- if $i }}{{ if eq (add $i 1) $n }} and {{ else }}, {{ end }}{{ end }}
-    {{- .name }} <span class="aff">({{ .affiliation }})</span>
+    {{- .name }}<sup class="aff">{{ .affiliation }}</sup>
     {{- end }}.</p>
 
   </div>
