@@ -5,3 +5,4 @@ public/
 resources/
 .hugo_build.lock
 whitepaper/figures/.figure-1.boxes.json
+.env*
