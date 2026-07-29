@@ -280,6 +280,10 @@
   ol.factors > li > .name .ids { font-family:var(--mono); font-size:12px; font-weight:400;
     color:var(--faint); white-space:nowrap; font-variant-numeric:tabular-nums; }
   ol.factors > li > .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
+  /* The requirement is the imperative; the detail says what it covers. Second
+     voice, one step quieter, so the roster still scans as six lines. */
+  ol.factors > li > .det { grid-column:2; color:var(--faint); font-size:15px;
+    margin-top:5px; max-width:62ch; }
 
   .aff { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
 
@@ -445,7 +449,9 @@
     runtime, in natural language, changing what it does and which approved tools and data it
     reaches for. You are provisioning a programmable actor. It reaches sensitive data, calls tools
     and acts at machine speed, so a mistake or a malicious instruction becomes a
-    harmful action before a person can intervene. Buying the gap closed is its own problem:
+    harmful action before a person can intervene. Existing practices remain necessary, but
+    they were not designed for this combination of runtime programmability, access and
+    autonomy. Buying the gap closed is its own problem:
     “agent governance” can mean almost anything, and no datasheet explains how the parts fit
     together.</p>
 
@@ -482,6 +488,7 @@
     <li id="{{ $prefix }}">
       <span class="name"><span class="oc-ic">{{ partial (printf "icons/%s.svg" (index $oicons $prefix)) . }}</span><a href="/controls#{{ lower .name }}">{{ .name }}</a><span class="lead"></span><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
       <span class="req">{{ .requirement }}</span>
+      {{- with .detail }}<span class="det">{{ . }}</span>{{ end }}
     </li>
     {{- end }}
   </ol>
@@ -505,6 +512,10 @@
     not prescribe how a model reasons — only the conditions under which an agent, and
     each of its material actions, may proceed.</p>
 
+    <p>It distils the experience of teams building, deploying and operating agents into
+    six outcomes and the controls that evidence them. Each control states what an
+    organization must do, not what it might consider doing.</p>
+
     <p>A draft, open for comment until {{ .Site.Params.commentsUntil }}.
     <strong>It is not a standard, and no conformance programme exists.</strong> Nothing
     here certifies anyone, including the people who wrote it.</p>
@@ -525,6 +536,11 @@
   <div class="prose">
     <p>Tell us where a control is wrong, unimplementable, or missing. File it against a specific
     identifier, so the argument has somewhere to land.</p>
+    <p>The six-outcome structure reflects our experience so far, and it is the part most
+    likely to move. Three kinds of comment are worth more than the rest:
+    <strong>implementation feedback</strong> from running a control for real, a
+    <strong>gap</strong> the six do not cover, and evidence that a control is ineffective
+    or costs more to operate than the risk it addresses.</p>
     <p>The contribution we need most is the one we cannot write ourselves: a crosswalk to a
     framework you already run: NIST AI RMF, ISO 42001, OWASP, CIS. Everyone who drafted this
     works for a vendor in the space, so a mapping from outside is worth more than another
