@@ -25,3 +25,13 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
   published     = "30 July 2026"
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"
+
+# The event strip renders only while `until` is in the future, so it removes
+# itself the day after rather than relying on anyone noticing.
+[params.event]
+  id    = "blackhat-2026"
+  label = "Live · Black Hat"
+  say   = "Docker, Keycard and Snyk are there 3–7 August. Bring the baseline a hard question."
+  cta   = "RSVP"
+  url   = "https://luma.com/insecure-wbn3"
+  until = "2026-08-08"

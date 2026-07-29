@@ -16,8 +16,24 @@
 
   /* Delegated, so the listener can bind before the body exists. Keyboard
      activation of the button arrives here as a click event. */
+  /* Event strip: dismissed per event id, so a new event shows again to someone
+     who dismissed the last one. Hidden before paint when already dismissed. */
+  function bar() { return document.getElementById('eventbar'); }
+  try {
+    var b = bar();
+    if (b && localStorage.getItem('ab-eventbar-' + b.dataset.event) === 'off') b.hidden = true;
+  } catch (e) {}
+
   document.addEventListener('click', function (e) {
     if (e.target.closest && e.target.closest('.themebtn')) toggle();
+    var x = e.target.closest && e.target.closest('[data-eventbar-close]');
+    if (x) {
+      var b = bar();
+      if (b) {
+        b.hidden = true;
+        try { localStorage.setItem('ab-eventbar-' + b.dataset.event, 'off'); } catch (e2) {}
+      }
+    }
     document.querySelectorAll('details.menu[open]').forEach(function (d) {
       if (!d.contains(e.target)) d.removeAttribute('open');
     });

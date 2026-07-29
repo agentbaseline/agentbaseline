@@ -1,0 +1,38 @@
+{{/* A time-bound strip above the masthead, for the week the framework gets
+     argued with in person.
+
+     It expires by itself: `until` is compared against build time, so the bar
+     stops rendering the day after the event rather than waiting for someone to
+     remember. A stale "live at" banner is worse than never having had one, and
+     nobody ever remembers.
+
+     Deliberately not accent-filled. The utility bar already carries one tinted
+     chip (comment closes), and two tinted blocks in the same viewport fight.
+     Here the accent is spent on the registration mark and the link only; the
+     strip itself is the page's wash with a hairline under it — the same
+     treatment the questions band and the figure plate use. */}}
+{{- $e := .Site.Params.event -}}
+{{- if $e -}}
+{{- $live := true -}}
+{{- if $e.until -}}
+  {{- $live = lt now.Unix (time $e.until).Unix -}}
+{{- end -}}
+{{- if $live -}}
+<aside class="eventbar" id="eventbar" data-event="{{ $e.id | default "event" }}"
+       aria-label="Event announcement">
+  <div class="in">
+    <span class="mark" aria-hidden="true"></span>
+    <span class="tag">{{ $e.label }}</span>
+    <span class="say">{{ $e.say }}</span>
+    <a class="go" href="{{ $e.url }}">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a>
+    <button type="button" class="x" data-eventbar-close
+            aria-label="Dismiss event announcement">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M7 7l10 10M17 7L7 17"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+{{- end -}}
+{{- end -}}

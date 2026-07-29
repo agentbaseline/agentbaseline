@@ -67,7 +67,15 @@ seen = collections.defaultdict(list)
 for name, text in corpus.items():
     for s in sentences(text):
         seen[s.lower().rstrip(".")].append(name)
+# Chrome shared by both pages — the masthead, the event strip — renders the same
+# sentence twice from one partial. That is one thing shown twice, not prose
+# written twice, which is the same reasoning the near-duplicate check already
+# uses for the roster. Narrow on purpose: it only forgives a sentence appearing
+# in exactly those two files and nowhere else.
+_CHROME = {"public/index.html", "public/controls/index.html"}
 for s, where in seen.items():
+    if set(where) == _CHROME and len(set(where)) == len(where):
+        continue
     if len(where) > 1:
         findings.append(("repeat", f"“{s[:78]}…” appears in {', '.join(sorted(set(where)))}"
                                    if len(s) > 78 else
