@@ -453,12 +453,10 @@
     harmful action before a person can intervene.</p>
 
     <p>Existing security practices remain necessary, but they were not designed for this
-    combination of runtime programmability, access and autonomy. Buying the gap closed is
-    its own problem: “agent governance” can mean almost anything, and no datasheet explains
-    how the parts fit together.</p>
+    combination of runtime programmability, access and autonomy.</p>
 
-    <p>A category tells you what a product is called. An outcome tells you what has to
-    be true. <strong>There are six, and between them they answer three questions:</strong></p>
+    <p><strong>That leaves three questions an enterprise has to be able to answer about
+    any agent it runs:</strong></p>
   </div>
 
   <ol class="questions">
@@ -471,8 +469,9 @@
   </ol>
 
   <div class="prose">
-    <p>No single enforcement point delivers all six. They are one system, scattered
-    across identity, runtime, tooling, data and evidence.</p>
+    <p>Each outcome is supported by capabilities that state what a project must do, not
+    what it might consider doing. The baseline is open source so maintainers, practitioners
+    and security teams can inspect it, implement it, challenge it and improve it.</p>
   </div>
 
   <h2>The six outcomes</h2>
@@ -536,18 +535,10 @@
 
   <h2>Contributing</h2>
   <div class="prose">
-    <p>Tell us where a control is wrong, unimplementable, or missing. File it against a specific
-    identifier, so the argument has somewhere to land.</p>
-    <p>The six-outcome structure reflects our experience so far, and it is the part most
-    likely to move. Three kinds of comment are worth more than the rest:
-    <strong>implementation feedback</strong> from running a control for real, a
-    <strong>gap</strong> the six do not cover, and evidence that a control is ineffective
-    or costs more to operate than the risk it addresses.</p>
-    <p>The contribution we need most is the one we cannot write ourselves: a crosswalk to a
-    framework you already run: NIST AI RMF, ISO 42001, OWASP, CIS. Everyone who drafted this
-    works for a vendor in the space, so a mapping from outside is worth more than another
-    control from inside. See
-    <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+    <p>The current six-outcome structure reflects our experience so far. We welcome
+    implementation feedback, uncovered control gaps, and evidence that a control is
+    ineffective or creates disproportionate maintainer burden.
+    See <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
   </div>
 
   <aside class="inperson">
