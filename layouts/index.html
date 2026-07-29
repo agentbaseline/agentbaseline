@@ -261,6 +261,10 @@
   ol.factors { list-style:none; margin:0; padding:0; counter-reset:f; }
   ol.factors > li { counter-increment:f; padding:20px 0; border-top:1px solid var(--line);
     display:grid; grid-template-columns:52px 1fr; gap:0 8px; }
+  /* The section's own leader rule already closes the heading, so the first item's
+     top border doubles it up a few pixels below. Borders separate items from each
+     other; the first item has nothing above it to separate from. */
+  ol.factors > li:first-child { border-top:0; }
   ol.factors > li:last-child { border-bottom:1px solid var(--line); }
   ol.factors > li::before { content:counter(f,upper-roman) "."; font-family:var(--serif);
     font-size:19px; color:var(--faint); padding-top:1px; }
