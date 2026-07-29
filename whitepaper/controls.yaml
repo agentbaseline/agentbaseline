@@ -12,9 +12,13 @@
 version: "1.0-draft"
 status: draft            # every control is `draft` until the v1.0 freeze
 source: >-
-  Derived from Appendix A of the working draft, which is the later and
-  tighter of the paper's two controls passes. Section 5 of the prose has
-  not yet been reconciled against it — tracked publicly as issue #1.
+  Reconciled by hand against the working draft, which currently carries several
+  disagreeing control passes: the body prose (41 identifiers), Appendix A (40,
+  with DIS-02 through DIS-07 rotated relative to the body), and a litmus table
+  (38). This file follows the body's Discover numbering and the litmus table's
+  requirement wording, and is narrower than all three. Do not assume any single
+  section of the paper is authoritative until the paper lands in this repo —
+  tracked publicly as issue #1.
 
 outcomes:
   - prefix: DIS
@@ -166,7 +170,6 @@ controls:
     requirement: >-
      Material actions shall be denied or halted when identity, policy, context,
      evidence, approval or target-state requirements cannot be verified.
-     Constrain
 
   - id: CON-01
     outcome: CON

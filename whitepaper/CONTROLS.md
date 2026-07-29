@@ -105,7 +105,7 @@ Actions outside the approved autonomy or impact boundary shall require approval 
 
 #### `AUT-06` — Fail-closed authorization and circuit breaking
 
-Material actions shall be denied or halted when identity, policy, context, evidence, approval or target-state requirements cannot be verified. Constrain
+Material actions shall be denied or halted when identity, policy, context, evidence, approval or target-state requirements cannot be verified.
 
 ## Validate
 

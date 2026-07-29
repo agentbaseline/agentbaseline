@@ -122,6 +122,19 @@ if built.exists():
                 err(f"{fam}: page publishes range …{m.group(2)}, controls.yaml "
                     f"has {n:02d} as the highest identifier")
 
+# ── paste artifacts in requirement text ──────────────────────────────────────
+# AUT-06 shipped with the word "Constrain" — a section heading from the source
+# document — as the last line of its requirement, and it rendered on /controls
+# inside a normative sentence. A trailing bare word is invisible in review and
+# wrong in a citation, so it is an error now rather than a matter of noticing.
+_NAMES = {"discover", "authorize", "constrain", "validate", "observe", "respond"}
+for _m in re.finditer(r'  - id: (\w+-\d+)\n(?:.*\n)*?    requirement: >-\n((?:     .+\n)+)',
+                      src, re.M):
+    _lines = [l.strip() for l in _m.group(2).rstrip().split("\n") if l.strip()]
+    if _lines and len(_lines[-1].split()) == 1 and _lines[-1].rstrip(".").lower() in _NAMES:
+        err(f"{_m.group(1)}: requirement ends in the bare word "
+            f"'{_lines[-1]}' — a heading pasted in from the source document")
+
 # ── report ────────────────────────────────────────────────────────────────────
 fam = collections.Counter(c["id"].split("-")[0] for c in controls)
 print(f"controls: {len(controls)} controls across {len(outcomes)} outcomes  "
