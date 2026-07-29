@@ -8,8 +8,8 @@
 The paper was drafted collaboratively by engineers at Keycard, Docker and Snyk, working in a
 shared document before it was moved here. Sections are attributed to their authors in the paper
 itself, and contributors are credited as **individuals with their affiliations**, not as company
-logos. ⟡ *(`MAINTAINERS.md` to be added, listing each person, their employer, and the sections
-and outcomes they own.)*
+logos. See [MAINTAINERS.md](MAINTAINERS.md) for each person, their employer, and the
+sections they wrote.
 
 Keycard convened the work and coordinates the release. Every convening organization's commercial
 interest is disclosed in [PROVENANCE.md](PROVENANCE.md).
