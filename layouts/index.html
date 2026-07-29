@@ -379,8 +379,8 @@
   aside.inperson p { font-size:18px; line-height:1.6; margin:0; max-width:62ch; }
 
   .allcontrols { font-family:var(--labelfont); font-weight:500; font-size:12.5px;
-    letter-spacing:.08em; text-transform:uppercase; margin:2px 0 0; }
-  .prose .note.src { font-size:15px; margin:10px 0 0; }
+    letter-spacing:.08em; text-transform:uppercase; margin:20px 0 0; }
+  .prose .note.src { font-size:15px; margin:2px 0 0; }
   .allcontrols a { color:var(--accent); text-decoration:none; }
   .allcontrols a::after { content:" \2192"; }
   .allcontrols a:hover { color:var(--link-hover); }
@@ -499,18 +499,13 @@
   </ol>
 
   <div class="prose">
-    <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
     <p class="note src">Each one is defined once, in
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a>.
     This page, the PDF and the figure are rendered from it.</p>
+    <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
   </div>
 
   <h2>Read the white paper</h2>
-
-  <figure class="fig1">
-    <span class="wide-fig">{{ partial "figure-1.svg" . }}</span>
-    <span class="narrow-fig">{{ partial "figure-1-narrow.svg" . }}</span>
-  </figure>
 
   <div class="prose">
     <p>Six security outcomes for safely building, deploying and operating AI agents. The
@@ -522,6 +517,13 @@
       <a href="{{ .Site.Params.repo }}/issues">Share feedback</a>
     </p>
   </div>
+
+  {{/* The drawing closes the section rather than opening it: the paper is the
+       ask, and the figure is what you are being asked to read about. */}}
+  <figure class="fig1">
+    <span class="wide-fig">{{ partial "figure-1.svg" . }}</span>
+    <span class="narrow-fig">{{ partial "figure-1-narrow.svg" . }}</span>
+  </figure>
 
   <h2>Working draft for community review</h2>
   <div class="prose">
