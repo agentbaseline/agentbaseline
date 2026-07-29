@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Figure 1 — the six outcomes as one control system.
 
-Faithful to the paper's own Figure 1: Discover sets the operating envelope above
+Faithful to the paper's own Figure 1: Discover sits above
 the action path; business intent passes through Authorize, Constrain and Validate
 to become an enterprise action; Observe and Respond hold evidence and containment
 below. The paper's caption verbatim: "The six required outcomes operate as one
@@ -52,10 +52,10 @@ GATE_R = GATE_L + 3 * GW + 2 * GGAP
 NAME, ROLE_S, LABEL, TERM_N = 20, 15, 12, 16   # the page's own values
 
 f = Fig(W, H, "The six outcomes as one control system",
-        "Discover establishes the operating envelope above the action path. Business "
-        "intent passes through Authorize, Constrain and Validate — grouped, because "
-        "every material action must go through them — and becomes an enterprise "
-        "action. Observe and Respond hold evidence and containment beneath.")
+        "Discover sits above the action path. Business intent passes through "
+        "Constrain, Authorize and Validate — grouped, because every material action "
+        "must go through them — and becomes an enterprise action. Observe and Respond "
+        "hold evidence and containment beneath.")
 
 
 # Two or three words each: the role in the flow, not the requirement. The roster
@@ -122,9 +122,9 @@ f.write("figure-1")
 NW = 360
 ny = 26
 n = Fig(NW, 640, "The six outcomes as one control system",
-        "Discover establishes the operating envelope. Business intent passes through "
-        "Authorize, Constrain and Validate to become an enterprise action. Observe and "
-        "Respond hold evidence and containment across every run.")
+        "Discover comes first. Business intent passes through Constrain, Authorize "
+        "and Validate to become an enterprise action. Observe and Respond hold "
+        "evidence and containment across every run.")
 
 n._def("ar", f'<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" '
               f'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'

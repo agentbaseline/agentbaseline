@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 364 596" width="360" height="596" role="img" aria-labelledby="ft fd">
   <title id="ft">The six outcomes as one control system</title>
-  <desc id="fd">Discover establishes the operating envelope. Business intent passes through Authorize, Constrain and Validate to become an enterprise action. Observe and Respond hold evidence and containment across every run.</desc>
+  <desc id="fd">Discover comes first. Business intent passes through Constrain, Authorize and Validate to become an enterprise action. Observe and Respond hold evidence and containment across every run.</desc>
   <rect width="360" height="640" fill="#FFFFFF"/>
   <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#797D79"/></marker></defs>
   <a href="/controls#discover"><text x="0" y="26" font-family="Figtree,'Avenir Next','Helvetica Neue',sans-serif" font-size="20" fill="#1A1C1A" font-weight="600">Discover</text></a>
