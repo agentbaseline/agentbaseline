@@ -324,6 +324,10 @@
     outline-offset:2px; }
 
   ol.factors + .prose { margin-top:28px; }
+  /* The three ways out of the page, on one line, in the label voice. */
+  .prose p.ctas { font-family:var(--labelfont); font-size:13.5px;
+    letter-spacing:.03em; color:var(--faint); margin-top:18px; }
+  .prose p.ctas a { color:var(--link); }
   ol.questions + .prose { margin-top:30px; }
   .prose + h2 { margin-top:56px; }
   ol.factors > li { scroll-margin-top:64px; }
@@ -495,43 +499,29 @@
   </ol>
 
   <div class="prose">
-    <p><strong>The six outcomes are a category test, not a certification scheme.</strong>
-    A product may cover one or more; an enterprise architecture is complete only when all
-    six are addressed.
-    Take them into a vendor conversation and ask which they cover.</p>
     <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
     <p class="note src">Each one is defined once, in
     <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a>.
     This page, the PDF and the figure are rendered from it.</p>
   </div>
 
-  <h2>What this is</h2>
-  <div class="prose">
-    <p>Written for the security, platform and architecture engineers who have to make
-    a decision about agents. <strong>It extends the identity providers, policy engines
-    and SIEM platforms you already run rather than replacing them</strong>, and it does
-    not prescribe how a model reasons — only the conditions under which an agent, and
-    each of its material actions, may proceed.</p>
-
-    <p>It distils the experience of teams building, deploying and operating agents into
-    six outcomes and the controls that evidence them. Each control states what an
-    organization must do, not what it might consider doing.</p>
-
-    <p>A draft, open for comment until {{ .Site.Params.commentsUntil }}.
-    <strong>It is not a standard, and no conformance programme exists.</strong> Nothing
-    here certifies anyone, including the people who wrote it.</p>
-    <p>Identifiers are not yet frozen. At v1.0 they freeze, and from then on a control is
-    superseded rather than renumbered, so a citation you publish keeps meaning what it
-    meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before you cite, and <a href="/controls">the controls</a> for the reference form.</p>
-  </div>
-
-  <h2>How the outcomes work together</h2>
+  <h2>Read the white paper</h2>
 
   <figure class="fig1">
     <span class="wide-fig">{{ partial "figure-1.svg" . }}</span>
     <span class="narrow-fig">{{ partial "figure-1-narrow.svg" . }}</span>
   </figure>
+
+  <div class="prose">
+    <p>Six security outcomes for safely building, deploying and operating AI agents. The
+    white paper explains the risks behind the baseline and defines the capabilities,
+    implementation requirements and evidence associated with each outcome.</p>
+    <p class="ctas">
+      {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">Read the white paper</a> · {{ end }}
+      <a href="{{ .Site.Params.repo }}">View the source</a> ·
+      <a href="{{ .Site.Params.repo }}/issues">Share feedback</a>
+    </p>
+  </div>
 
   <h2>Working draft for community review</h2>
   <div class="prose">
