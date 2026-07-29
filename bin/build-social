@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Generate static/social-card.png (1200x630) from whichever figure the site ships.
+"""Generate static/social-card.png (1200x630): the wordmark over Figure 1.
 
-Same source as the page and the PDF. Identifier ranges are stripped: at card
-scale they are illegible, and shipping unreadable type is worse than omitting it.
+The card is the site's hero in miniature — outlined "Agent", solid "Baseline",
+the tenet line, then the figure — on the page's warm paper. The self-hosted
+woff2 subsets are embedded as data URIs so headless Chrome renders the real
+faces with no network and no font fallback drift.
 """
-import re, pathlib, subprocess, sys
+import base64, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 src = ROOT / "whitepaper" / "figures" / "figure-1.svg"
@@ -12,23 +14,49 @@ if not src.exists():
     sys.exit(f"{src.name} not found")
 fig = src.read_text(encoding="utf-8")
 
-vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', fig)
-fw, fh = int(vb.group(1)), int(vb.group(2))
+# the figure's drawable content: everything inside the outer <svg>, minus the
+# white plate and the accessible name (the card supplies its own surface)
+inner = re.sub(r'^<svg[^>]*>\s*', "", fig.strip())
+inner = re.sub(r'</svg>\s*$', "", inner)
+inner = re.sub(r'<title[^>]*>.*?</title>\s*', "", inner, flags=re.S)
+inner = re.sub(r'<desc[^>]*>.*?</desc>\s*', "", inner, flags=re.S)
+inner = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\s*', "", inner, count=1)
 
-# aspect-fit the figure into 1200x630 with even padding
-pad_x = 40
-inner_w = fw + 2 * pad_x
-inner_h = max(fh + 2 * pad_x, inner_w * 630 / 1200)
-off_y = -(inner_h - fh) / 2
+def face(family, style, weight, fname):
+    data = base64.b64encode((ROOT / "static" / "fonts" / fname).read_bytes()).decode()
+    return (f"@font-face{{font-family:'{family}';font-style:{style};"
+            f"font-weight:{weight};src:url(data:font/woff2;base64,{data}) "
+            f"format('woff2');}}")
 
-card = re.sub(r'<text[^>]*font-family="ui-monospace[^>]*>[A-Z]{3}-01…\d\d</text>\n?\s*',
-              "", fig)
-card = card.replace(vb.group(0),
-                    f'viewBox="{-pad_x} {off_y:.0f} {inner_w} {inner_h:.0f}"')
-card = re.sub(r'width="\d+" height="\d+"', 'width="1200" height="630"', card, count=1)
-card = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>',
-              f'<rect x="{-pad_x}" y="{off_y:.0f}" width="{inner_w}" '
-              f'height="{inner_h:.0f}" fill="#FFFFFF"/>', card, count=1)
+fonts = "".join([
+    face("Figtree", "normal", "300 900", "figtree-normal-400-latin.woff2"),
+    face("Chakra Petch", "normal", "500", "chakra-petch-normal-500-latin.woff2"),
+    face("IBM Plex Serif", "normal", "400", "ibm-plex-serif-normal-400-latin.woff2"),
+    face("IBM Plex Mono", "normal", "400", "ibm-plex-mono-normal-400-latin.woff2"),
+])
+
+INK, SOFT, FAINT, BASE, PAPER = "#221F18", "#5C5850", "#736E60", "#D9D4C6", "#FBF9F3"
+HEAD = "Figtree,'Avenir Next','Helvetica Neue',sans-serif"
+MONO = "'IBM Plex Mono',ui-monospace,Menlo,monospace"
+
+# wordmark geometry: Figtree 600 measures 2.794em for "Agent" (tracking -0.02em
+# brings it to ~2.7em); at 68px that puts "Baseline" at x ≈ 60 + 184 + 16
+card = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <style>{fonts}</style>
+  <rect width="1200" height="630" fill="{PAPER}"/>
+  <text x="60" y="112" font-family="{HEAD}" font-size="68" font-weight="600"
+    letter-spacing="-1.4" fill="none" stroke="{INK}" stroke-width="1.4">Agent</text>
+  <text x="260" y="112" font-family="{HEAD}" font-size="68" font-weight="600"
+    letter-spacing="-1.4" fill="{INK}">Baseline</text>
+  <line x1="620" y1="112" x2="1140" y2="112" stroke="{BASE}" stroke-width="1"/>
+  <text x="60" y="156" font-family="{HEAD}" font-size="19" font-weight="500"
+    fill="{SOFT}">Identify the agent.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Bound its authority.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Control its actions.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Prove its outcomes.</text>
+  <text x="1140" y="600" text-anchor="end" font-family="{MONO}" font-size="14"
+    fill="{FAINT}">agentbaseline.org · v1.0-draft</text>
+  <g transform="translate(160,200)">
+  {inner}
+  </g>
+</svg>'''
 
 tmp = ROOT / "whitepaper" / "figures" / ".social.svg"
 tmp.write_text(card, encoding="utf-8")
@@ -39,11 +67,11 @@ out.parent.mkdir(exist_ok=True)
 if not pathlib.Path(chrome).exists():
     tmp.unlink(missing_ok=True)
     sys.exit("chrome not found — social card not regenerated")
-before = out.stat().st_mtime if out.exists() else 0
 r = subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
-                f"--screenshot={out}", "--window-size=1200,630",
-                "--default-background-color=FFFFFFFF", tmp.as_uri()],
-               capture_output=True)
+                    "--virtual-time-budget=3000",
+                    f"--screenshot={out}", "--window-size=1200,630",
+                    "--default-background-color=FFFFFFFF", tmp.as_uri()],
+                   capture_output=True)
 if r.returncode != 0:
     sys.exit(f"chrome failed ({r.returncode}): {r.stderr.decode()[:400]}")
 tmp.unlink(missing_ok=True)
