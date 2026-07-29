@@ -376,35 +376,11 @@
   ol.factors > li > .det { grid-column:2; color:var(--faint); font-size:15px;
     margin-top:5px; max-width:62ch; }
 
-  /* The roster: the drawing's signature block, one row per person — name and
-     affiliation on the left, the sections they wrote on the right, straight
-     from contributors.yaml. Surname order interleaves the three companies;
-     the rows must not regroup them. */
-  ul.roster { list-style:none; margin:28px 0 24px; padding:0; }
-  ul.roster > li { margin:0; padding:18px 0 20px;
-    border-top:1px solid var(--line);
-    display:grid; grid-template-columns:5fr 7fr; gap:2px 40px;
-    grid-template-rows:auto 1fr; }
-  ul.roster > li:last-child { border-bottom:1px solid var(--line); }
-  .roster .pn { font-family:var(--head); font-size:17.5px; font-weight:600;
-    letter-spacing:-0.01em; margin:0; line-height:1.3; grid-area:1/1; }
-  .roster .pm { margin:7px 0 0; display:flex; align-items:center;
-    gap:9px; flex-wrap:wrap; grid-area:2/1; align-self:start; }
-  .roster .pa { background:color-mix(in srgb, var(--accent) 12%, transparent);
-    color:var(--accent); font-family:var(--labelfont); font-weight:500;
-    font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-    padding:2px 7px; border-radius:3px; }
-  .roster .pr { font-family:var(--mono); font-size:11px; color:var(--faint); }
-  .roster .pw { font-family:var(--labelfont); font-weight:500; font-size:9.5px;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--faint);
-    margin:0 0 4px; padding-top:5px; grid-area:1/2; }
-  .roster ul.ps { list-style:none; margin:0; padding:0; grid-area:2/2; }
-  .roster ul.ps li { font-size:13.5px; color:var(--soft); line-height:1.5;
-    padding:2px 0; }
-  @media (max-width:639px) {
-    ul.roster > li { display:block; }
-    .roster .pw { margin-top:12px; }
-  }
+  /* Affiliations ride each name as a superscript tag — the label layer's
+     voice, quiet as a footnote mark. */
+  sup.aff { font-family:var(--labelfont); font-weight:500; font-size:10px;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--faint);
+    line-height:0; margin-left:3px; }
 
   ol.factors + .prose { margin-top:28px; }
   /* The three ways out of the page, on one line, in the label voice. */
@@ -636,29 +612,18 @@
 
   <h2>Who wrote it</h2>
   <div class="prose">
-    <p>{{ $people.statement }}</p>
+    <p>Drafted by&#32;
+    {{- /* Surname order — see the note in contributors.yaml. First-name order
+           clusters these six into three company pairs, which is the one
+           arrangement that makes a joint document read as three delegations. */ -}}
+    {{- $authors := sort (where $people.contributors "confirmed" true) "sortkey" }}
+    {{- $n := len $authors }}
+    {{- range $i, $c := $authors }}
+    {{- if $i }}{{ if eq (add $i 1) $n }} and {{ else }}, {{ end }}{{ end }}
+    {{- .name }}<sup class="aff">{{ .affiliation }}</sup>
+    {{- end }}.</p>
+
   </div>
-  {{- /* Surname order — see the note in contributors.yaml. First-name order
-         clusters these six into three company pairs, which is the one
-         arrangement that makes a joint document read as three delegations.
-         The lattice renders in that order for the same reason. */ -}}
-  {{- $authors := sort (where $people.contributors "confirmed" true) "sortkey" }}
-  <ul class="roster">
-    {{- range $authors }}
-    <li>
-      <h3 class="pn">{{ .name }}</h3>
-      <p class="pm"><span class="pa">{{ .affiliation }}</span><span class="pr">{{ .role }}</span></p>
-      {{- with .sections }}
-      <p class="pw">Wrote</p>
-      <ul class="ps">
-        {{- range . }}
-        <li>{{ . }}</li>
-        {{- end }}
-      </ul>
-      {{- end }}
-    </li>
-    {{- end }}
-  </ul>
 
   <footer class="wide">
     <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
