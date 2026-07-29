@@ -20,26 +20,38 @@ outcomes:
   - prefix: DIS
     name: Discover
     requirement: "Discover every agent and its dependencies."
+    detail: >-
+      Maintain an accurate view of the agents in use, their components, owners, operating status and effective access.
     evidence: "Authoritative inventory reconciled with observed code, cloud, endpoint, identity, SaaS and runtime evidence."
   - prefix: AUT
     name: Authorize
     requirement: "Bind identity, task, target and authority."
+    detail: >-
+      Attribute consequential actions, and limit authority by purpose, task, resource, action and time.
     evidence: "Every consequential action attributable to an agent, a principal and an approved purpose, under attenuated delegation."
   - prefix: CON
     name: Constrain
     requirement: "Limit components, runtime, data and reach."
+    detail: >-
+      Limit each agent and component to the environments, capabilities, data and actions its approved purpose requires.
     evidence: "Versioned system manifest, broken toxic flows, isolated execution and confined resources."
   - prefix: VAL
     name: Validate
     requirement: "Admit the system and verify outcomes."
+    detail: >-
+      Evaluate agents and their components before use, after material changes, and at intervals appropriate to their risk.
     evidence: "Admission gate passed, agent-specific testing performed, assurance evidence retained and revalidated on material change."
   - prefix: OBS
     name: Observe
     requirement: "Correlate activity and prove what happened."
+    detail: >-
+      Create correlated evidence connecting intent, identity, task, policy, tool use, action and outcome.
     evidence: "Agent-native telemetry correlated end to end, with intent-to-outcome evidence of provable integrity."
   - prefix: RES
     name: Respond
     requirement: "Stop, revoke, quarantine and scope impact."
+    detail: >-
+      Stop execution, remove active authority, quarantine affected components, preserve evidence and determine impact.
     evidence: "Demonstrated ability to halt an agent, revoke its authority, quarantine a version and preserve evidence."
 
 controls:

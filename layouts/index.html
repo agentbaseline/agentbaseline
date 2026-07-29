@@ -280,6 +280,10 @@
   ol.factors > li > .name .ids { font-family:var(--mono); font-size:12px; font-weight:400;
     color:var(--faint); white-space:nowrap; font-variant-numeric:tabular-nums; }
   ol.factors > li > .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
+  /* The requirement is the imperative; the detail says what it covers. Second
+     voice, one step quieter, so the roster still scans as six lines. */
+  ol.factors > li > .det { grid-column:2; color:var(--faint); font-size:15px;
+    margin-top:5px; max-width:62ch; }
 
   .aff { font-family:var(--mono); font-size:12.5px; color:var(--faint); }
 
@@ -320,6 +324,10 @@
     outline-offset:2px; }
 
   ol.factors + .prose { margin-top:28px; }
+  /* The three ways out of the page, on one line, in the label voice. */
+  .prose p.ctas { font-family:var(--labelfont); font-size:13.5px;
+    letter-spacing:.03em; color:var(--faint); margin-top:18px; }
+  .prose p.ctas a { color:var(--link); }
   ol.questions + .prose { margin-top:30px; }
   .prose + h2 { margin-top:56px; }
   ol.factors > li { scroll-margin-top:64px; }
@@ -371,8 +379,7 @@
   aside.inperson p { font-size:18px; line-height:1.6; margin:0; max-width:62ch; }
 
   .allcontrols { font-family:var(--labelfont); font-weight:500; font-size:12.5px;
-    letter-spacing:.08em; text-transform:uppercase; margin:2px 0 0; }
-  .prose .note.src { font-size:15px; margin:10px 0 0; }
+    letter-spacing:.08em; text-transform:uppercase; margin:6px 0 0; }
   .allcontrols a { color:var(--accent); text-decoration:none; }
   .allcontrols a::after { content:" \2192"; }
   .allcontrols a:hover { color:var(--link-hover); }
@@ -435,22 +442,24 @@
   </header>
 
   <div class="intro">
-    <p>Agents arrive on someone else's timeline. Security is often not in the room when
-    that decision is made, and by the time it is, they already hold access to real data and
-    real systems. You can allow that without controls you trust, or block it and become the
-    obstacle while it continues in the shadows anyway.</p>
+    {{/* Third person, present tense, no second-person address. The persuasive
+         register this used to carry — agents arriving on someone else's timeline,
+         becoming the obstacle — is the right voice for a vendor's blog and the
+         wrong one for the document it announces. A spec states what is true and
+         lets the reader draw the conclusion. */}}
+    <p>Agents are becoming active participants in everyday workflows, with access to real
+    data, tools and systems.</p>
 
-    <p>Your existing controls still do their job: they were built for software whose
-    behaviour is settled before it ships. An agent's is not. An end user reprograms it at
-    runtime, in natural language, changing what it does and which approved tools and data it
-    reaches for. You are provisioning a programmable actor. It reaches sensitive data, calls tools
-    and acts at machine speed, so a mistake or a malicious instruction becomes a
-    harmful action before a person can intervene. Buying the gap closed is its own problem:
-    “agent governance” can mean almost anything, and no datasheet explains how the parts fit
-    together.</p>
+    <p>Unlike fixed-function software, an agent can be reprogrammed at runtime through
+    natural-language instructions. It determines how to pursue a goal and takes action with
+    limited human supervision. A mistaken or malicious instruction can therefore become a
+    harmful action before a person can intervene.</p>
 
-    <p>A category tells you what a product is called. An outcome tells you what has to
-    be true. <strong>There are six, and between them they answer three questions:</strong></p>
+    <p>Existing security practices remain necessary, but they were not designed for this
+    combination of runtime programmability, access and autonomy.</p>
+
+    <p><strong>That leaves three questions an enterprise has to be able to answer about
+    any agent it runs:</strong></p>
   </div>
 
   <ol class="questions">
@@ -463,8 +472,9 @@
   </ol>
 
   <div class="prose">
-    <p>No single enforcement point delivers all six. They are one system, scattered
-    across identity, runtime, tooling, data and evidence.</p>
+    <p>Each outcome is supported by capabilities that state what a project must do, not
+    what it might consider doing. The baseline is open source so maintainers, practitioners
+    and security teams can inspect it, implement it, challenge it and improve it.</p>
   </div>
 
   <h2>The six outcomes</h2>
@@ -482,54 +492,41 @@
     <li id="{{ $prefix }}">
       <span class="name"><span class="oc-ic">{{ partial (printf "icons/%s.svg" (index $oicons $prefix)) . }}</span><a href="/controls#{{ lower .name }}">{{ .name }}</a><span class="lead"></span><span class="ids">{{ $prefix }}-01…{{ index (split $last "-") 1 }}</span></span>
       <span class="req">{{ .requirement }}</span>
+      {{- with .detail }}<span class="det">{{ . }}</span>{{ end }}
     </li>
     {{- end }}
   </ol>
 
   <div class="prose">
-    <p><strong>The six outcomes are a category test, not a certification scheme.</strong>
-    A product may cover one or more; an enterprise architecture is complete only when all
-    six are addressed.
-    Take them into a vendor conversation and ask which they cover.</p>
-    <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
-    <p class="note src">Each one is defined once, in
-    <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a>.
-    This page, the PDF and the figure are rendered from it.</p>
+    <p class="allcontrols"><a href="/controls">Browse the {{ len $cat.controls }} controls behind these outcomes</a></p>
   </div>
 
-  <h2>What this is</h2>
+  <h2>Read the white paper</h2>
+
   <div class="prose">
-    <p>Written for the security, platform and architecture engineers who have to make
-    a decision about agents. <strong>It extends the identity providers, policy engines
-    and SIEM platforms you already run rather than replacing them</strong>, and it does
-    not prescribe how a model reasons — only the conditions under which an agent, and
-    each of its material actions, may proceed.</p>
-
-    <p>A draft, open for comment until {{ .Site.Params.commentsUntil }}.
-    <strong>It is not a standard, and no conformance programme exists.</strong> Nothing
-    here certifies anyone, including the people who wrote it.</p>
-    <p>Identifiers are not yet frozen. At v1.0 they freeze, and from then on a control is
-    superseded rather than renumbered, so a citation you publish keeps meaning what it
-    meant. Read <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">VERSIONING</a>
-    before you cite, and <a href="/controls">the controls</a> for the reference form.</p>
+    <p>Six security outcomes for safely building, deploying and operating AI agents. The
+    white paper explains the risks behind the baseline and defines the capabilities,
+    implementation requirements and evidence associated with each outcome.</p>
+    <p class="ctas">
+      {{ if fileExists "static/whitepaper.pdf" }}<a href="/whitepaper.pdf">Read the white paper</a> · {{ end }}
+      <a href="{{ .Site.Params.repo }}">View the source</a> ·
+      <a href="{{ .Site.Params.repo }}/issues">Share feedback</a>
+    </p>
   </div>
 
-  <h2>How the outcomes work together</h2>
-
+  {{/* The drawing closes the section rather than opening it: the paper is the
+       ask, and the figure is what you are being asked to read about. */}}
   <figure class="fig1">
     <span class="wide-fig">{{ partial "figure-1.svg" . }}</span>
     <span class="narrow-fig">{{ partial "figure-1-narrow.svg" . }}</span>
   </figure>
 
-  <h2>Contributing</h2>
+  <h2>Working draft for community review</h2>
   <div class="prose">
-    <p>Tell us where a control is wrong, unimplementable, or missing. File it against a specific
-    identifier, so the argument has somewhere to land.</p>
-    <p>The contribution we need most is the one we cannot write ourselves: a crosswalk to a
-    framework you already run: NIST AI RMF, ISO 42001, OWASP, CIS. Everyone who drafted this
-    works for a vendor in the space, so a mapping from outside is worth more than another
-    control from inside. See
-    <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
+    <p>The current six-outcome structure reflects our experience so far. We welcome
+    implementation feedback, uncovered control gaps, and evidence that a control is
+    ineffective or creates disproportionate maintainer burden.
+    See <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
   </div>
 
   <aside class="inperson">
