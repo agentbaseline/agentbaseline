@@ -379,8 +379,7 @@
   aside.inperson p { font-size:18px; line-height:1.6; margin:0; max-width:62ch; }
 
   .allcontrols { font-family:var(--labelfont); font-weight:500; font-size:12.5px;
-    letter-spacing:.08em; text-transform:uppercase; margin:20px 0 0; }
-  .prose .note.src { font-size:15px; margin:2px 0 0; }
+    letter-spacing:.08em; text-transform:uppercase; margin:6px 0 0; }
   .allcontrols a { color:var(--accent); text-decoration:none; }
   .allcontrols a::after { content:" \2192"; }
   .allcontrols a:hover { color:var(--link-hover); }
@@ -499,10 +498,7 @@
   </ol>
 
   <div class="prose">
-    <p class="note src">Each one is defined once, in
-    <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a>.
-    This page, the PDF and the figure are rendered from it.</p>
-    <p class="allcontrols"><a href="/controls">Browse all {{ len $cat.controls }} controls</a></p>
+    <p class="allcontrols"><a href="/controls">Browse the {{ len $cat.controls }} controls behind these outcomes</a></p>
   </div>
 
   <h2>Read the white paper</h2>
