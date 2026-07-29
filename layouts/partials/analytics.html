@@ -1,0 +1,14 @@
+{{/* Vercel Web Analytics, first-party.
+
+     The script is served from this origin (/_vercel/insights/*, added by the
+     deploy that follows enabling it in the dashboard), so the CSP stays
+     default-src 'self' with no external hosts. That is the whole reason this is
+     here rather than a third-party tag.
+
+     No cookies. Visitors are identified by a hash of the incoming request,
+     discarded after 24 hours, and nothing is tied to an IP or an individual —
+     which is why the page needs no consent banner.
+
+     The documented snippet ships an inline shim for window.va. Inline script is
+     blocked by our CSP, so it lives in /js/theme.js instead. */}}
+<script defer src="/_vercel/insights/script.js"></script>

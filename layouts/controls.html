@@ -21,6 +21,7 @@
 {{/* External and synchronous: the deployment CSP allows script-src 'self'
      only, and the stored theme must apply before first paint. */}}
 <script src="/js/theme.js"></script>
+{{ partial "analytics.html" . }}
 <style>
   /* Same sheet language as the front page: title block, hairline frame,
      registration marks, mono structure around serif prose. See index.html for

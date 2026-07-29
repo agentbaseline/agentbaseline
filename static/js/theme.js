@@ -2,6 +2,13 @@
    stored theme applies before first paint; an external file (not inline)
    because the deployment CSP allows script-src 'self' and nothing inline. */
 (function () {
+  /* Vercel Web Analytics queue shim. The documented snippet puts this inline,
+     which our CSP refuses; here it is external and allowed. It only buffers
+     calls made before the deferred script arrives. */
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+
   var r = document.documentElement, s;
   try { s = localStorage.getItem('ab-theme'); } catch (e) {}
   if (s === 'light' || s === 'dark') r.dataset.theme = s;
