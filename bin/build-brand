@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+"""Generate the brand assets: favicon, repo avatar, campaign graphic.
+
+One visual system, three surfaces. The favicon is the wordmark reduced to a
+single glyph — the outlined Figtree "A" with the pen's glint frozen on its
+stroke — drawn as a real vector path extracted from the shipped woff2, so it
+depends on no font at render time. The campaign graphic is the site's hero as
+a plate: wordmark with the static glint, the four tenets on their timeline,
+the sheet's keylines, set dark where the acid sings. Fonts are embedded as
+data URIs so headless Chrome renders the real faces with no network.
+
+Requires fonttools and brotli (pip install fonttools brotli) and Chrome.
+"""
+import base64, io, pathlib, subprocess, sys
+
+from fontTools.ttLib import TTFont
+from fontTools.varLib.instancer import instantiateVariableFont
+from fontTools.pens.svgPathPen import SVGPathPen
+from fontTools.pens.transformPen import TransformPen
+from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.perimeterPen import PerimeterPen
+from fontTools.misc.transform import Transform
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+FONTS = ROOT / "static" / "fonts"
+BRAND = ROOT / "brand"
+BRAND.mkdir(exist_ok=True)
+
+# ── palette: the page's dark theme ───────────────────────────────────────────
+PAPER, INK, SOFT, FAINT = "#151714", "#E6E7E3", "#A7ABA7", "#8B8F8B"
+LINE, BASE, ACID = "#2E302D", "#333531", "#C6F13F"
+
+# ── the A, as a path ─────────────────────────────────────────────────────────
+font = TTFont(FONTS / "figtree-normal-400-latin.woff2")
+instantiateVariableFont(font, {"wght": 600}, inplace=True)
+upm = font["head"].unitsPerEm
+glyphset = font.getGlyphSet()
+gname = font.getBestCmap()[ord("A")]
+glyph = glyphset[gname]
+
+bp = BoundsPen(glyphset); glyph.draw(bp)
+xmin, ymin, xmax, ymax = bp.bounds
+pp = PerimeterPen(glyphset=glyphset); glyph.draw(pp)
+
+
+def a_path(height, ox, oy):
+    """The A scaled to `height` px, baseline-left at (ox, oy). Returns the SVG
+    path and the scaled outline perimeter."""
+    s = height / (ymax - ymin)
+    sp = SVGPathPen(glyphset)
+    glyph.draw(TransformPen(sp, Transform(s, 0, 0, -s, ox - xmin * s, oy)))
+    return sp.getCommands(), pp.value * s
+
+
+def glint(path, per, at, tile=PAPER, gl=26, ko=44, wko=4.5, wgl=2.4):
+    """The frozen pen: a knockout gap in the outline with the acid tip inside,
+    placed `at` of the way around the path."""
+    off = per * at
+    return (f'<path d="{path}" fill="none" stroke="{tile}" stroke-width="{wko}" '
+            f'stroke-dasharray="{ko} {per}" stroke-dashoffset="{-(off - (ko - gl) / 2):.1f}"/>'
+            f'<path d="{path}" fill="none" stroke="{ACID}" stroke-width="{wgl}" '
+            f'stroke-dasharray="{gl} {per}" stroke-dashoffset="{-off:.1f}" '
+            f'stroke-linecap="round"/>')
+
+
+# ── favicon ──────────────────────────────────────────────────────────────────
+# The A splits where the counter ends: the gap's lower edge sits flush on the
+# crossbar's top line (read from the glyph, not eyeballed), ink above, acid
+# below — the two inks never touch, the way the glint rode in its gap.
+from fontTools.pens.recordingPen import RecordingPen
+_rp = RecordingPen(); glyph.draw(_rp)
+_contours, _cur = [], []
+for _op, _pts in _rp.value:
+    if _op == "moveTo": _cur = list(_pts)
+    elif _op == "closePath": _contours.append(_cur)
+    else: _cur.extend(_pts)
+_counter = min(_contours, key=len)          # the inner triangle
+CBAR_TOP = min(pt[1] for pt in _counter)    # its floor is the crossbar's top
+
+path, per = a_path(36, 15, 49)
+_s36 = 36 / (ymax - ymin)
+ACID_Y = 49 - CBAR_TOP * _s36 - 1.2         # cover the crossbar-top stroke
+INK_END = ACID_Y - 3.5                      # the gap
+icon = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="13" fill="{PAPER}"/>
+  <clipPath id="th"><rect x="0" y="0" width="64" height="{INK_END:.2f}"/></clipPath>
+  <clipPath id="bh"><rect x="0" y="{ACID_Y:.2f}" width="64" height="{64 - ACID_Y:.2f}"/></clipPath>
+  <path d="{path}" fill="none" stroke="{INK}" stroke-width="2" clip-path="url(#th)"/>
+  <path d="{path}" fill="none" stroke="{ACID}" stroke-width="2" clip-path="url(#bh)"/>
+  <line x1="10" y1="55.5" x2="54" y2="55.5" stroke="{BASE}" stroke-width="1.5"/>
+</svg>
+'''
+(ROOT / "static" / "icon.svg").write_text(icon, encoding="utf-8")
+print("wrote static/icon.svg")
+
+
+# ── shared text helpers for the campaign plate ───────────────────────────────
+def face(family, style, weight, fname):
+    data = base64.b64encode((FONTS / fname).read_bytes()).decode()
+    return (f"@font-face{{font-family:'{family}';font-style:{style};"
+            f"font-weight:{weight};src:url(data:font/woff2;base64,{data}) "
+            f"format('woff2');}}")
+
+EMBED = "".join([
+    face("Figtree", "normal", "300 900", "figtree-normal-400-latin.woff2"),
+    face("Chakra Petch", "normal", "500", "chakra-petch-normal-500-latin.woff2"),
+    face("IBM Plex Mono", "normal", "400", "ibm-plex-mono-normal-400-latin.woff2"),
+])
+HEAD_F = "Figtree,'Avenir Next',sans-serif"
+LABEL_F = "'Chakra Petch',sans-serif"
+MONO_F = "'IBM Plex Mono',Menlo,monospace"
+
+
+def crosshair(x, y, r=11):
+    return (f'<line x1="{x-r}" y1="{y}" x2="{x+r}" y2="{y}" stroke="{FAINT}" stroke-width="1"/>'
+            f'<line x1="{x}" y1="{y-r}" x2="{x}" y2="{y+r}" stroke="{FAINT}" stroke-width="1"/>')
+
+
+# ── campaign graphic · 1600x900 ──────────────────────────────────────────────
+# wordmark geometry from measured Figtree 600 advances (100 units/em, the
+# page's -0.02em tracking baked in): per-letter x for "Agent", then Baseline
+FS = 170
+LX = [0, 67.9, 124.6, 177.7, 232.1]
+AGENT_W, SPACE, BASELINE_W = 269.4, 21.5, 354.4   # at 100, tracking applied
+MX, MY = 120, 452                                  # wordmark origin
+S = FS / 100
+
+CAMP_AT = 0.083                                    # pen on the left diagonal, echo on the counter
+# the overlay must coincide with the browser's text rendering exactly: same
+# em scale (FS/upm), same origin — not a bbox fit
+_s = FS / upm
+_sp = SVGPathPen(glyphset)
+glyph.draw(TransformPen(_sp, Transform(_s, 0, 0, -_s, MX, MY)))
+apath, aper = _sp.getCommands(), pp.value * _s
+
+letters = "".join(
+    f'<text x="{MX + x * S:.1f}" y="{MY}" font-family="{HEAD_F}" font-size="{FS}" '
+    f'font-weight="600" letter-spacing="{-0.02 * FS:.1f}" fill="none" '
+    f'stroke="{INK}" stroke-width="1.6">{c}</text>'
+    for x, c in zip(LX[1:], "gent"))
+
+TEN = ["Identify the agent.", "Bound its authority.",
+       "Control its actions.", "Prove its outcomes."]
+TENW = [214, 227, 219, 229]                        # measured, at 26px / 500
+COL = 356
+tenets = ""
+for i, (t, w) in enumerate(zip(TEN, TENW)):
+    cx = MX + i * COL
+    mid = cx + w / 2
+    tenets += (f'<text x="{cx}" y="622" font-family="{HEAD_F}" font-size="26" '
+               f'font-weight="500" letter-spacing="-0.1" fill="{SOFT}">{t}</text>')
+    tenets += (f'<circle cx="{mid:.0f}" cy="672" r="6.5" fill="{PAPER}" '
+               f'stroke="{ACID}" stroke-width="1.8"/>')
+    if i < 3:
+        nxt = MX + (i + 1) * COL + TENW[i + 1] / 2
+        tenets += (f'<line x1="{mid + 14:.0f}" y1="672" x2="{nxt - 14:.0f}" y2="672" '
+                   f'stroke="{BASE}" stroke-width="1"/>')
+
+CHIP_TXT = "AGENTBASELINE.ORG"
+chip_w = len(CHIP_TXT) * 14.6 + 44
+camp = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <style>{EMBED}</style>
+  <rect width="1600" height="900" fill="{PAPER}"/>
+  <rect x="48" y="48" width="1504" height="804" fill="none" stroke="{LINE}" stroke-width="1"/>
+  {crosshair(48, 48)}{crosshair(1552, 48)}{crosshair(48, 852)}{crosshair(1552, 852)}
+  <rect x="120" y="92" width="{chip_w:.0f}" height="44" rx="5"
+    fill="{ACID}" fill-opacity="0.12"/>
+  <text x="{120 + chip_w / 2:.0f}" y="121" text-anchor="middle" font-family="{LABEL_F}"
+    font-size="21" font-weight="500" letter-spacing="1.6" fill="{ACID}">{CHIP_TXT}</text>
+  <line x1="48" y1="160" x2="1552" y2="160" stroke="{LINE}" stroke-width="1"/>
+
+  <text x="{MX}" y="{MY}" font-family="{HEAD_F}" font-size="{FS}" font-weight="600"
+    letter-spacing="{-0.02 * FS:.1f}" fill="none" stroke="{INK}" stroke-width="1.6">A</text>
+  {letters}
+  {glint(apath, aper, CAMP_AT, gl=38, ko=64, wko=6.5, wgl=3.4)}
+  <text x="{MX + (AGENT_W + SPACE) * S:.0f}" y="{MY}" font-family="{HEAD_F}"
+    font-size="{FS}" font-weight="600" letter-spacing="{-0.02 * FS:.1f}"
+    fill="{INK}">Baseline</text>
+  <line x1="{MX + (AGENT_W + SPACE + BASELINE_W) * S + 40:.0f}" y1="{MY}" x2="1552" y2="{MY}"
+    stroke="{BASE}" stroke-width="1.5"/>
+
+  {tenets}
+
+  <text x="120" y="800" font-family="{MONO_F}" font-size="19"
+    fill="{FAINT}">Six security outcomes · 33 controls · versioned in the open</text>
+  <text x="1480" y="800" text-anchor="end" font-family="{MONO_F}" font-size="17"
+    fill="{FAINT}">v1.0-draft</text>
+</svg>
+'''
+(BRAND / "social-campaign.svg").write_text(camp, encoding="utf-8")
+
+# ── render PNGs ──────────────────────────────────────────────────────────────
+chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+if not pathlib.Path(chrome).exists():
+    sys.exit("chrome not found — SVGs written, PNGs not rendered")
+
+def shot(svg_path, out, w, h, scale=2):
+    r = subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
+                        "--virtual-time-budget=3000",
+                        f"--force-device-scale-factor={scale}",
+                        f"--screenshot={out}", f"--window-size={w},{h}",
+                        "--default-background-color=00000000", svg_path.as_uri()],
+                       capture_output=True)
+    if r.returncode != 0:
+        sys.exit(f"chrome failed on {out.name}: {r.stderr.decode()[:300]}")
+    print(f"wrote {out.relative_to(ROOT)}  ({out.stat().st_size:,} bytes)")
+
+shot(BRAND / "social-campaign.svg", BRAND / "social-campaign.png", 1600, 900, 2)
+
+# the repo avatar: the favicon at 512
+avatar_svg = BRAND / ".avatar.svg"
+avatar_svg.write_text(icon.replace('viewBox="0 0 64 64"',
+                                   'viewBox="0 0 64 64" width="512" height="512"'),
+                      encoding="utf-8")
+shot(avatar_svg, BRAND / "avatar-512.png", 512, 512, 1)
+avatar_svg.unlink()
