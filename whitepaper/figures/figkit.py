@@ -11,8 +11,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 C = {"ink": "#1A1C1A", "soft": "#5A5E5A", "faint": "#797D79",
      "hair": "#E4E5E1", "rule": "#CBCDC8", "accent": "#1A4D8F",
      "plate": "#FFFFFF",
-     "serif": "Charter,'Iowan Old Style',Georgia,serif",
-     "mono": "ui-monospace,'SF Mono',Menlo,Consolas,monospace"}
+     # The page's own voices (see layouts/index.html): heads, prose, labels,
+     # data. A figure set in the page's type reads as part of the document.
+     "serif": "'IBM Plex Serif',Charter,Georgia,serif",
+     "head": "Figtree,'Avenir Next','Helvetica Neue',sans-serif",
+     "label": "'Chakra Petch','Avenir Next',sans-serif",
+     "mono": "'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace"}
 
 
 def catalogue():
@@ -42,25 +46,27 @@ class Fig:
         self.parts.append(f'<rect width="{w}" height="{h}" fill="{C["plate"]}"/>')
 
     @staticmethod
-    def _adv(size, mono, weight="400"):
-        """Mean advance per character.
+    def _adv(size, mono, weight="400", face=None):
+        """Mean advance per character, pessimistic per face.
 
-        Mono is near-exact. The serif figure is deliberately pessimistic: the
-        measured Charter mean is ~0.503, but bold runs are ~4% wider, caps and
-        em dashes are far wider, and on Linux the fallback resolves to DejaVu
-        Serif at ~0.55. Under-measuring makes a real collision read as
-        clearance, so the constant errs high.
+        Under-measuring makes a real collision read as clearance, so every
+        constant errs high: Figtree at 600 measures ~0.55, Chakra Petch caps
+        ~0.62 before tracking, Plex Serif ~0.55, Plex Mono exactly 0.6.
         """
+        if face == "head":
+            return size * (0.585 if weight in ("600", "700") else 0.56)
+        if face == "label":
+            return size * 0.66
         if mono:
             return size * 0.601
-        return size * (0.575 if weight == "700" else 0.548)
+        return size * (0.60 if weight == "700" else 0.575)
 
     @staticmethod
     def _esc(s):
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     def text(self, x, y, s, size=13, fill=None, weight="400", mono=False,
-             ls=0.0, tag="", href=""):
+             ls=0.0, tag="", href="", face=None):
         """Draw one run. `href` wraps it in a link.
 
         A figure whose parts are links is navigation rather than illustration —
@@ -69,11 +75,12 @@ class Fig:
         link colour, only an underline on hover, because six accented names
         would make the drawing louder than the prose around it.
         """
-        width = len(s) * self._adv(size, mono, weight) + len(s) * ls * size
+        width = len(s) * self._adv(size, mono, weight, face) + len(s) * ls * size
         self.boxes.append({"tag": tag or s[:20], "x": x, "y": y - size * 0.78,
                            "w": width, "h": size * 1.02, "text": s})
         sp = f' letter-spacing="{ls}em"' if ls else ""
-        run = (f'<text x="{x}" y="{y}" font-family="{C["mono"] if mono else C["serif"]}" '
+        fam = C[face] if face else (C["mono"] if mono else C["serif"])
+        run = (f'<text x="{x}" y="{y}" font-family="{fam}" '
                f'font-size="{size}" fill="{fill or C["ink"]}" font-weight="{weight}"{sp}>'
                f'{self._esc(s)}</text>')
         if href:
@@ -82,7 +89,14 @@ class Fig:
         return width
 
     def label(self, x, y, s, tag=""):
-        return self.text(x, y, s.upper(), 11, C["soft"], "400", True, 0.12, tag=tag)
+        return self.text(x, y, s.upper(), 11, C["soft"], "500", False, 0.1,
+                         tag=tag, face="label")
+
+    def card(self, x, y, w, h):
+        """The page's card: hairline, 4px radius, no fill — the tenet block."""
+        self.parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" '
+                          f'rx="4" fill="none" stroke="{C["hair"]}" '
+                          f'stroke-width="1"/>')
 
     def outcome(self, x, y, pre, gloss, names, hi, tag=None):
         """Name, identifier range, one-line gloss. No box."""

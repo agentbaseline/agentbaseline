@@ -9,155 +9,304 @@
 <meta name="description" content="An open reference architecture and controls for running AI agents in the enterprise. A draft for public comment, versioned in the open.">
 <link rel="canonical" href="{{ .Permalink }}">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{{/* CDN during the design pass; self-host the woff2 files before v1.0 so the
+     site goes back to making zero external requests. */}}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600;700&family=Chakra+Petch:wght@400;500;600&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+{{/* External and synchronous: the deployment CSP allows script-src 'self'
+     only, and the stored theme must apply before first paint. */}}
+<script src="/js/theme.js"></script>
 <style>
+  /* Same sheet language as the front page: title block, hairline frame,
+     registration marks, mono structure around serif prose. See index.html for
+     the rationale; the tokens are identical. */
   :root {
-    --paper:#FFFFFF; --ink:#222422; --soft:#5C605C; --faint:#6E726E;
-    --line:#E6E7E4; --link:#0B57D0; --visited:#55349B; --mark:#B3541E;
-    --wash:#F7F7F5; --accent:#1A4D8F;
-    --serif: Charter,"Iowan Old Style",Georgia,"Times New Roman",serif;
-    --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --paper:#FBF9F3; --ink:#221F18; --soft:#5C5850; --faint:#736E60;
+    --line:#E6E2D7; --link:#5A7A00; --link-hover:#3F5400; --visited:#66713F; --mark:#B3541E;
+    --wash:#F4F1E8; --accent:#5A7A00; --baseline:#D9D4C6;
+    --serif: "IBM Plex Serif",Charter,"Iowan Old Style",Georgia,serif;
+    --labelfont: "Chakra Petch","Avenir Next",sans-serif;
+    --head: "Figtree","Avenir Next","Helvetica Neue",sans-serif;
+    --mono: "IBM Plex Mono",ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8; --faint:#8A8E8A;
-      --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050;
-      --wash:#212321; --accent:#8AB4F8; }
+    :root { --paper:#151714; --ink:#E6E7E3; --soft:#A7ABA7; --faint:#8B8F8B;
+      --line:#2E302D; --link:#C6F13F; --link-hover:#DCFF66; --visited:#ABB584; --mark:#E08050;
+      --wash:#1D1F1C; --accent:#C6F13F; --baseline:#333531; }
   }
-  :root[data-theme="light"] { --wash:#F7F7F5; --accent:#1A4D8F; --paper:#FFFFFF; --ink:#222422; --soft:#5C605C;
-    --faint:#6E726E; --line:#E6E7E4; --link:#0B57D0; --visited:#55349B; --mark:#B3541E; }
-  :root[data-theme="dark"] { --wash:#212321; --accent:#8AB4F8; --paper:#191A19; --ink:#E6E7E4; --soft:#A8ACA8;
-    --faint:#8A8E8A; --line:#2F312F; --link:#8AB4F8; --visited:#C0A6F0; --mark:#E08050; }
+  :root[data-theme="light"] { --wash:#F4F1E8; --accent:#5A7A00; --baseline:#D9D4C6;
+    --paper:#FBF9F3; --ink:#221F18; --soft:#5C5850;
+    --faint:#736E60; --line:#E6E2D7; --link:#5A7A00; --link-hover:#3F5400; --visited:#66713F; --mark:#B3541E; }
+  :root[data-theme="dark"] { --wash:#1D1F1C; --accent:#C6F13F; --baseline:#333531;
+    --paper:#151714; --ink:#E6E7E3; --soft:#A7ABA7;
+    --faint:#8B8F8B; --line:#2E302D; --link:#C6F13F; --link-hover:#DCFF66; --visited:#ABB584; --mark:#E08050; }
 
   *,*::before,*::after { box-sizing: border-box; }
   body { margin:0; background:var(--paper); color:var(--ink);
-    font-family:var(--serif); font-size:18px; line-height:1.7;
-    -webkit-font-smoothing:antialiased; }
-  a { color:var(--link); text-underline-offset:2.5px; }
+    font-family:var(--serif); font-size:17.5px; line-height:1.75;
+    -webkit-font-smoothing:antialiased; overflow-x:clip; }
+  svg.ph { width:1em; height:1em; vertical-align:-0.15em; }
+  a { color:var(--link); text-decoration:none; }
+  a:hover { color:var(--link-hover); }
+  a svg.ph { color:inherit; }
   a:visited { color:var(--visited); }
   a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* Text selection carries the accent — a translucent wash so the ink beneath
+     stays its own colour. */
+  ::selection { background:color-mix(in srgb, var(--accent) 30%, transparent); }
 
-  .utility { font-family:var(--mono); font-size:12px; border-bottom:1px solid var(--line); }
-  .utility .in { max-width:640px; margin:0 auto; padding:10px 24px;
+  .utility { font-family:var(--mono); font-size:12px;
+    border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;
+    background:var(--paper); }
+  .utility .in { margin:0 auto; padding:12px 32px;
     display:flex; gap:18px; flex-wrap:wrap; }
-  .utility a { color:var(--soft); text-decoration:none; }
-  .utility a:hover { color:var(--link); text-decoration:underline; }
-  .utility a.mast { color:var(--ink); letter-spacing:.14em;
-    text-transform:uppercase; font-weight:600; }
+  .utility a { color:var(--soft); text-decoration:none;
+    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
+    text-transform:uppercase; }
+  .utility a:hover { color:var(--link); }
+  .utility a.mast { color:var(--ink); letter-spacing:.12em; font-weight:600; }
+  .utility .crumb { font-family:var(--labelfont); font-size:12px;
+    letter-spacing:.07em; text-transform:uppercase; }
+  .utility .crumb .sep { color:var(--faint); margin:0 2px; }
+  .utility .crumb .here { color:var(--soft); }
+  .nav-menu summary svg.ph { width:18px; height:18px; }
+  details.menu ul.dd.left { left:-8px; right:auto; }
   .utility .right { margin-left:auto; color:var(--faint); }
+  .utility .pub { font-family:var(--labelfont); font-size:11.5px;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--soft); }
+  .utility .pub .k { color:var(--faint); margin-right:2px; }
+  /* The one tinted block in the chrome: the deadline is the site's ask.
+     Soft treatment — accent text on a translucent wash of itself. */
+  .utility a.closes, .utility a.closes:visited {
+    background:color-mix(in srgb, var(--accent) 12%, transparent);
+    color:var(--accent); font-family:var(--labelfont); font-weight:500;
+    font-size:11px; letter-spacing:.06em; padding:3px 8px;
+    border-radius:3px; }
+  .utility a.closes:hover {
+    background:color-mix(in srgb, var(--accent) 22%, transparent);
+    color:var(--accent); }
+  details.menu { position:relative; }
+  details.menu summary { list-style:none; cursor:pointer;
+    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--soft); display:inline-flex;
+    align-items:center; gap:4px; }
+  details.menu summary::-webkit-details-marker { display:none; }
+  details.menu summary:hover, details.menu[open] summary { color:var(--link); }
+  details.menu ul.dd { position:absolute; top:calc(100% + 10px); right:-8px;
+    min-width:190px; margin:0; padding:6px; list-style:none;
+    background:var(--paper); border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10); z-index:30; }
+  details.menu ul.dd a { display:flex; align-items:center; gap:9px;
+    padding:8px 10px; font-family:var(--mono); font-size:12.5px;
+    color:var(--soft); border-radius:3px; text-transform:none; letter-spacing:0; }
+  details.menu ul.dd a:hover { background:var(--wash); color:var(--link); }
+  .utility .ver { color:var(--faint); }
+  @media (max-width:760px) { .utility .pub { display:none; } }
+  .themebtn { background:none; border:0; padding:2px; margin:0; cursor:pointer;
+    color:var(--soft); display:inline-flex; align-self:center; }
+  .themebtn:hover { color:var(--link); }
+  .themebtn:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .themebtn svg.ph { width:15px; height:15px; }
+  /* The glyph shows the mode a click gives you. data-theme (the stored choice)
+     must beat the system preference in both directions. */
+  .tb-sun { display:none; } .tb-moon { display:inline-flex; }
+  @media (prefers-color-scheme:dark) {
+    .tb-sun { display:inline-flex; } .tb-moon { display:none; }
+  }
+  :root[data-theme="dark"] .tb-sun { display:inline-flex; }
+  :root[data-theme="dark"] .tb-moon { display:none; }
+  :root[data-theme="light"] .tb-sun { display:none; }
+  :root[data-theme="light"] .tb-moon { display:inline-flex; }
 
-  .page { max-width:640px; margin:0 auto; padding:72px 24px 96px; }
-  h1 { font-size:clamp(30px,5vw,40px); font-weight:700; line-height:1.18;
-    margin:0 0 10px; letter-spacing:-0.008em; text-wrap:balance; }
-  .metaline { font-family:var(--mono); font-size:12.5px; color:var(--faint);
-    margin:0 0 44px; line-height:1.9; }
-  .metaline a { color:var(--soft); }
-  .intro p { margin:0 0 22px; }
-  .intro .status-line { color:var(--soft); font-size:16.5px; }
+  .sheet { max-width:1200px; margin:0 auto; position:relative; }
+  @media (min-width:1280px) {
+    .sheet { border-inline:1px solid var(--line); }
+    .sheet::before, .sheet::after { content:""; position:absolute; top:-7px;
+      width:15px; height:15px; pointer-events:none;
+      background:
+        linear-gradient(var(--faint),var(--faint)) center/1px 15px no-repeat,
+        linear-gradient(var(--faint),var(--faint)) center/15px 1px no-repeat; }
+    .sheet::before { left:-8px; }
+    .sheet::after { right:-8px; }
+    /* The frame closes the way it opens — marks at all four corners. These
+       anchor to .sheet (the nearest positioned ancestor); as absolutely
+       positioned pseudo-elements they never become grid items. */
+    .page::before, .page::after { content:""; position:absolute; bottom:-8px;
+      width:15px; height:15px; pointer-events:none;
+      background:
+        linear-gradient(var(--faint),var(--faint)) center/1px 15px no-repeat,
+        linear-gradient(var(--faint),var(--faint)) center/15px 1px no-repeat; }
+    .page::before { left:-8px; }
+    .page::after { right:-8px; }
+  }
+  .page { display:grid; grid-template-columns:1fr min(680px,100%) 1fr;
+    padding:0 clamp(28px,4vw,56px) 128px; }
+  .page > * { grid-column:2; min-width:0; }
+  .page > .wide { grid-column:1 / -1; }
 
-  h2 { font-size:14px; font-family:var(--mono); font-weight:400;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--soft);
-    margin:60px 0 20px; }
+  .titleblock { padding-top:80px; margin-bottom:52px; }
+  h1 { font-family:var(--head); font-size:clamp(38px,5.5vw,50px);
+    font-weight:600; line-height:1.05; margin:0 0 28px; letter-spacing:-0.02em;
+    text-wrap:balance; position:relative; }
+  h1::after { content:""; position:absolute; z-index:-1; height:1px;
+    top:0.79em; left:50%; transform:translateX(-50%); width:100vw;
+    background:linear-gradient(to right, transparent 0%,
+      var(--baseline) 26%, var(--baseline) 58%, transparent 88%); }
 
-  ol.factors { list-style:none; margin:0; padding:0; counter-reset:f; }
-  ol.factors > li { counter-increment:f; padding:18px 0; border-top:1px solid var(--line);
-    display:grid; grid-template-columns:52px 1fr; gap:0 8px; }
-  ol.factors > li:last-child { border-bottom:1px solid var(--line); }
-  ol.factors > li::before { content:counter(f,upper-roman) "."; font-family:var(--serif);
-    font-size:19px; color:var(--faint); padding-top:1px; }
-  ol.factors > li > .name a { color:var(--ink); text-decoration:none; }
-  ol.factors > li > .name a:hover { color:var(--link); text-decoration:underline; }
-  ol.factors > li > .name { font-size:21px; font-weight:700; }
-  ol.factors > li > .name .ids { font-family:var(--mono); font-size:12px; font-weight:400;
-    color:var(--faint); margin-left:10px; white-space:nowrap; }
-  ol.factors > li > .req { grid-column:2; color:var(--soft); font-size:16px; margin-top:2px; }
+  dl.tb { display:grid; grid-template-columns:repeat(4,auto) 1fr;
+    margin:0; border-block:1px solid var(--line); font-family:var(--mono); }
+  dl.tb .cell { padding:12px 20px 13px 0; margin:0; }
+  dl.tb .cell + .cell { border-left:1px solid var(--line); padding-left:20px; }
+  dl.tb dt { font-family:var(--labelfont); font-weight:500; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase;
+    color:var(--faint); margin-bottom:3px; }
+  dl.tb dd { font-size:13px; margin:0; color:var(--ink);
+    font-variant-numeric:tabular-nums; white-space:nowrap; }
+  dl.tb dd a { color:var(--soft); }
+  dl.tb dd a:hover { color:var(--link); }
+  @media (max-width:719px) {
+    dl.tb { grid-template-columns:1fr 1fr; }
+    dl.tb .cell:nth-child(odd) { border-left:none; padding-left:0; }
+    dl.tb .cell:nth-child(n+3) { border-top:1px solid var(--line); }
+  }
 
-  ul.people { list-style:none; margin:0; padding:0; }
-  ul.people li { padding:14px 0; border-top:1px solid var(--line);
-    display:flex; flex-direction:column; gap:2px; }
-  ul.people li:last-child { border-bottom:1px solid var(--line); }
-  ul.people .who { font-size:17px; font-weight:700; }
-  ul.people .org { font-family:var(--mono); font-size:11.5px; font-weight:400;
-    letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-left:10px; }
-  ul.people .wrote { color:var(--soft); font-size:15px; }
-  ul.people .role { font-family:var(--mono); font-size:11px; color:var(--faint);
-    letter-spacing:.05em; }
-
-  figure.fig1 { margin-block:44px 0; margin-inline:0; padding:0; }
-  /* The figure is deliberately light in both themes: identical bytes ship to the
-     page, the PDF, partner slides and the social card. One artifact, five surfaces. */
-  figure.fig1 { min-width:0; }
-  .prose + figure.fig1 { margin-block-start:40px; }
-  figure.fig1 + h2 { margin-top:72px; }
-  figure.fig1 svg { display:block; width:100%; max-width:100%; height:auto;
-    border:1px solid var(--line); border-radius:8px; background:#FFFFFF; }
-  figure.fig1 figcaption { font-size:14px; color:var(--soft); margin-top:14px;
-    line-height:1.6; max-width:592px; margin-inline:auto; }
-
-  ol.factors + .prose { margin-top:28px; }
-  nav.toc { display:flex; flex-wrap:wrap; gap:0 26px; margin:56px 0 -18px;
-    padding-top:20px; border-top:1px solid var(--line);
+  nav.toc { display:flex; flex-wrap:wrap; gap:0 26px; margin:0 0 8px;
     font-family:var(--mono); font-size:12.5px; }
+  /* The catalogue's own nav: every identifier, in a rail that keeps pace with
+     the reader. Wide viewports only — it lives in the sheet's left column;
+     narrower ones keep the horizontal contents line above. */
+  nav.sidenav { display:none; }
+  @media (min-width:1200px) {
+    nav.toc { display:none; }
+    /* A grid item in the sheet's left column, spanning every content row —
+       the title block above is .wide, so the rail starts beneath it and the
+       sticky inner tracks the whole catalogue. */
+    nav.sidenav { display:block; grid-column:1; grid-row:2 / span 999;
+      width:190px; justify-self:start; }
+    nav.sidenav .sn { position:sticky; top:76px;
+      max-height:calc(100vh - 100px); overflow:auto; padding:4px 12px 12px 0; }
+    .sn-g { margin-bottom:18px; }
+    .sn-o { display:block; font-family:var(--labelfont); font-size:11px;
+      letter-spacing:.08em; text-transform:uppercase; color:var(--soft);
+      margin-bottom:7px; }
+    .sn-o .pfx { color:var(--accent); font-weight:600; }
+    .sn-o:hover { color:var(--link); }
+    .sn-ids { display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; }
+    .sn-ids a { font-family:var(--mono); font-size:11px; color:var(--faint);
+      font-variant-numeric:tabular-nums; }
+    .sn-ids a:hover, .sn-ids a:visited:hover { color:var(--link); }
+    .sn-ids a:visited { color:var(--faint); }
+  }
   nav.toc a { color:var(--soft); text-decoration:none; padding:4px 0; }
-  nav.toc a:hover { color:var(--link); text-decoration:underline; }
+  nav.toc a:hover { color:var(--link); }
   nav.toc .n { color:var(--faint); margin-left:6px; font-variant-numeric:tabular-nums; }
-  ol.factors > li { scroll-margin-top:20px; }
 
-  ol.controls { list-style:none; margin:18px 0 4px; padding:0; grid-column:2;
-    border-top:1px solid var(--line); }
-  ol.controls li { padding:14px 0; border-bottom:1px solid var(--line);
-    display:grid; grid-template-columns:82px 1fr; gap:2px 14px; scroll-margin-top:24px; }
+  h2 { font-size:13.5px; font-family:var(--labelfont); font-weight:500;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--soft);
+    margin:76px 0 22px; position:relative;
+    display:flex; align-items:baseline; gap:12px; }
+  h2 .pfx { color:var(--accent); font-weight:600; letter-spacing:.06em; }
+  /* Hanging punctuation: the mark lives in the margin, the text on the datum. */
+  @media (min-width:720px) {
+    h2 .pfx { position:absolute; right:calc(100% + 14px); white-space:nowrap; }
+  }
+  h2 .oc-ic { color:var(--soft); align-self:center; display:inline-flex;
+    margin-right:-4px; }
+  h2 .oc-ic svg.ph { width:15px; height:15px; }
+  h2::after { content:""; flex:1; height:1px; background:var(--line);
+    align-self:center; }
+  h2[id] { scroll-margin-top:72px; }
+  .outcome-req { color:var(--soft); font-size:16px; margin:-8px 0 4px; }
+
+  ol.controls { list-style:none; margin:18px 0 4px; padding:0; }
+  ol.controls li { padding:16px 0; border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:82px 1fr; gap:2px 14px; scroll-margin-top:72px; }
+  ol.controls li:first-child { border-top:1px solid var(--line); }
   ol.controls li:target { background:var(--wash); box-shadow:-10px 0 0 var(--wash),10px 0 0 var(--wash); }
   ol.controls .cid { grid-row:1/3; font-family:var(--mono); font-size:12px; font-weight:700;
     color:var(--accent); text-decoration:none; padding-top:3px;
     font-variant-numeric:tabular-nums; }
-  ol.controls .cid:hover { text-decoration:underline; }
-  ol.controls .ctitle { font-size:16px; font-weight:700; }
+  ol.controls .cid:hover { color:var(--link-hover); }
+  ol.controls .ctitle { font-family:var(--head); font-size:15.5px;
+    font-weight:600; letter-spacing:-0.005em; }
   ol.controls .creq { font-size:15px; color:var(--soft); line-height:1.6; }
 
-  .prose p { margin:0 0 18px; }
-  .prose .note { color:var(--soft); font-size:16px; }
-  .cite { font-family:var(--mono); font-size:13px; background:var(--paper);
-    border:1px solid var(--line); padding:12px 14px; overflow-x:auto; }
-  footer { margin-top:72px; padding-top:20px; border-top:1px solid var(--line);
-    font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9; }
-
-  /* Break the prose measure for the figure only — centred on the viewport and
-     never wider than it, so the body never scrolls sideways. Declared last:
-     an earlier `margin` shorthand on .fig1 would otherwise reset margin-inline. */
-  @media (min-width:1000px) {
-    figure.fig1 { width:min(920px, calc(100vw - 48px));
-      margin-inline-start:calc(50% - min(460px, calc(50vw - 24px))); }
-  }
-  h2[id] { scroll-margin-top:2rem; }
-  .outcome-req { color:var(--soft); font-size:16px; margin:-8px 0 4px; }
   .cite { font-family:var(--mono); font-size:13px; background:var(--wash);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px;
     overflow-x:auto; margin:0 0 16px; }
   p.note { color:var(--soft); font-size:16px; max-width:66ch; margin:0 0 14px; }
-  ol.controls { border-top:none; }
+
+  footer { margin-top:104px; border-top:1px solid var(--line); padding-top:16px;
+    font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9;
+    display:flex; gap:12px 32px; flex-wrap:wrap; justify-content:space-between; }
+  footer .sig { font-family:var(--labelfont); letter-spacing:.12em;
+    text-transform:uppercase; }
 </style>
 </head>
 <body>
 
 <nav class="utility">
   <div class="in">
-    <a class="mast" href="/">Agent Baseline</a>
-    <a href="{{ .Site.Params.repo }}">Source</a>
-    <a href="{{ .Site.Params.repo }}/issues">Comment</a>
-    <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>
-    <a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a>
-    <span class="right">v{{ .Site.Params.version }}</span>
+    <details class="menu nav-menu">
+      <summary aria-label="Site menu">{{ partial "icons/list.svg" . }}</summary>
+      <ul class="dd left">
+        <li><a href="{{ .Site.Params.repo }}">Source</a></li>
+        <li><a href="{{ .Site.Params.repo }}/issues">Comment</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a></li>
+      </ul>
+    </details>
+    <span class="crumb"><a class="mast" href="/">Agent Baseline</a>
+      <span class="sep">/</span> <span class="here">Controls</span></span>
+    <span class="right pub"><span class="k">Published</span> {{ .Site.Params.published }}</span>
+    <a class="closes" href="{{ .Site.Params.repo }}/issues">Comment closes {{ .Site.Params.commentsUntil }}</a>
+    <details class="menu">
+      <summary>Artifacts {{ partial "icons/caret-down.svg" . }}</summary>
+      <ul class="dd">
+        {{ if fileExists "static/whitepaper.pdf" }}<li><a href="/whitepaper.pdf">{{ partial "icons/file-pdf.svg" . }}PDF</a></li>{{ end }}
+        <li><a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">{{ partial "icons/file-code.svg" . }}controls.yaml</a></li>
+        <li><a href="{{ .Site.Params.repo }}">{{ partial "icons/git-branch.svg" . }}repository</a></li>
+      </ul>
+    </details>
+    <span class="ver">v{{ .Site.Params.version }}</span>
+    <button class="themebtn" aria-label="Switch between light and dark theme">
+      <span class="tb-sun">{{ partial "icons/sun.svg" . }}</span>
+      <span class="tb-moon">{{ partial "icons/moon.svg" . }}</span>
+    </button>
   </div>
 </nav>
 
-<main class="page">
+<main class="sheet">
+<div class="page">
 
-  <h1>Controls</h1>
-  <p class="metaline">
-    {{ len $cat.controls }} controls across six outcomes · v{{ .Site.Params.version }} · {{ .Site.Params.published }}<br>
-    <a href="/">overview</a> ·
-    <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
-    <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">identifier stability</a>
-  </p>
+  <header class="titleblock wide">
+    <h1>Controls</h1>
+    <dl class="tb">
+      <div class="cell"><dt>Catalogue</dt><dd>{{ len $cat.controls }} controls · six outcomes</dd></div>
+      <div class="cell"><dt>Reference</dt><dd>
+        <a href="/">overview</a> ·
+        <a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">controls.yaml</a> ·
+        <a href="{{ .Site.Params.repo }}/blob/main/VERSIONING.md">identifier stability</a>
+      </dd></div>
+    </dl>
+  </header>
+
+  <nav class="sidenav" aria-label="All controls">
+    <div class="sn">
+      {{- range $cat.outcomes }}
+      {{- $ids := where $cat.controls "outcome" .prefix }}
+      <div class="sn-g">
+        <a class="sn-o" href="#{{ lower .name }}"><span class="pfx">{{ .prefix }}</span> {{ .name }}</a>
+        <div class="sn-ids">
+          {{- range $ids }}
+          <a href="#{{ .id }}">{{ .id }}</a>
+          {{- end }}
+        </div>
+      </div>
+      {{- end }}
+    </div>
+  </nav>
 
   <nav class="toc" aria-label="Contents">
     {{- range $cat.outcomes }}
@@ -166,10 +315,13 @@
     {{- end }}
   </nav>
 
+  {{- $oicons := dict "DIS" "binoculars" "AUT" "identification-badge"
+                      "CON" "arrows-in-cardinal" "VAL" "seal-check"
+                      "OBS" "eye" "RES" "hand-palm" }}
   {{- range $cat.outcomes }}
   {{- $prefix := .prefix }}
   {{- $ids := where $cat.controls "outcome" $prefix }}
-  <h2 id="{{ lower .name }}">{{ .name }}</h2>
+  <h2 id="{{ lower .name }}"><span class="pfx">{{ $prefix }}</span><span class="oc-ic">{{ partial (printf "icons/%s.svg" (index $oicons $prefix)) $ }}</span> {{ .name }}</h2>
   <p class="outcome-req">{{ .requirement }}</p>
   <ol class="controls">
     {{- range $ids }}
@@ -192,11 +344,13 @@
   <p class="note">To cite the document itself: Agent Baseline, v{{ .Site.Params.version }},
   agentbaseline.org, {{ .Site.Params.published }}.</p>
 
-  <footer>
-    Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
-    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a>
+  <footer class="wide">
+    <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
+    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
+    <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
   </footer>
 
+</div>
 </main>
 </body>
 </html>
