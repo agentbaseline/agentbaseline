@@ -6,3 +6,6 @@ resources/
 .hugo_build.lock
 whitepaper/figures/.figure-1.boxes.json
 .env*
+
+# build-pdf scratch: the pandoc HTML and the paginated document
+whitepaper/.build/

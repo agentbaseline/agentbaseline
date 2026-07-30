@@ -17,7 +17,7 @@ This baseline fills a gap that existing guidance leaves open. Threat lists and r
 
 Security is one outcome of getting it right, but the larger purpose is enabling the enterprise to operationalize AI safely. The six outcomes described here define the operating layer that translates business intent into governed autonomous action. Their concerns of identity, capability, authority, evidence and containment belong as much to the CIO, the CTO, platform engineering and governance teams as they do to the CISO, because they decide not just whether agents are safe but whether the organization can delegate real work to them at all.
 
-![](figures/docs-image1.png)
+![The continuous control loop: business intent flows to Discover, Constrain and Authorize, then to Observe, Validate and Respond, and back to the next request.](figures/figure-control-loop.svg)
 
 # Contents {#contents}
 
@@ -29,7 +29,7 @@ Security is one outcome of getting it right, but the larger purpose is enabling 
 
 [What we mean by an AI agent](#what-we-mean-by-an-ai-agent)
 
-[Six-outcome](#six-outcome)
+[The six outcomes](#six-outcome)
 
 [Discover](#discover)
 
@@ -53,7 +53,7 @@ Security is one outcome of getting it right, but the larger purpose is enabling 
 
 [Stage 3: The deployed agent and the delegation problem](#stage-3:-the-deployed-agent-and-the-delegation-problem)
 
-[Stage 4: autonomous operation and the ability to say “stop”](#stage-4:-autonomous-operation-and-the-ability-to-say-“stop”)
+[Stage 4: autonomous operation and the ability to say “stop”](#stage-4-saying-stop)
 
 [Conclusion](#conclusion)
 
@@ -82,9 +82,7 @@ No single enforcement point can deliver this control system. The required contro
 | 5\. Validate | Test agents, components and generated artifacts against relevant threats. | Tested agents and first-party components, verified third-party agents and components, and tested agent-produced artifacts. |
 | 6\. Respond | Stop, revoke, quarantine and contain unsafe agent activity. | Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping. |
 
-# 
-
-# Six-outcome {#six-outcome}
+# The six outcomes {#six-outcome}
 
 The six outcomes are not an exhaustive list of controls. They are the baseline architectural coverage test because together they answer three questions: 
 
@@ -108,7 +106,7 @@ To put this in perspective, imagine trying to catalogue every skill your employe
 
 Neither problem is solved by making Security the census-taker. The workable model inverts the usual accountability: the business registers and owns its agents, and Security writes the criteria that say which agents must be registered, when, and what the record contains. Observation stays universal. Registration does not need to, so long as the threshold is explicit and set by risk: an unregistered agent below it is accepted risk, one above it is a finding for discovery to surface. The threshold also polices itself. Registration is how an agent reaches the valuable parts of the organization, so an agent that stays unregistered stays confined to low-value access.
 
-![](figures/docs-image2.png)
+![Discovery in five stages: sense and collect, identify and bind, observe and capture, assess and enrich, record and emit, feeding continuous rediscovery.](figures/figure-discover.svg)
 
 ### What to do
 
@@ -130,7 +128,7 @@ Most existing supply-chain controls still apply. A skill is a Markdown file, so 
 
 Checking components one by one misses another class of risk. A tool with no known vulnerability can still complete a path from untrusted input to sensitive data, external communication or destructive action. The danger comes from the combination. The “lethal trifecta” is one example.
 
-![](figures/docs-image3.png)
+![Three overlapping circles - untrusted input, access to sensitive data, and external communication. An agent holding all three can turn prompt injection into data loss.](figures/figure-lethal-trifecta.svg)
 
 Discovery establishes which components exist and where they are used. Supply-chain and composition capabilities determine which components may be used, how they may be connected, and whether agents can introduce unapproved components at runtime.
 
@@ -150,7 +148,7 @@ For ordinary software, arbitrary code running outside policy is a compromise; fo
 
 Two things need special care, both at the edges of the boundary. Egress is where data theft is decided, since an attack only succeeds if the data can leave, and agent egress is harder than conventional data-loss control because the legitimate destinations cannot be listed in advance: a service's are fixed, but an agent's are chosen by the same runtime planning an attacker can steer, and its work channels, package installs, git pushes, webhooks and APIs, are the very channels stolen data would use, with covert paths like DNS alongside them. Egress must therefore be scoped to the task, not the workload. The other edge is what the agent creates, not only what it loads: untrusted content steers the model, the model writes code, and the code acts, laundering an instruction into behaviour no input filter ever saw. Inside the sandbox that is tolerable, since it runs with only the task's authority; the risk concentrates at the exit, where a commit, package or deployment carries it into systems the sandbox no longer controls.
 
-### ![](figures/docs-image4.png)
+![A central governance plane defines versioned capability profiles, which are instantiated into a scoped agent sandbox limited to workspace, approved network, scoped credentials and bounded compute.](figures/figure-runtime-isolation.svg)
 
 Reference capabilities: CON-03–04 Appendix A
 
@@ -176,7 +174,7 @@ Identity alone does not bound what an agent may do. An account's permissions sta
 
 Standing permissions may legitimately exist in the systems an agent touches, but an agent that exercises them directly wields everything the account can do, not what the task requires. A narrow task then runs under broad standing access, and that access passes unchanged to every subagent: the chain has no technical expression of the task boundary. If one agent acts incorrectly, the scale of failure is set by the inherited permissions, not by the authority the work needed.
 
-![](figures/docs-image5.png)
+![Authority attenuating along the chain: initiating principal, agent, downstream agent, tool or target - each hop scoped no wider than its caller.](figures/figure-authority-attenuation.svg)
 
 ### What to do
 
@@ -242,7 +240,7 @@ Reference capabilities: VAL-01-04 Appendix A
 
 When an agent goes wrong, the response window is shorter than the normal human incident cycle. An agent does not act at raw machine speed: each step still waits for model inference and tool execution. Its advantage is how quickly it can interpret noisy results, recognise useful patterns and choose the next action. Work that takes a person minutes or hours can take an agent seconds, allowing a harmful run to adapt before an operator understands what is happening.
 
-![](figures/docs-image6.png)
+![The response lifecycle: detect, stop and revoke, quarantine, scope and preserve, fail closed.](figures/figure-response-lifecycle.svg)
 
 Containment must do more than terminate the visible process. If an agent has been tricked into exfiltrating data with a legitimately issued token, deleting its container does nothing while that token, its delegated grants and its live sessions still work elsewhere. Response must stop new work and invalidate the active credentials, permits, grants and sessions within a window set by the worst-case impact.
 
@@ -310,7 +308,7 @@ Before this service goes live, the team checks the actual release, including its
 
 Some patches eventually start from a schedule rather than a user. The record says that the service acted for an approved maintenance purpose it does not pretend that Alice was present at midnight. The resulting change is still checked against the ticket and the repository outcome. An allowed write can produce a harmful patch, so permission is only one part of the evidence (VAL-04, OBS-04, OBS-06).
 
-## Stage 4: autonomous operation and the ability to say “stop” {#stage-4:-autonomous-operation-and-the-ability-to-say-“stop”}
+## Stage 4: autonomous operation and the ability to say “stop” {#stage-4-saying-stop}
 
 One night, a vulnerability feed opens a patching job while the team is asleep. The advisory has been poisoned. Partway through the run, the agent sends data toward an unapproved destination.
 
@@ -327,8 +325,6 @@ No single enforcement point can secure that path, and no shopping list of produc
 None of this requires a new agent platform or a single mandatory proxy. The controls stay where they already live: the identity provider, the admission gate, the sandbox, the credential broker, the testing pipeline, the SIEM. Each one is extended to understand agents. Common contracts for identity, policy, action and evidence tie them together, and shared identifiers let decisions and evidence follow the agent wherever it runs. A product may implement one piece. The architecture is complete only when all six outcomes are covered and connected.
 
 The same dependency patch can be watched command by command or run unattended overnight. The business intent never changes, only the autonomy does. That is the challenge these outcomes exist to meet, and it was never really about governing a model. It is about safely delegating work. Together the six form the operating layer that lets autonomy scale without risk scaling with it. An organization that can identify every agent, bound its authority, control its actions and prove its outcomes gives its CISO a third option: let autonomy grow deliberately instead of discovering it after the fact. That is what it means to move fast without losing control.
-
-# 
 
 # Appendix A. Canonical capability map {#appendix-a.-canonical-capability-map}
 
