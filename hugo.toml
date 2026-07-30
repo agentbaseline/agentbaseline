@@ -2,6 +2,21 @@ baseURL = "https://agentbaseline.org/"
 title = "Agent Baseline"
 locale = "en"
 
+# This site is two pages and a PDF. It has no taxonomies, no sections and no
+# feed, so the kinds that would invent them are switched off.
+#
+# Placement is load-bearing, not style. TOML has no closing delimiter: every
+# key after a [table] header belongs to that table until the next header. This
+# line used to sit below the [[module.mounts]] block, which made it a key of
+# the last mount rather than a root setting — Hugo dropped it silently and
+# published all six kinds anyway. That is how /categories and /tags came to
+# serve empty RSS channels to browsers as `application/xml`. Root keys go
+# above the first table header.
+#
+# `sitemap` is deliberately absent: the site ships its own template at
+# layouts/sitemap.xml, and disabling the kind would suppress it.
+disableKinds = ["taxonomy", "term", "RSS", "404", "section"]
+
 # The site renders FROM the catalogue: whitepaper/controls.yaml is mounted
 # into Hugo's data tree, so the outcomes and their identifier ranges on the
 # page are generated from it and cannot drift.
@@ -17,8 +32,6 @@ locale = "en"
 [[module.mounts]]
   source = "content"
   target = "content"
-
-disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
 
 [params]
   version       = "1.0-draft"
