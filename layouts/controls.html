@@ -138,7 +138,11 @@
   :root[data-theme="light"] .tb-sun { display:none; }
   :root[data-theme="light"] .tb-moon { display:inline-flex; }
 
-  .sheet { max-width:1200px; margin:0 auto; position:relative; }
+  /* The bottom padding is the sheet's, not the grid's: the footer sits outside
+     <main> and inside the sheet, so the space that closes the drawing has to
+     belong to the thing the registration marks are anchored to. */
+  .sheet { max-width:1200px; margin:0 auto; position:relative;
+    padding-bottom:128px; }
   @media (min-width:1280px) {
     .sheet { border-inline:1px solid var(--line); }
     .sheet::before, .sheet::after { content:""; position:absolute; top:-7px;
@@ -160,7 +164,7 @@
     .page::after { right:-8px; }
   }
   .page { display:grid; grid-template-columns:1fr min(680px,100%) 1fr;
-    padding:0 clamp(28px,4vw,56px) 128px; }
+    padding:0 clamp(28px,4vw,56px); }
   .page > * { grid-column:2; min-width:0; }
   .page > .wide { grid-column:1 / -1; }
 
@@ -256,7 +260,11 @@
     overflow-x:auto; margin:0 0 16px; }
   p.note { color:var(--soft); font-size:16px; max-width:66ch; margin:0 0 14px; }
 
-  footer { margin-top:104px; border-top:1px solid var(--line); padding-top:16px;
+  /* A sibling of <main>, not a child of it: contentinfo is a landmark of the
+     page, and a landmark nested inside main is not exposed as one. Outside the
+     grid it matches the grid's inset by hand. */
+  footer { margin:104px clamp(28px,4vw,56px) 0;
+    border-top:1px solid var(--line); padding-top:16px;
     font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9;
     display:flex; gap:12px 32px; flex-wrap:wrap; justify-content:space-between; }
   footer .sig { font-family:var(--labelfont); letter-spacing:.12em;
@@ -300,8 +308,8 @@
   </div>
 </nav>
 
-<main class="sheet" id="main" tabindex="-1">
-<div class="page">
+<div class="sheet">
+<main class="page" id="main" tabindex="-1">
 
   <header class="titleblock wide">
     <h1>Controls</h1>
@@ -367,13 +375,14 @@
   <p class="note">To cite the document itself: Agent Baseline, v{{ .Site.Params.version }},
   agentbaseline.org, {{ .Site.Params.published }}.</p>
 
-  <footer class="wide">
-    <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
-    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
-    <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
-  </footer>
+</main>
+
+<footer>
+  <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
+  <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
+  <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
+</footer>
 
 </div>
-</main>
 </body>
 </html>

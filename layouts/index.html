@@ -172,7 +172,11 @@
      frame with registration marks at the top corners — the page as a drawing
      sheet, not a blog column. The marks are drawn, not typed, so translators
      and screen readers never meet them. */
-  .sheet { max-width:1200px; margin:0 auto; position:relative; }
+  /* The bottom padding is the sheet's, not the grid's: the footer sits outside
+     <main> and inside the sheet, so the space that closes the drawing has to
+     belong to the thing the registration marks are anchored to. */
+  .sheet { max-width:1200px; margin:0 auto; position:relative;
+    padding-bottom:128px; }
   @media (min-width:1280px) {
     .sheet { border-inline:1px solid var(--line); }
     .sheet::before, .sheet::after { content:""; position:absolute; top:-7px;
@@ -197,7 +201,7 @@
   /* Prose keeps a 640px measure inside the wider sheet; anything marked .wide —
      the title block, the figure, the footer — takes the full sheet. */
   .page { display:grid; grid-template-columns:1fr min(680px,100%) 1fr;
-    padding:0 clamp(28px,4vw,56px) 128px; }
+    padding:0 clamp(28px,4vw,56px); }
   .page > * { grid-column:2; min-width:0; }
   .page > .wide { grid-column:1 / -1; }
 
@@ -487,8 +491,13 @@
   .prose p { margin:0 0 18px; }
   .prose .note { color:var(--soft); font-size:16px; }
 
-  /* The footer mirrors the title block — a document closes the way it opens. */
-  footer { margin-top:104px; border-top:1px solid var(--line); padding-top:16px;
+  /* The footer mirrors the title block — a document closes the way it opens.
+     It is a sibling of <main>, not a child of it: contentinfo is a landmark of
+     the page, and a landmark nested inside main is not exposed as one. Outside
+     the grid it keeps the prose sheet's measure by matching the grid's inset
+     by hand. */
+  footer { margin:104px clamp(28px,4vw,56px) 0;
+    border-top:1px solid var(--line); padding-top:16px;
     font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9;
     display:flex; gap:12px 32px; flex-wrap:wrap; justify-content:space-between; }
   footer .sig { font-family:var(--labelfont); letter-spacing:.12em;
@@ -530,8 +539,8 @@
   </div>
 </nav>
 
-<main class="sheet" id="main" tabindex="-1">
-<div class="page">
+<div class="sheet">
+<main class="page" id="main" tabindex="-1">
 
   <header class="titleblock wide">
     <h1><span class="sr-only">Agent</span><svg class="agent-draw" viewBox="0 0 270 120" aria-hidden="true" focusable="false"><text x="0" y="95">A</text><text x="67.9" y="95">g</text><text x="124.6" y="95">e</text><text x="177.7" y="95">n</text><text x="232.1" y="95">t</text><g class="reink"><text x="0" y="95">A</text><text x="67.9" y="95">g</text><text x="124.6" y="95">e</text><text x="177.7" y="95">n</text><text x="232.1" y="95">t</text></g><g class="wipe"><text x="0" y="95">A</text><text x="67.9" y="95">g</text><text x="124.6" y="95">e</text><text x="177.7" y="95">n</text><text x="232.1" y="95">t</text></g><g class="spark"><text x="0" y="95">A</text><text x="67.9" y="95">g</text><text x="124.6" y="95">e</text><text x="177.7" y="95">n</text><text x="232.1" y="95">t</text></g></svg> <em>Baseline</em></h1>
@@ -646,13 +655,14 @@
 
   </div>
 
-  <footer class="wide">
-    <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
-    <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
-    <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
-  </footer>
+</main>
+
+<footer>
+  <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 · versioned at
+  <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
+  <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
+</footer>
 
 </div>
-</main>
 </body>
 </html>
