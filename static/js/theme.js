@@ -7,6 +7,13 @@
      per page view, and only if IntersectionObserver exists — no polyfill, the
      measurement is not worth bytes on old browsers. */
   addEventListener('DOMContentLoaded', function () {
+    /* Landing directly on a control means someone was sent it, or cited it —
+       the behaviour the whole versioning promise exists to support, and
+       invisible in page views because the hash never reaches the server. */
+    var hash = (location.hash || '').slice(1);
+    if (/^(?:DIS|CON|AUT|VAL|OBS|RES)-\d{2}$/.test(hash) && typeof va === 'function') {
+      va('event', { name: 'arrival', data: { at: hash } });
+    }
     if (!('IntersectionObserver' in window)) return;
     var marks = document.querySelectorAll('[data-depth]');
     if (!marks.length) return;
@@ -63,7 +70,7 @@
       var b = document.getElementById('eventbar');
       return ['rsvp', { event: (b && b.dataset.event) || 'event' }];
     }
-    var oc = h.match(/^\/controls#(discover|constrain|authorize|validate|observe|respond)$/);
+    var oc = h.match(/^(?:\/controls)?#(discover|constrain|authorize|validate|observe|respond)$/);
     if (oc) {
       /* Which of the six a reader goes to is the most interesting thing the page
          can tell us, and it is invisible in page views — every one of these
@@ -72,7 +79,17 @@
       return ['outcome', {
         name: oc[1],
         from: a.closest('ol.questions') ? 'questions'
-            : a.closest('ol.factors')   ? 'roster' : 'other'
+            : a.closest('ol.factors')   ? 'roster'
+            : a.closest('nav.toc')      ? 'contents'
+            : a.closest('nav.sidenav')  ? 'rail' : 'other'
+      }];
+    }
+    var cid = h.match(/^#((?:DIS|CON|AUT|VAL|OBS|RES)-\d{2})$/);
+    if (cid) {
+      return ['control', {
+        id: cid[1],
+        from: a.classList.contains('cid') ? 'permalink'
+            : a.closest('nav.sidenav')    ? 'rail' : 'other'
       }];
     }
     if (h.indexOf('github.com/') > -1) {

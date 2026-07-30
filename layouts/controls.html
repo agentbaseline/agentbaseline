@@ -328,7 +328,7 @@
   {{- range $cat.outcomes }}
   {{- $prefix := .prefix }}
   {{- $ids := where $cat.controls "outcome" $prefix }}
-  <h2 id="{{ lower .name }}"><span class="pfx">{{ $prefix }}</span><span class="oc-ic">{{ partial (printf "icons/%s.svg" (index $oicons $prefix)) $ }}</span> {{ .name }}</h2>
+  <h2 id="{{ lower .name }}" data-depth="{{ lower .name }}"><span class="pfx">{{ $prefix }}</span><span class="oc-ic">{{ partial (printf "icons/%s.svg" (index $oicons $prefix)) $ }}</span> {{ .name }}</h2>
   <p class="outcome-req">{{ .requirement }}</p>
   <ol class="controls">
     {{- range $ids }}
