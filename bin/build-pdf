@@ -202,10 +202,23 @@ CSS = """
         --rule:#CFCBBE; --accent:#4F6B00; --wash:#F7F5EE; }
 
 * { box-sizing:border-box; }
+/* hyphens:manual, not auto. A hyphenated final line is what the fragmenter
+   mismeasured at the page 7 → 8 break: it wrote a break token into the middle of
+   "threshold", and the line it thought it had placed was actually sitting in the
+   off-sheet overflow column, so 92 characters were laid out and never painted.
+   Automatic hyphenation also corrupted the text layer wherever it fired at a
+   break — "mishandles instruct-" / "-ions" extracts with the running footer
+   wedged inside the word, so copy-paste out of the PDF produced garbage. Turning
+   it off costs a little evenness in the justified rag and removes both; the
+   measure is ~85 characters, wide enough not to need it.
+
+   This only changes where the lines fall. It does not fix the fragmenter, so it
+   would not stop the same bug reappearing after an edit to the prose — the guard
+   in bin/print-page.mjs is what makes that loud instead of silent. */
 body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
   line-height:1.62; color:var(--ink); margin:0;
   font-variant-numeric:oldstyle-num proportional-nums;
-  hyphens:auto; -webkit-hyphens:auto; text-align:justify;
+  hyphens:manual; -webkit-hyphens:manual; text-align:justify;
   hanging-punctuation:first last; }
 
 /* ── cover ─────────────────────────────────────────────────────────────── */
