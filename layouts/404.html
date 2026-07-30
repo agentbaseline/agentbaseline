@@ -1,0 +1,301 @@
+{{- $cat := hugo.Data.controls -}}
+{{- /* Without this file Vercel answers an unmatched path with its own default:
+       `content-type: text/plain`, the words "The page could not be found", the
+       string NOT_FOUND and the request id of the edge node that served it. It
+       looks like a broken service rather than a mistyped URL, it leaks an
+       internal identifier to anyone who fat-fingers a link, and it offers no
+       way back into the site.
+
+       Same sheet as the other two pages, in a quieter register: the masthead,
+       the title block resting on its datum rule, and the footer. The chrome is
+       duplicated rather than shared because that is how this site is built —
+       layouts/index.html and layouts/controls.html each carry their own copy,
+       and there is no masthead or footer partial to reuse. Extracting one is
+       worth doing; doing it here would mean editing both live pages to fix an
+       error page, so it is left alone. The partials that DO exist — the event
+       strip, the icons, analytics — are used rather than re-cut.
+
+       No new design vocabulary: every rule below is lifted from
+       layouts/controls.html unchanged. */ -}}
+<!doctype html>
+<html lang="en"{{ with .Site.Params.event }} data-event="{{ .id }}"{{ end }}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — Agent Baseline</title>
+{{/* An error page is never a destination. noindex keeps it out of the index if
+     it is ever reached with a 200 (a preview, a mirror, a proxy that rewrites
+     the status), and there are no social cards because nothing here is worth
+     sharing — that is the difference between this page and the other two. */}}
+<meta name="robots" content="noindex">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="icon" href="/icon-512.png" sizes="512x512" type="image/png">
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="preload" href="/fonts/figtree-normal-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-serif-normal-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+{{/* External and synchronous: the deployment CSP allows script-src 'self'
+     only, and the stored theme must apply before first paint. */}}
+<script src="/js/theme.js"></script>
+{{ partial "analytics.html" . }}
+<style>
+  /* Same sheet language as the front page: title block, hairline frame,
+     registration marks, mono structure around serif prose. See index.html for
+     the rationale; the tokens are identical. */
+  :root {
+    --paper:#FBF9F3; --ink:#221F18; --soft:#5C5850; --faint:#736E60;
+    --line:#E6E2D7; --link:#5A7A00; --link-hover:#3F5400; --visited:#66713F; --mark:#B3541E;
+    --wash:#F4F1E8; --accent:#5A7A00; --baseline:#D9D4C6;
+    --serif: "IBM Plex Serif",Charter,"Iowan Old Style",Georgia,serif;
+    --labelfont: "Chakra Petch","Avenir Next",sans-serif;
+    --head: "Figtree","Avenir Next","Helvetica Neue",sans-serif;
+    --mono: "IBM Plex Mono",ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#151714; --ink:#E6E7E3; --soft:#A7ABA7; --faint:#8B8F8B;
+      --line:#2E302D; --link:#C6F13F; --link-hover:#DCFF66; --visited:#ABB584; --mark:#E08050;
+      --wash:#1D1F1C; --accent:#C6F13F; --baseline:#333531; }
+  }
+  :root[data-theme="light"] { --paper:#FBF9F3; --ink:#221F18; --soft:#5C5850;
+    --faint:#736E60; --line:#E6E2D7; --link:#5A7A00; --link-hover:#3F5400;
+    --visited:#66713F; --mark:#B3541E; --wash:#F4F1E8; --accent:#5A7A00;
+    --baseline:#D9D4C6; }
+  :root[data-theme="dark"] { --paper:#151714; --ink:#E6E7E3; --soft:#A7ABA7;
+    --faint:#8B8F8B; --line:#2E302D; --link:#C6F13F; --link-hover:#DCFF66;
+    --visited:#ABB584; --mark:#E08050; --wash:#1D1F1C; --accent:#C6F13F;
+    --baseline:#333531; }
+
+  *,*::before,*::after { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17.5px; line-height:1.75;
+    -webkit-font-smoothing:antialiased; overflow-x:clip; }
+  svg.ph { width:1em; height:1em; vertical-align:-0.15em; }
+  a { color:var(--link); text-decoration:none; }
+  a:hover { color:var(--link-hover); }
+  a svg.ph { color:inherit; }
+  a:visited { color:var(--visited); }
+  a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .skip { position:fixed; top:8px; left:8px; z-index:100;
+    transform:translateY(-250%);
+    background:var(--paper); color:var(--ink);
+    border:1px solid var(--line); border-radius:3px; padding:8px 12px;
+    font-family:var(--labelfont); font-weight:500; font-size:12px;
+    letter-spacing:.07em; text-transform:uppercase; }
+  .skip:focus { transform:none; color:var(--ink);
+    outline:2px solid var(--accent); outline-offset:2px; }
+  #main:focus { outline:none; }
+  ::selection { background:color-mix(in srgb, var(--accent) 30%, transparent); }
+
+  .utility { font-family:var(--mono); font-size:12px;
+    border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;
+    background:var(--paper); }
+  .utility .in { margin:0 auto; padding:12px 32px;
+    display:flex; gap:18px; flex-wrap:wrap; }
+  .utility a { color:var(--soft); text-decoration:none;
+    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
+    text-transform:uppercase; }
+  .utility a:hover { color:var(--link); }
+  .utility a.mast { color:var(--ink); letter-spacing:.12em; font-weight:600; }
+  .utility .crumb { font-family:var(--labelfont); font-size:12px;
+    letter-spacing:.07em; text-transform:uppercase; }
+  .utility .crumb .sep { color:var(--faint); margin:0 2px; }
+  .utility .crumb .here { color:var(--soft); }
+  .nav-menu summary svg.ph { width:18px; height:18px; }
+  details.menu ul.dd.left { left:-8px; right:auto; }
+  .utility .right { margin-left:auto; color:var(--faint); }
+  .utility .pub { font-family:var(--labelfont); font-size:11.5px;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--soft); }
+  .utility .pub .k { color:var(--faint); margin-right:2px; }
+  /* The one tinted block in the chrome: the deadline is the site's ask.
+     Soft treatment — accent text on a translucent wash of itself. */
+  .utility a.closes, .utility a.closes:visited {
+    background:color-mix(in srgb, var(--accent) 12%, transparent);
+    color:var(--accent); font-family:var(--labelfont); font-weight:500;
+    font-size:11px; letter-spacing:.06em; padding:3px 8px;
+    border-radius:3px; }
+  .utility a.closes:hover {
+    background:color-mix(in srgb, var(--accent) 22%, transparent);
+    color:var(--accent); }
+  details.menu { position:relative; }
+  details.menu summary { list-style:none; cursor:pointer;
+    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--soft); display:inline-flex;
+    align-items:center; gap:4px; }
+  details.menu summary::-webkit-details-marker { display:none; }
+  details.menu summary:hover, details.menu[open] summary { color:var(--link); }
+  /* list-style:none removes the marker, not the focus ring — without this the
+     summary is the one control on the site still drawing the UA default. */
+  details.menu summary:focus-visible { outline:2px solid var(--accent);
+    outline-offset:2px; }
+  details.menu ul.dd { position:absolute; top:calc(100% + 10px); right:-8px;
+    min-width:190px; margin:0; padding:6px; list-style:none;
+    background:var(--paper); border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10); z-index:30; }
+  details.menu ul.dd a { display:flex; align-items:center; gap:9px;
+    padding:8px 10px; font-family:var(--mono); font-size:12.5px;
+    color:var(--soft); border-radius:3px; text-transform:none; letter-spacing:0; }
+  details.menu ul.dd a:hover { background:var(--wash); color:var(--link); }
+  .utility .ver { color:var(--faint); }
+  @media (max-width:760px) { .utility .pub { display:none; } }
+  .themebtn { background:none; border:0; padding:2px; margin:0; cursor:pointer;
+    color:var(--soft); display:inline-flex; align-self:center; }
+  .themebtn:hover { color:var(--link); }
+  .themebtn:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .themebtn svg.ph { width:15px; height:15px; }
+  /* The glyph shows the mode a click gives you. data-theme (the stored choice)
+     must beat the system preference in both directions. */
+  .tb-sun { display:none; } .tb-moon { display:inline-flex; }
+  @media (prefers-color-scheme:dark) {
+    .tb-sun { display:inline-flex; } .tb-moon { display:none; }
+  }
+  :root[data-theme="dark"] .tb-sun { display:inline-flex; }
+  :root[data-theme="dark"] .tb-moon { display:none; }
+  :root[data-theme="light"] .tb-sun { display:none; }
+  :root[data-theme="light"] .tb-moon { display:inline-flex; }
+
+  /* The bottom padding is the sheet's, not the grid's: the footer sits outside
+     <main> and inside the sheet, so the space that closes the drawing has to
+     belong to the thing the registration marks are anchored to. */
+  .sheet { max-width:1200px; margin:0 auto; position:relative; overflow-x:clip;
+    padding-bottom:128px; }
+  @media (min-width:1280px) {
+    .sheet { border-inline:1px solid var(--line); }
+    .sheet::before, .sheet::after { content:""; position:absolute; top:-7px;
+      width:15px; height:15px; pointer-events:none;
+      background:
+        linear-gradient(var(--faint),var(--faint)) center/1px 15px no-repeat,
+        linear-gradient(var(--faint),var(--faint)) center/15px 1px no-repeat; }
+    .sheet::before { left:-8px; }
+    .sheet::after { right:-8px; }
+    .page::before, .page::after { content:""; position:absolute; bottom:-8px;
+      width:15px; height:15px; pointer-events:none;
+      background:
+        linear-gradient(var(--faint),var(--faint)) center/1px 15px no-repeat,
+        linear-gradient(var(--faint),var(--faint)) center/15px 1px no-repeat; }
+    .page::before { left:-8px; }
+    .page::after { right:-8px; }
+  }
+
+  .page { display:grid; grid-template-columns:1fr min(680px,100%) 1fr;
+    padding:0 clamp(28px,4vw,56px); }
+  .page > * { grid-column:2; min-width:0; }
+  .page > .wide { grid-column:1 / -1; }
+
+  .titleblock { padding-top:80px; margin-bottom:52px; }
+  /* The other two pages put the title block in the full-sheet slot because
+     something wide follows it — the tenets, the catalogue's field table. Here
+     nothing does, so it stays in the prose column and the title shares a left
+     edge with the sentence under it. Same slot the grid gives by default; the
+     28px that would separate the title from a field table goes too, since
+     there is no field table. */
+  h1 { font-family:var(--head); font-size:clamp(38px,5.5vw,50px);
+    font-weight:600; line-height:1.05; margin:0; letter-spacing:-0.02em;
+    text-wrap:balance; position:relative; }
+  /* 100vw counts the scrollbar, and this rule is centred, so it overhangs the
+     viewport by roughly 4px each side — a constant 8px of horizontal scroll on
+     every width. `clip` rather than `hidden` because `hidden` on an ancestor
+     silently kills position:sticky, which the masthead depends on. */
+  h1::after { content:""; position:absolute; z-index:-1; height:1px;
+    top:0.79em; left:50%; transform:translateX(-50%); width:100vw;
+    background:linear-gradient(to right, transparent 0%,
+      var(--baseline) 26%, var(--baseline) 58%, transparent 88%); }
+
+  /* The status, in the label voice — the same treatment the title block's
+     field labels get on the controls page. Mono, because it is a datum. */
+  .status { font-family:var(--mono); font-size:12px; color:var(--faint);
+    letter-spacing:.06em; margin:0 0 14px; }
+
+  .prose p { margin:0 0 18px; }
+  .prose .note { color:var(--soft); font-size:16px; }
+  /* The ways out of the page, on one line, in the label voice. */
+  .prose p.ctas { font-family:var(--labelfont); font-size:13.5px;
+    letter-spacing:.03em; color:var(--faint); margin-top:22px; }
+  .prose p.ctas a { color:var(--link); }
+
+  /* The footer mirrors the title block — a document closes the way it opens.
+     It is a sibling of <main>, not a child of it: contentinfo is a landmark of
+     the page, and a landmark nested inside main is not exposed as one. */
+  footer { margin:104px clamp(28px,4vw,56px) 0;
+    border-top:1px solid var(--line); padding-top:16px;
+    font-family:var(--mono); font-size:11.5px; color:var(--faint); line-height:1.9;
+    display:flex; gap:12px 32px; flex-wrap:wrap; justify-content:space-between; }
+  footer .sig { font-family:var(--labelfont); letter-spacing:.12em;
+    text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+{{ partial "event-bar.html" . }}
+
+<nav class="utility" aria-label="Document">
+  <div class="in">
+    <details class="menu nav-menu">
+      <summary aria-label="Site menu">{{ partial "icons/list.svg" . }}</summary>
+      <ul class="dd left">
+        <li><a href="{{ .Site.Params.repo }}">Source</a></li>
+        <li><a href="{{ .Site.Params.repo }}/issues">Comment</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a></li>
+      </ul>
+    </details>
+    <span class="crumb"><a class="mast" href="/">Agent Baseline</a>
+      <span class="sep">/</span> <span class="here">Not found</span></span>
+    <span class="right pub"><span class="k">Published</span> {{ .Site.Params.published }}</span>
+    <a class="closes" href="{{ .Site.Params.repo }}/issues">Comment closes {{ .Site.Params.commentsUntil }}</a>
+    <details class="menu">
+      <summary>Artifacts {{ partial "icons/caret-down.svg" . }}</summary>
+      <ul class="dd">
+        {{ if fileExists "static/whitepaper.pdf" }}<li><a href="/whitepaper.pdf">{{ partial "icons/file-pdf.svg" . }}PDF</a></li>{{ end }}
+        <li><a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">{{ partial "icons/file-code.svg" . }}controls.yaml</a></li>
+        <li><a href="{{ .Site.Params.repo }}">{{ partial "icons/git-branch.svg" . }}repository</a></li>
+      </ul>
+    </details>
+    <span class="ver">v{{ .Site.Params.version }}</span>
+    {{/* aria-pressed is corrected by theme.js as soon as the body parses — the
+         head script resolves the theme before this element exists, so the
+         served value is a placeholder and never the source of truth. */}}
+    <button class="themebtn" aria-label="Switch between light and dark theme"
+            aria-pressed="false">
+      <span class="tb-sun">{{ partial "icons/sun.svg" . }}</span>
+      <span class="tb-moon">{{ partial "icons/moon.svg" . }}</span>
+    </button>
+  </div>
+</nav>
+
+<div class="sheet">
+<main class="page" id="main" tabindex="-1">
+
+  <header class="titleblock">
+    <p class="status">HTTP 404</p>
+    <h1>No page at this address</h1>
+  </header>
+
+  <div class="prose">
+    {{/* Same register as the rest of the document: states what is true, does
+         not apologise, and does not speculate about what the reader meant. */}}
+    <p>The address was mistyped, or it points at something this site has never
+    published.</p>
+    {{/* The count is read from the catalogue, like every other number on the
+         site, so it cannot drift from controls.yaml. */}}
+    <p class="note">Everything here is two pages: the overview, and the
+    {{ len $cat.controls }} controls behind the six outcomes.</p>
+    <p class="ctas">
+      <a href="/">Go to the overview</a> ·
+      <a href="/controls">Browse the controls</a>
+      {{ if fileExists "static/whitepaper.pdf" }}· <a href="/whitepaper.pdf">Download the PDF</a>{{ end }}
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
+  <a href="{{ .Site.Params.repo }}">github.com/agentbaseline</a></span>
+  <span class="sig">Agent Baseline · v{{ .Site.Params.version }}</span>
+</footer>
+
+</div>
+</body>
+</html>

@@ -13,9 +13,10 @@ locale = "en"
 # serve empty RSS channels to browsers as `application/xml`. Root keys go
 # above the first table header.
 #
-# `sitemap` is deliberately absent: the site ships its own template at
-# layouts/sitemap.xml, and disabling the kind would suppress it.
-disableKinds = ["taxonomy", "term", "RSS", "404", "section"]
+# `sitemap` and `404` are deliberately absent: the site ships its own templates
+# for both (layouts/sitemap.xml, layouts/404.html), and disabling either kind
+# would suppress the file Hugo needs to write.
+disableKinds = ["taxonomy", "term", "RSS", "section"]
 
 # The site renders FROM the catalogue: whitepaper/controls.yaml is mounted
 # into Hugo's data tree, so the outcomes and their identifier ranges on the
