@@ -1,7 +1,7 @@
 {{- $cat := hugo.Data.controls -}}
 {{- $people := hugo.Data.contributors -}}
 <!doctype html>
-<html lang="en">
+<html lang="en"{{ with .Site.Params.event }} data-event="{{ .id }}"{{ end }}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

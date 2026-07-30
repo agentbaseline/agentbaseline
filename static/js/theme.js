@@ -115,9 +115,13 @@
   /* Event strip: dismissed per event id, so a new event shows again to someone
      who dismissed the last one. Hidden before paint when already dismissed. */
   function bar() { return document.getElementById('eventbar'); }
+  /* This runs in <head>, so the body does not exist and getElementById is always
+     null — the previous version of this check silently never fired and a
+     dismissed strip came back on every reload. The event id rides on <html>
+     instead, and a class on the root hides the strip before it paints. */
   try {
-    var b = bar();
-    if (b && localStorage.getItem('ab-eventbar-' + b.dataset.event) === 'off') b.hidden = true;
+    var ev = r.dataset.event;
+    if (ev && localStorage.getItem('ab-eventbar-' + ev) === 'off') r.classList.add('eb-off');
   } catch (e) {}
 
   document.addEventListener('click', function (e) {

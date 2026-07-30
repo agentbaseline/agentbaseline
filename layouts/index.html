@@ -1,7 +1,7 @@
 {{- $cat := hugo.Data.controls -}}
 {{- $people := hugo.Data.contributors -}}
 <!doctype html>
-<html lang="en">
+<html lang="en"{{ with .Site.Params.event }} data-event="{{ .id }}"{{ end }}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -446,7 +446,7 @@
     text-transform:uppercase; font-size:11px; white-space:nowrap; }
   .eventbar .say { color:var(--soft); min-width:0; }
   .eventbar .go { color:var(--ink); font-weight:600; text-decoration:none;
-    white-space:nowrap; border-bottom:1px solid var(--rule); }
+    white-space:nowrap; border-bottom:1px solid var(--faint); }
   .eventbar .go:hover { color:var(--accent); border-bottom-color:var(--accent); }
   .eventbar .x { margin-left:auto; flex:none; background:none; border:0;
     color:var(--faint); cursor:pointer; padding:2px; line-height:0;
@@ -454,6 +454,9 @@
   .eventbar .x:hover { color:var(--ink); }
   .eventbar .x:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   .eventbar[hidden] { display:none; }
+  /* Set by the head script from <html data-event>, because the body does
+     not exist yet at that point and getElementById returns null. */
+  html.eb-off .eventbar { display:none; }
   @media (max-width:640px) {
     .eventbar .in { padding:9px 20px; gap:9px; }
     .eventbar .x { margin-left:0; position:absolute; right:14px; }
