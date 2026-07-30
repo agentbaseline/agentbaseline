@@ -339,8 +339,17 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
   padding-bottom:2mm; border-bottom:.5pt solid var(--rule); break-after:avoid; }
 .fam .span { margin-left:auto; font-family:"IBM Plex Mono",monospace;
   font-size:8pt; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+/* An outcome heading, its requirement line and its first control are one unit.
+   .fam h2 already declined to be the last thing on a page, but break-after:avoid
+   binds a heading only to the element immediately following it — the requirement
+   paragraph was then free to break away and take the first control with it,
+   leaving "Constrain" and "Respond" stranded on their rules at the foot of a page
+   under an inch and a half of white. Carrying the avoid along the chain keeps the
+   group together. */
 .famreq { font-family:"Figtree",sans-serif; font-size:9pt; color:var(--soft);
-  margin:0 0 4mm; hyphens:none; text-align:left; }
+  margin:0 0 4mm; hyphens:none; text-align:left;
+  break-before:avoid; break-after:avoid; }
+.famreq + .ctl { break-before:avoid; }
 /* One control, one block: identifier in the margin, everything else in the
    measure. break-inside:avoid is the whole point — a control that splits
    across a page leaves its description with no identifier attached. */
