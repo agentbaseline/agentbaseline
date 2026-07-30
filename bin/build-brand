@@ -11,7 +11,10 @@ data URIs so headless Chrome renders the real faces with no network.
 
 Requires fonttools and brotli (pip install fonttools brotli) and Chrome.
 """
-import base64, io, pathlib, re, subprocess, sys
+import base64, io, pathlib, subprocess, sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import controls_source
 
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
@@ -24,15 +27,10 @@ from fontTools.misc.transform import Transform
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 # Same literal, same failure: the count was typed in and read 33 on the day the
-# catalogue became 35. Derived from the source of truth instead.
-def catalogue_size():
-    src = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
-    ids = re.findall(r"^\s*-\s+id:\s*([A-Z]{3}-\d{2})\s*$", src, re.M)
-    if not ids:
-        raise SystemExit("could not count controls in controls.yaml")
-    return len(set(ids))
-
-N_CONTROLS = catalogue_size()
+# catalogue became 35. Derived from the source of truth instead — through the
+# shared counter, so the campaign graphic cannot say a different number from
+# the card and the page.
+N_CONTROLS = controls_source.catalogue_size()
 FONTS = ROOT / "static" / "fonts"
 BRAND = ROOT / "brand"
 BRAND.mkdir(exist_ok=True)

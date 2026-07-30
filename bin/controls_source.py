@@ -92,3 +92,54 @@ def load(text=None):
             controls.append({k: field(blk, k) for k in
                              ("id", "outcome", "title", "type", "status", "requirement")})
     return outcomes, controls
+
+
+# ── how many controls are there ──────────────────────────────────────────────
+# Three answers to that question shipped, and they did not have to agree:
+# build-pdf counted any block carrying an `id:` with no format check;
+# build-social and build-brand counted `^\s*-\s+id:\s*([A-Z]{3}-\d{2})\s*$`;
+# social-meta.html counts `len hugo.Data.controls.controls`, which is the real
+# YAML list. The card's filename carries the count on purpose — platforms cache
+# og:image by URL, so the number has to move the URL — which makes a
+# disagreement between the script that writes the file and the template that
+# links it a 404 on every share rather than a wrong caption.
+#
+# `[A-Z]{3}-\d{2}` is not the grammar VERSIONING.md promises. It fixes the
+# number at two digits, and VERSIONING.md's own rules push past that: numbers
+# are never reused, withdrawn ones stay burned, and "gaps are expected and
+# fine", so a family reaches three digits by following the promise rather than
+# by breaking it. A catalogue containing RES-101 counted 34 in build-social and
+# 35 in Hugo, and the og:image pointed at a card that was never written.
+ID = re.compile(r"[A-Z]{3}-\d{2,}")
+
+
+def control_ids(text=None):
+    """Every control identifier, in file order.
+
+    Hugo counts list entries, so this counts list entries too, and refuses
+    rather than returns a number that cannot match. A malformed or duplicated
+    identifier would otherwise be silently dropped here and silently counted
+    there, which is the whole failure being closed.
+    """
+    controls = load(text)[1]
+    bad = [c["id"] for c in controls if not c["id"] or not ID.fullmatch(c["id"])]
+    if bad:
+        raise SystemExit(
+            f"controls.yaml: {len(bad)} identifier(s) are not FAMILY-NN "
+            f"(e.g. {bad[0]!r}). Hugo counts these entries and this script "
+            f"cannot, so the social card and the og:image that links it would "
+            f"disagree. Fix the identifier or widen bin/controls_source.ID.")
+    seen = [c["id"] for c in controls]
+    if len(set(seen)) != len(seen):
+        dupe = next(i for i in seen if seen.count(i) > 1)
+        raise SystemExit(f"controls.yaml: {dupe} appears more than once — "
+                         f"Hugo counts both entries and this script counts one.")
+    return seen
+
+
+def catalogue_size(text=None):
+    """The number social-meta.html puts in the og:image filename."""
+    ids = control_ids(text)
+    if not ids:
+        raise SystemExit("could not count controls in controls.yaml")
+    return len(ids)

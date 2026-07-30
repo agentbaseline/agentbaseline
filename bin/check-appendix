@@ -31,7 +31,7 @@ def load_yaml_controls():
     out = {}
     for c in controls_source.load()[1]:
         cid = c["id"]
-        if cid and re.fullmatch(r"[A-Z]{3}-\d{2}", cid):
+        if cid and controls_source.ID.fullmatch(cid):
             out[cid] = {"title": c["title"] or "", "type": c["type"] or "",
                         "req": c["requirement"] or ""}
     return out
@@ -47,7 +47,7 @@ def load_paper_table():
         if not line.startswith("|") or ":----" in line:
             continue
         c = [x.strip() for x in line.strip().strip("|").split("|")]
-        if len(c) >= 5 and re.fullmatch(r"[A-Z]{3}-\d{2}", c[1]):
+        if len(c) >= 5 and controls_source.ID.fullmatch(c[1]):
             out[c[1]] = {"title": c[2], "type": c[3], "req": c[4]}
     return out
 

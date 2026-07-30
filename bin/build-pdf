@@ -52,10 +52,16 @@ if not PAGED.exists():
 # drifted into different regexes. Its own copy read a folded scalar as "every
 # indented line that follows", which swallowed the next sibling key, and
 # recognised only `>-` of the six block-scalar indicators.
+#
+# The count it reports on the cover is the count the social card and the page
+# report, because control_ids() is the one that answers that question. This
+# script used to accept any block carrying an `id:` in any shape, so it could
+# print a number the card and the og:image did not have.
 def load_controls():
     outcomes, controls = controls_source.load()
     if not outcomes or not controls:
         sys.exit("could not read controls.yaml — refusing to render an empty appendix")
+    controls_source.control_ids()
     return outcomes, controls
 
 OUTCOMES, CONTROLS = load_controls()
