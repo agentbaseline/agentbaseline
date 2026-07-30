@@ -75,8 +75,8 @@ is described in [GOVERNANCE.md](GOVERNANCE.md) and [CONTRIBUTING.md](CONTRIBUTIN
 
 ## Machine-readable
 
-Consume `whitepaper/controls.yaml`. It carries identifier, title, requirement, evidence of
-achievement, status, and supersession links. Do not scrape the prose or the figures — they
+Consume `whitepaper/controls.yaml`. It carries identifier, title, type, requirement, evidence
+of achievement, status, and supersession links. Do not scrape the prose or the figures — they
 render from the controls and are not the source of truth.
 
 ## If this repository moves
