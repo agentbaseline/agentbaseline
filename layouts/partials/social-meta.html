@@ -1,0 +1,29 @@
+{{/* OpenGraph and Twitter cards, shared by both pages.
+
+     These lived in layouts/index.html only, so /controls — which is the citation
+     target, the URL someone shares when they are pointing at a specific control
+     — previewed as nothing at all. Same failure as the event strip: markup in one
+     layout, silently absent from the other.
+
+     Called with a dict so each page supplies its own title and description:
+       {{ partial "social-meta.html" (dict "ctx" . "title" "…" "desc" "…") }} */}}
+{{- $t := .title | default "Agent Baseline" -}}
+{{- $d := .desc -}}
+{{- $u := .ctx.Permalink | default .ctx.Site.BaseURL -}}
+{{- /* trailingSlash is false in vercel.json, so /controls/ 308s to
+       /controls. Declaring the redirecting form as canonical hands two
+       readers two different URLs for the same page. The root keeps its
+       slash; everything else loses it. */ -}}
+{{- if ne $u .ctx.Site.BaseURL -}}{{- $u = strings.TrimSuffix "/" $u -}}{{- end -}}
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Agent Baseline">
+<meta property="og:title" content="{{ $t }}">
+<meta property="og:description" content="{{ $d }}">
+<meta property="og:url" content="{{ $u }}">
+<meta property="og:image" content="{{ .ctx.Site.BaseURL }}social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $t }}">
+<meta name="twitter:description" content="{{ $d }}">
+<meta name="twitter:image" content="{{ .ctx.Site.BaseURL }}social-card.png">
