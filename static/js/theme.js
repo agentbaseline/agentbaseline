@@ -48,12 +48,33 @@
   try { s = localStorage.getItem('ab-theme'); } catch (e) {}
   if (s === 'light' || s === 'dark') r.dataset.theme = s;
 
+  /* The stored choice wins; with none stored the system preference is the
+     state. One definition of it, because the button now has to report the
+     state as well as flip it. */
+  var dm = matchMedia('(prefers-color-scheme: dark)');
+  function isDark() {
+    return r.dataset.theme ? r.dataset.theme === 'dark' : dm.matches;
+  }
+
+  /* The button is a toggle, so it has to say which state it is in; a static
+     label alone leaves a screen reader with no way to know which theme is on.
+     The button does not exist while this file runs in <head>, so the markup
+     ships aria-pressed="false" and the first sync happens the moment the body
+     is parsed. After that every flip updates it — and so does a change of
+     system preference, which is the state whenever nothing is stored. */
+  function press() {
+    var on = isDark() ? 'true' : 'false';
+    document.querySelectorAll('.themebtn').forEach(function (b) {
+      b.setAttribute('aria-pressed', on);
+    });
+  }
+  addEventListener('DOMContentLoaded', press);
+  if (dm.addEventListener) dm.addEventListener('change', press);
+
   function toggle() {
-    var dark = r.dataset.theme
-      ? r.dataset.theme === 'dark'
-      : matchMedia('(prefers-color-scheme: dark)').matches;
-    r.dataset.theme = dark ? 'light' : 'dark';
+    r.dataset.theme = isDark() ? 'light' : 'dark';
     try { localStorage.setItem('ab-theme', r.dataset.theme); } catch (e) {}
+    press();
   }
 
   /* Outbound and artifact clicks, by delegation rather than per-link handlers —

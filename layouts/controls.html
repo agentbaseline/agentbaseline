@@ -305,7 +305,11 @@
       </ul>
     </details>
     <span class="ver">v{{ .Site.Params.version }}</span>
-    <button class="themebtn" aria-label="Switch between light and dark theme">
+    {{/* aria-pressed is corrected by theme.js as soon as the body parses — the
+         head script resolves the theme before this element exists, so the
+         served value is a placeholder and never the source of truth. */}}
+    <button class="themebtn" aria-label="Switch between light and dark theme"
+            aria-pressed="false">
       <span class="tb-sun">{{ partial "icons/sun.svg" . }}</span>
       <span class="tb-moon">{{ partial "icons/moon.svg" . }}</span>
     </button>
