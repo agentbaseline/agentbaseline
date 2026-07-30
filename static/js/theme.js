@@ -2,6 +2,34 @@
    stored theme applies before first paint; an external file (not inline)
    because the deployment CSP allows script-src 'self' and nothing inline. */
 (function () {
+  /* Read depth. A page view says the page was opened; this says how far down a
+     1,100-word argument a reader actually got. Fires at most once per section
+     per page view, and only if IntersectionObserver exists — no polyfill, the
+     measurement is not worth bytes on old browsers. */
+  addEventListener('DOMContentLoaded', function () {
+    if (!('IntersectionObserver' in window)) return;
+    var marks = document.querySelectorAll('[data-depth]');
+    if (!marks.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        if (typeof va === 'function') {
+          va('event', { name: 'depth', data: { reached: en.target.dataset.depth } });
+        }
+      });
+    }, { threshold: 0.4 });
+    marks.forEach(function (m) { io.observe(m); });
+
+    /* Opening the artifacts menu is intent even when nothing is clicked. */
+    var d = document.querySelector('details.menu');
+    if (d) d.addEventListener('toggle', function () {
+      if (d.open && typeof va === 'function') {
+        va('event', { name: 'artifacts', data: { action: 'open' } });
+      }
+    });
+  });
+
   /* Vercel Web Analytics queue shim. The documented snippet puts this inline,
      which our CSP refuses; here it is external and allowed. It only buffers
      calls made before the deferred script arrives. */
@@ -34,6 +62,18 @@
     if (h.indexOf('luma.com') > -1) {
       var b = document.getElementById('eventbar');
       return ['rsvp', { event: (b && b.dataset.event) || 'event' }];
+    }
+    var oc = h.match(/^\/controls#(discover|constrain|authorize|validate|observe|respond)$/);
+    if (oc) {
+      /* Which of the six a reader goes to is the most interesting thing the page
+         can tell us, and it is invisible in page views — every one of these
+         resolves to a single /controls hit. `from` separates the questions band
+         from the roster, which also says which framing did the work. */
+      return ['outcome', {
+        name: oc[1],
+        from: a.closest('ol.questions') ? 'questions'
+            : a.closest('ol.factors')   ? 'roster' : 'other'
+      }];
     }
     if (h.indexOf('github.com/') > -1) {
       var seg = h.replace(/[?#].*$/, '').split('/').filter(Boolean);
@@ -71,6 +111,9 @@
       if (b) {
         b.hidden = true;
         try { localStorage.setItem('ab-eventbar-' + b.dataset.event, 'off'); } catch (e2) {}
+        if (typeof va === 'function') {
+          va('event', { name: 'dismiss', data: { what: 'eventbar' } });
+        }
       }
     }
     document.querySelectorAll('details.menu[open]').forEach(function (d) {

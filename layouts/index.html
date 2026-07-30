@@ -568,7 +568,7 @@
   {{- $oicons := dict "DIS" "binoculars" "AUT" "identification-badge"
                       "CON" "arrows-in-cardinal" "VAL" "seal-check"
                       "OBS" "eye" "RES" "hand-palm" }}
-  <ol class="factors">
+  <ol class="factors" data-depth="outcomes">
     {{- range $cat.outcomes }}
     {{- $prefix := .prefix }}
     {{- $ids := where $cat.controls "outcome" $prefix }}
@@ -585,7 +585,7 @@
     <p class="allcontrols"><a href="/controls">Browse the {{ len $cat.controls }} controls behind these outcomes</a></p>
   </div>
 
-  <h2>Read the white paper</h2>
+  <h2 data-depth="paper">Read the white paper</h2>
 
   <div class="prose">
     <p>It explains the risks behind the baseline and defines the capabilities,
@@ -611,7 +611,7 @@
     <a href="{{ .Site.Params.repo }}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</p>
   </div>
 
-  <h2>Who wrote it</h2>
+  <h2 data-depth="authors">Who wrote it</h2>
   <div class="prose">
     <p>Drafted by&#32;
     {{- /* Surname order — see the note in contributors.yaml. First-name order
