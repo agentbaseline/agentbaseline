@@ -20,7 +20,19 @@
        has already been fetched. Putting the count in the filename means the URL
        changes exactly when the number does, which is the only thing on the card
        that has ever been wrong. */ -}}
-{{- $card := printf "%ssocial-card-%d.png" .ctx.Site.BaseURL (len hugo.Data.controls.controls) -}}
+{{- /* Versioning the filename by count defeats the platforms' og:image cache,
+       but only bin/build-social writes that file and it never runs in CI — it
+       needs Chrome on a Mac. So the count can move without the image existing,
+       and an og:image that 404s is worse than one showing a stale number: the
+       preview renders blank rather than slightly wrong. Fall back to the
+       unversioned card, which is always present. */ -}}
+{{- $n := len hugo.Data.controls.controls -}}
+{{- $file := printf "social-card-%d.png" $n -}}
+{{- if not (fileExists (printf "static/%s" $file)) -}}
+  {{- warnf "social-card-%d.png is missing — og:image falls back to social-card.png, which may show a stale count. Run bin/build-social." $n -}}
+  {{- $file = "social-card.png" -}}
+{{- end -}}
+{{- $card := printf "%s%s" .ctx.Site.BaseURL $file -}}
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Agent Baseline">
 <meta property="og:title" content="{{ $t }}">
