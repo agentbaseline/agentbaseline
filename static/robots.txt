@@ -1,0 +1,8 @@
+# Agent Baseline is a public reference document. It exists to be read, quoted
+# and cited — by people, by search engines and by models. Nothing here is
+# disallowed, and no crawler is singled out.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://agentbaseline.org/sitemap.xml
