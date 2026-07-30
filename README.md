@@ -17,7 +17,7 @@ An agent's behaviour is not settled before it ships: an end user reprograms it a
 in natural language. This baseline defines what has to be true to run one safely, by outcome
 rather than by product category.
 
-**The argument, in full: [agentbaseline.org](https://enterprise-control-plane-mock.vercel.app)**
+**The argument, in full: [agentbaseline.org](https://agentbaseline.org)**
 — why product categories do not map to the problem, and the three questions the six answer.
 
 ## The six outcomes
