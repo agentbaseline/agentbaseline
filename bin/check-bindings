@@ -36,16 +36,21 @@ VAR_RANGE = re.compile(r"\brange\b\s*\$(\w+)\s*$")
 def catalogue_fields():
     """Field names defined on outcomes and on controls."""
     t = CATALOGUE.read_text(encoding="utf-8")
-    outcome, control = set(), set()
+    outcome, control = None, None
     for blk in re.split(r"\n(?=  - )", t):
         if not blk.lstrip().startswith("- "):
             continue
         names = set(re.findall(r"^[ \t-]*(\w[\w-]*):", blk, re.M))
+        # Intersect, do not union. Unioning meant one record carrying a field
+        # made it "present" for all of them — so deleting `evidence:` from a
+        # single outcome left this gate green while the catalogue and the paper
+        # disagreed. A field the templates rely on has to be on every record,
+        # or the block that lacks it renders short and nothing says so.
         if "prefix" in names:
-            outcome |= names
+            outcome = names if outcome is None else outcome & names
         elif "id" in names:
-            control |= names
-    return outcome, control
+            control = names if control is None else control & names
+    return outcome or set(), control or set()
 
 
 def reads():
@@ -88,6 +93,43 @@ def reads():
 OUT, CTL = catalogue_fields()
 found = reads()
 
+# ── sibling records must have the same shape ─────────────────────────────────
+# The field-read check above can only see fields a template names, so a field
+# nothing renders can vanish unnoticed — which is exactly what happened to the
+# RES outcome's `evidence:` value. It is published data: the paper prints it,
+# VERSIONING.md tells machine consumers the file carries it, and CONTRIBUTING
+# builds a rule on it. Six records describing the same kind of thing should
+# carry the same keys, and an odd one out is a deletion or a typo.
+def shape_gaps():
+    import re
+    t = CATALOGUE.read_text(encoding="utf-8")
+    groups = {"outcome": [], "control": []}
+    for blk in re.split(r"\n(?=  - )", t):
+        if not blk.lstrip().startswith("- "):
+            continue
+        names = set(re.findall(r"^[ \t-]*(\w[\w-]*):", blk, re.M))
+        key = re.search(r"^[ \t-]*(?:prefix|id):[ \t]*(\S+)", blk, re.M)
+        if "prefix" in names:
+            groups["outcome"].append((key.group(1) if key else "?", names))
+        elif "id" in names:
+            groups["control"].append((key.group(1) if key else "?", names))
+    out = []
+    for kind, recs in groups.items():
+        if len(recs) < 2:
+            continue
+        common = set.union(*(n for _, n in recs))
+        for name, names in recs:
+            for f in sorted(common - names):
+                # `controls:` is the document's own top-level key, absorbed into
+                # the last outcome block by the split; not a real field.
+                if f == "controls":
+                    continue
+                out.append(f"{kind} {name} has no `{f}:` — every other "
+                           f"{kind} record does")
+    return out
+
+gaps = shape_gaps()
+
 missing, seen = [], set()
 for f, ln, kind, field in found:
     have = OUT if kind == "outcomes" else CTL
@@ -101,10 +143,12 @@ print(f"bindings: {len(found)} catalogue field read(s) in the templates · "
 for f, ln, kind, field in missing:
     print(f"  MISSING  {f}:{ln} reads `.{field}` on a {kind[:-1]} — "
           f"controls.yaml has no such field")
-print(f"\n{len(missing)} missing field(s)")
+for g in gaps:
+    print(f"  GAP      {g}")
+print(f"\n{len(missing)} missing field(s) · {len(gaps)} shape gap(s)")
 if missing:
     print("A template field that does not exist renders nothing and raises\n"
           "nothing. Restore it in controls.yaml, or remove the template's\n"
           "dependency — but do not leave the page quietly shorter than it was\n"
           "designed to be.")
-sys.exit(1 if missing else 0)
+sys.exit(1 if (missing or gaps) else 0)
