@@ -92,6 +92,10 @@
          the block that closes the page. Without `from` they collapse into one
          number, and the only question worth asking — does anyone reach the
          bottom, or does the ticker do all the work — becomes unanswerable. */
+         Both RSVP links open in a new tab, which is not only kinder to a reader
+         mid-document: a same-tab navigation can cancel the beacon still in
+         flight, and `rsvp` would read zero for a reason unrelated to whether
+         anyone clicked. */
       var b = document.getElementById('eventbar');
       return ['rsvp', { event: (b && b.dataset.event) || 'event',
                         from: a.dataset.rsvp || 'other' }];

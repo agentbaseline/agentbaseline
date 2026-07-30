@@ -91,7 +91,7 @@
     <div><dt>What</dt><dd>{{ $e.what }}</dd></div>
     <div><dt>Who</dt><dd>{{ $e.who }}</dd></div>
   </dl>
-  <p class="go"><a href="{{ $e.url }}" data-rsvp="close">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a></p>
+  <p class="go"><a href="{{ $e.url }}" data-rsvp="close" target="_blank" rel="noopener">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a></p>
 </aside>
 {{- end -}}
 {{- end -}}
