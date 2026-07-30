@@ -1,0 +1,46 @@
+{{- /* The sitemap is the one file written for machines that no human opens, so
+       it drifted from the site without anyone seeing it. Hugo's built-in
+       template emits every page it knows about, each with a trailing slash.
+       This deployment sets `trailingSlash: false` and `cleanUrls: true`, and
+       every canonical on the site is written without the slash — so the
+       generated sitemap advertised four URLs, three of which answered 308 and
+       disagreed with the canonical tag on the page they redirected to. A
+       crawler was being handed the wrong address for every page but one.
+
+       Three rules, held here rather than in config:
+
+       1. Addresses match the canonicals exactly. `/controls/` becomes
+          `/controls`, the way `layouts/controls.html` writes it. Only the home
+          page keeps its slash, because that is what its canonical says and an
+          empty path is a slash anyway.
+       2. Only real pages are listed. Taxonomy and term pages are filtered by
+          kind, not by trusting that they are switched off elsewhere — this
+          file stays right even if someone turns them back on.
+       3. The white paper is listed. It is the artifact the site exists to
+          hand over, it is linked from both pages, and the built-in template
+          cannot see it because it is a static file rather than a page.
+
+       No lastmod, changefreq or priority: the content carries no meaningful
+       dates, and a sitemap that states a date it invented is worse than one
+       that states none. */ -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {{- range site.Pages }}
+  {{- if in (slice "home" "page" "section") .Kind }}
+  {{- /* Root is the one address that keeps its slash; everything else is
+         trimmed to the form its own canonical tag uses. */}}
+  {{- $loc := .Permalink }}
+  {{- if ne .RelPermalink "/" }}{{ $loc = strings.TrimSuffix "/" $loc }}{{ end }}
+  <url>
+    <loc>{{ $loc }}</loc>
+  </url>
+  {{- end }}
+  {{- end }}
+  {{- /* Guarded the same way the download links are, so a build without the
+         paper produces a sitemap without a dead entry rather than a 404. */}}
+  {{- if fileExists "static/whitepaper.pdf" }}
+  <url>
+    <loc>{{ "whitepaper.pdf" | absURL }}</loc>
+  </url>
+  {{- end }}
+</urlset>
