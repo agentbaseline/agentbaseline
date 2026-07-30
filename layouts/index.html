@@ -104,10 +104,11 @@
      without JS the mast simply never appears, and nothing is lost). Collapsed
      via max-width so the nav links slide rather than jump. */
   .utility a.mast { color:var(--ink); font-weight:600; letter-spacing:.12em; }
-  .utility a.home-mast { max-width:0; opacity:0; overflow:hidden;
+  .utility a.home-mast { max-width:0; opacity:0; visibility:hidden; overflow:hidden;
     white-space:nowrap; margin-right:-18px; padding:0;
     transition:max-width .3s ease, opacity .25s ease, margin-right .3s ease; }
-  .utility.mast-on a.home-mast { max-width:220px; opacity:1; margin-right:0; }
+  .utility.mast-on a.home-mast { max-width:220px; opacity:1; visibility:visible;
+    margin-right:0; }
   @media (prefers-reduced-motion:reduce) {
     .utility a.home-mast { transition:none; }
   }
@@ -168,7 +169,7 @@
   /* The bottom padding is the sheet's, not the grid's: the footer sits outside
      <main> and inside the sheet, so the space that closes the drawing has to
      belong to the thing the registration marks are anchored to. */
-  .sheet { max-width:1200px; margin:0 auto; position:relative;
+  .sheet { max-width:1200px; margin:0 auto; position:relative; overflow-x:clip;
     padding-bottom:128px; }
   @media (min-width:1280px) {
     .sheet { border-inline:1px solid var(--line); }
@@ -307,6 +308,10 @@
      Instrument Serif's ascent) and dissolves toward both margins, so it reads
      as emerging around the type rather than as a section divider. */
   h1 { position:relative; }
+  /* 100vw counts the scrollbar, and this rule is centred, so it overhangs the
+     viewport by roughly 4px each side — a constant 8px of horizontal scroll on
+     every width. `clip` rather than `hidden` because `hidden` on an ancestor
+     silently kills position:sticky, which the masthead depends on. */
   h1::after { content:""; position:absolute; z-index:-1; height:1px;
     top:0.79em; left:50%; transform:translateX(-50%); width:100vw;
     background:linear-gradient(to right, transparent 0%,
@@ -474,7 +479,7 @@
 
 {{ partial "event-bar.html" . }}
 
-<nav class="utility">
+<nav class="utility" aria-label="Document">
   <div class="in">
     <a class="mast home-mast" href="/">Agent Baseline</a>
     <a href="{{ .Site.Params.repo }}">Source</a>

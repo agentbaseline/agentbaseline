@@ -146,7 +146,7 @@
   /* The bottom padding is the sheet's, not the grid's: the footer sits outside
      <main> and inside the sheet, so the space that closes the drawing has to
      belong to the thing the registration marks are anchored to. */
-  .sheet { max-width:1200px; margin:0 auto; position:relative;
+  .sheet { max-width:1200px; margin:0 auto; position:relative; overflow-x:clip;
     padding-bottom:128px; }
   @media (min-width:1280px) {
     .sheet { border-inline:1px solid var(--line); }
@@ -177,6 +177,10 @@
   h1 { font-family:var(--head); font-size:clamp(38px,5.5vw,50px);
     font-weight:600; line-height:1.05; margin:0 0 28px; letter-spacing:-0.02em;
     text-wrap:balance; position:relative; }
+  /* 100vw counts the scrollbar, and this rule is centred, so it overhangs the
+     viewport by roughly 4px each side — a constant 8px of horizontal scroll on
+     every width. `clip` rather than `hidden` because `hidden` on an ancestor
+     silently kills position:sticky, which the masthead depends on. */
   h1::after { content:""; position:absolute; z-index:-1; height:1px;
     top:0.79em; left:50%; transform:translateX(-50%); width:100vw;
     background:linear-gradient(to right, transparent 0%,
@@ -190,8 +194,12 @@
     letter-spacing:.1em; text-transform:uppercase;
     color:var(--faint); margin-bottom:3px; }
   dl.tb dd { font-size:13px; margin:0; color:var(--ink);
-    font-variant-numeric:tabular-nums; white-space:nowrap; }
-  dl.tb dd a { color:var(--soft); }
+    font-variant-numeric:tabular-nums; }
+  /* nowrap belongs on the individual links, not the cell. On the cell it made
+     the Reference list one unbreakable run and forced 173px of horizontal
+     scroll on the page at narrow widths — WCAG 1.4.10. Here a link name still
+     never splits, and the list wraps. */
+  dl.tb dd a { color:var(--soft); white-space:nowrap; }
   dl.tb dd a:hover { color:var(--link); }
   @media (max-width:719px) {
     dl.tb { grid-template-columns:1fr 1fr; }
@@ -282,7 +290,7 @@
 
 {{ partial "event-bar.html" . }}
 
-<nav class="utility">
+<nav class="utility" aria-label="Document">
   <div class="in">
     <details class="menu nav-menu">
       <summary aria-label="Site menu">{{ partial "icons/list.svg" . }}</summary>

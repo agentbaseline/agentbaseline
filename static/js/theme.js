@@ -161,6 +161,19 @@
     if (x) {
       var b = bar();
       if (b) {
+        /* Focus is inside the strip at this point. Hiding its ancestor drops
+           the active element to <body>, so a keyboard user loses their place
+           entirely and nothing is announced. Hand focus to the masthead first,
+           which is the next thing in the document. */
+        if (b.contains(document.activeElement)) {
+          var nxt = document.querySelector('.skip, .utility a, main');
+          if (nxt) {
+            if (!nxt.hasAttribute('tabindex') && nxt.tagName === 'MAIN') {
+              nxt.setAttribute('tabindex', '-1');
+            }
+            try { nxt.focus(); } catch (e3) {}
+          }
+        }
         b.hidden = true;
         try { localStorage.setItem('ab-eventbar-' + b.dataset.event, 'off'); } catch (e2) {}
         if (typeof va === 'function') {
