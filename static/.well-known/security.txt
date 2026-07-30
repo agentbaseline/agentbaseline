@@ -1,0 +1,9 @@
+# RFC 9116. This is a document, not a service — there is nothing here to
+# exploit but the site itself, and a report about the site should still have
+# somewhere to go. Renew the Expires date when it comes round; a stale
+# security.txt is a worse signal than none.
+
+Contact: mailto:maintainers@agentbaseline.org
+Expires: 2027-07-30T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://agentbaseline.org/.well-known/security.txt
