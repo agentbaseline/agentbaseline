@@ -1,26 +1,19 @@
 #!/usr/bin/env python3
-"""Generate static/social-card.png (1200x630): the wordmark over Figure 1.
+"""Generate static/social-card.png (1200x630): the wordmark and the tenets.
 
-The card is the site's hero in miniature — outlined "Agent", solid "Baseline",
-the tenet line, then the figure — on the page's warm paper. The self-hosted
-woff2 subsets are embedded as data URIs so headless Chrome renders the real
-faces with no network and no font fallback drift.
+The card is the site's hero in miniature: outlined "Agent", solid "Baseline",
+the four tenets on their connector rule, and one line of substance. The self-
+hosted woff2 subsets are embedded as data URIs so headless Chrome renders the
+real faces with no network and no font fallback drift.
+
+The figure used to sit here and no longer does. It left the page, so a preview
+showing it advertised something the page does not contain — and at the size a
+feed renders an unfurl, six cards of 8pt labels are noise rather than
+information. An unfurl has one job, which is to be legible at thumbnail size.
 """
 import base64, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-src = ROOT / "whitepaper" / "figures" / "figure-1.svg"
-if not src.exists():
-    sys.exit(f"{src.name} not found")
-fig = src.read_text(encoding="utf-8")
-
-# the figure's drawable content: everything inside the outer <svg>, minus the
-# white plate and the accessible name (the card supplies its own surface)
-inner = re.sub(r'^<svg[^>]*>\s*', "", fig.strip())
-inner = re.sub(r'</svg>\s*$', "", inner)
-inner = re.sub(r'<title[^>]*>.*?</title>\s*', "", inner, flags=re.S)
-inner = re.sub(r'<desc[^>]*>.*?</desc>\s*', "", inner, flags=re.S)
-inner = re.sub(r'<rect width="\d+" height="\d+" fill="#[0-9A-Fa-f]+"/>\s*', "", inner, count=1)
 
 def face(family, style, weight, fname):
     data = base64.b64encode((ROOT / "static" / "fonts" / fname).read_bytes()).decode()
@@ -36,6 +29,8 @@ fonts = "".join([
 ])
 
 INK, SOFT, FAINT, BASE, PAPER = "#221F18", "#5C5850", "#736E60", "#D9D4C6", "#FBF9F3"
+# the light theme's accent, matching --accent in layouts/index.html
+ACCENT = "#5A7A00"
 HEAD = "Figtree,'Avenir Next','Helvetica Neue',sans-serif"
 MONO = "'IBM Plex Mono',ui-monospace,Menlo,monospace"
 
@@ -44,18 +39,32 @@ MONO = "'IBM Plex Mono',ui-monospace,Menlo,monospace"
 card = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <style>{fonts}</style>
   <rect width="1200" height="630" fill="{PAPER}"/>
-  <text x="60" y="112" font-family="{HEAD}" font-size="68" font-weight="600"
-    letter-spacing="-1.4" fill="none" stroke="{INK}" stroke-width="1.4">Agent</text>
-  <text x="260" y="112" font-family="{HEAD}" font-size="68" font-weight="600"
-    letter-spacing="-1.4" fill="{INK}">Baseline</text>
-  <line x1="620" y1="112" x2="1140" y2="112" stroke="{BASE}" stroke-width="1"/>
-  <text x="60" y="156" font-family="{HEAD}" font-size="19" font-weight="500"
-    fill="{SOFT}">Identify the agent.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Bound its authority.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Control its actions.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Prove its outcomes.</text>
-  <text x="1140" y="600" text-anchor="end" font-family="{MONO}" font-size="14"
-    fill="{FAINT}">agentbaseline.org · v1.0-draft</text>
-  <g transform="translate(160,200)">
-  {inner}
+
+  <!-- registration marks, the sheet's own device, quarter size -->
+  <g fill="none" stroke="{BASE}" stroke-width="1">
+    <path d="M40 74 v-34 h34 M1126 40 h34 v34 M40 556 v34 h34 M1126 590 h34 v-34"/>
   </g>
+
+  <text x="80" y="322" font-family="{HEAD}" font-size="100" font-weight="600"
+    letter-spacing="-2" fill="none" stroke="{INK}" stroke-width="1.8">Agent</text>
+  <text x="376" y="322" font-family="{HEAD}" font-size="100" font-weight="600"
+    letter-spacing="-2" fill="{INK}">Baseline</text>
+  <line x1="856" y1="322" x2="1120" y2="322" stroke="{BASE}" stroke-width="1"/>
+
+  <text x="80" y="404" font-family="{HEAD}" font-size="23" font-weight="500"
+    fill="{SOFT}">Identify the agent.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Bound its authority.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Control its actions.<tspan fill="{FAINT}">&#160;&#160;·&#160;&#160;</tspan>Prove its outcomes.</text>
+
+  <!-- the connector rule and its four pips, as on the page -->
+  <line x1="96" y1="436" x2="1064" y2="436" stroke="{BASE}" stroke-width="1"/>
+  <g fill="{PAPER}" stroke="{ACCENT}" stroke-width="1.6">
+    <circle cx="96" cy="436" r="4.5"/><circle cx="418" cy="436" r="4.5"/>
+    <circle cx="740" cy="436" r="4.5"/><circle cx="1064" cy="436" r="4.5"/>
+  </g>
+
+  <text x="80" y="562" font-family="{MONO}" font-size="15"
+    fill="{FAINT}">Six security outcomes &#183; 33 controls &#183; versioned in the open</text>
+  <text x="1120" y="562" text-anchor="end" font-family="{MONO}" font-size="15"
+    fill="{FAINT}">agentbaseline.org &#183; v1.0-draft</text>
 </svg>'''
 
 tmp = ROOT / "whitepaper" / "figures" / ".social.svg"
