@@ -29,7 +29,7 @@ Security is one outcome of getting it right, but the larger purpose is enabling 
 
 [What we mean by an AI agent](#what-we-mean-by-an-ai-agent)
 
-[Six-outcome](#six-outcome)
+[The six outcomes](#six-outcome)
 
 [Discover](#discover)
 
@@ -53,7 +53,7 @@ Security is one outcome of getting it right, but the larger purpose is enabling 
 
 [Stage 3: The deployed agent and the delegation problem](#stage-3:-the-deployed-agent-and-the-delegation-problem)
 
-[Stage 4: autonomous operation and the ability to say “stop”](#stage-4:-autonomous-operation-and-the-ability-to-say-“stop”)
+[Stage 4: autonomous operation and the ability to say “stop”](#stage-4-saying-stop)
 
 [Conclusion](#conclusion)
 
@@ -82,9 +82,7 @@ No single enforcement point can deliver this control system. The required contro
 | 5\. Validate | Test agents, components and generated artifacts against relevant threats. | Tested agents and first-party components, verified third-party agents and components, and tested agent-produced artifacts. |
 | 6\. Respond | Stop, revoke, quarantine and contain unsafe agent activity. | Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping. |
 
-# 
-
-# Six-outcome {#six-outcome}
+# The six outcomes {#six-outcome}
 
 The six outcomes are not an exhaustive list of controls. They are the baseline architectural coverage test because together they answer three questions: 
 
@@ -150,7 +148,7 @@ For ordinary software, arbitrary code running outside policy is a compromise; fo
 
 Two things need special care, both at the edges of the boundary. Egress is where data theft is decided, since an attack only succeeds if the data can leave, and agent egress is harder than conventional data-loss control because the legitimate destinations cannot be listed in advance: a service's are fixed, but an agent's are chosen by the same runtime planning an attacker can steer, and its work channels, package installs, git pushes, webhooks and APIs, are the very channels stolen data would use, with covert paths like DNS alongside them. Egress must therefore be scoped to the task, not the workload. The other edge is what the agent creates, not only what it loads: untrusted content steers the model, the model writes code, and the code acts, laundering an instruction into behaviour no input filter ever saw. Inside the sandbox that is tolerable, since it runs with only the task's authority; the risk concentrates at the exit, where a commit, package or deployment carries it into systems the sandbox no longer controls.
 
-### ![](figures/docs-image4.png)
+![](figures/docs-image4.png)
 
 Reference capabilities: CON-03–04 Appendix A
 
@@ -310,7 +308,7 @@ Before this service goes live, the team checks the actual release, including its
 
 Some patches eventually start from a schedule rather than a user. The record says that the service acted for an approved maintenance purpose it does not pretend that Alice was present at midnight. The resulting change is still checked against the ticket and the repository outcome. An allowed write can produce a harmful patch, so permission is only one part of the evidence (VAL-04, OBS-04, OBS-06).
 
-## Stage 4: autonomous operation and the ability to say “stop” {#stage-4:-autonomous-operation-and-the-ability-to-say-“stop”}
+## Stage 4: autonomous operation and the ability to say “stop” {#stage-4-saying-stop}
 
 One night, a vulnerability feed opens a patching job while the team is asleep. The advisory has been poisoned. Partway through the run, the agent sends data toward an unapproved destination.
 
@@ -327,8 +325,6 @@ No single enforcement point can secure that path, and no shopping list of produc
 None of this requires a new agent platform or a single mandatory proxy. The controls stay where they already live: the identity provider, the admission gate, the sandbox, the credential broker, the testing pipeline, the SIEM. Each one is extended to understand agents. Common contracts for identity, policy, action and evidence tie them together, and shared identifiers let decisions and evidence follow the agent wherever it runs. A product may implement one piece. The architecture is complete only when all six outcomes are covered and connected.
 
 The same dependency patch can be watched command by command or run unattended overnight. The business intent never changes, only the autonomy does. That is the challenge these outcomes exist to meet, and it was never really about governing a model. It is about safely delegating work. Together the six form the operating layer that lets autonomy scale without risk scaling with it. An organization that can identify every agent, bound its authority, control its actions and prove its outcomes gives its CISO a third option: let autonomy grow deliberately instead of discovering it after the fact. That is what it means to move fast without losing control.
-
-# 
 
 # Appendix A. Canonical capability map {#appendix-a.-canonical-capability-map}
 

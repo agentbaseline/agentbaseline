@@ -1,53 +1,426 @@
 #!/usr/bin/env python3
-"""Render whitepaper/whitepaper.pdf from whitepaper.md.
+"""Render static/whitepaper.pdf from whitepaper.md and controls.yaml.
 
-Markdown -> HTML via pandoc, then Chrome's print engine. Deliberately not LaTeX:
-this way the PDF inherits the site's typography, so the page, the PDF, the slides
-and the social card are visibly one artifact rather than four.
+Markdown -> HTML via pandoc, paginated by Paged.js, printed by Chrome.
+Deliberately not LaTeX: the PDF embeds the site's own woff2 files, so the page,
+the PDF and the social card are one artifact rather than three that resemble
+each other.
+
+Three things the previous version got wrong, all visible in the shipped file:
+
+  * It claimed to inherit the site's typography and did not — it named Charter
+    and Menlo, which are not on this site, so the PDF embedded system fonts and
+    read like a word-processor export.
+  * It passed --no-pdf-header-footer, so a 27-page citable document had no page
+    numbers at all, and its contents page was a list of blue underlined links
+    with nothing to look up.
+  * It rendered Appendix A from the paper's five-column Markdown table. Four of
+    those columns hold one to three words and the fifth holds a paragraph, so
+    the description was squeezed to about three words a line and ran twenty
+    lines tall beside four empty cells. Worse, rows broke across pages and the
+    identifier column went blank, so a continued description could not be
+    attributed to any control — a correctness failure in a reference appendix.
+
+The appendix is now generated from controls.yaml, which is the source of truth
+and which check-appendix proves still agrees with the paper's own table.
 """
-import pathlib, subprocess, sys, shutil
+import pathlib, subprocess, sys, shutil, re, base64, html
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "whitepaper" / "whitepaper.md"
 OUT = ROOT / "static" / "whitepaper.pdf"
-TMP = ROOT / "whitepaper" / ".paper.html"
+WORK = ROOT / "whitepaper" / ".build"
+PAGED = ROOT / "bin" / "vendor" / "paged.polyfill.js"
 
-if not shutil.which("pandoc"):
-    sys.exit("pandoc not installed")
+for tool in ("pandoc",):
+    if not shutil.which(tool):
+        sys.exit(f"{tool} is not installed")
+if not PAGED.exists():
+    sys.exit(f"missing {PAGED.relative_to(ROOT)} — see bin/vendor/README.md")
 
+# ── the catalogue ────────────────────────────────────────────────────────────
+# A tolerant reader rather than a schema-shaped regex. The previous attempt at
+# this pinned the field order and silently matched zero controls when a new
+# `type:` field was inserted, which is the failure mode to avoid in the script
+# that renders the reference appendix.
+def load_controls():
+    t = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
+    outcomes, controls = [], []
+    for blk in re.split(r"\n(?=  - )", t):
+        if not blk.lstrip().startswith("- "):
+            continue
+        def field(name):
+            # `[ \t-]*` and not `\s+`: the first field of a list entry carries
+            # the dash — `  - id: DIS-01` — and an anchor that only allows
+            # whitespace matches every field except the one that identifies
+            # the record.
+            m = re.search(rf"^[ \t-]*{name}:[ \t]*(?:>-\s*\n((?:[ ]+\S.*\n?)+)|(.+))$",
+                          blk, re.M)
+            if not m:
+                return None
+            v = m.group(1) or m.group(2) or ""
+            return " ".join(v.split()).strip().strip('"')
+        if field("prefix"):
+            outcomes.append({k: field(k) for k in
+                             ("prefix", "name", "requirement", "detail", "evidence")})
+        elif field("id"):
+            controls.append({k: field(k) for k in
+                             ("id", "outcome", "title", "type", "status", "requirement")})
+    if not outcomes or not controls:
+        sys.exit("could not read controls.yaml — refusing to render an empty appendix")
+    return outcomes, controls
+
+OUTCOMES, CONTROLS = load_controls()
+
+# ── the paper ────────────────────────────────────────────────────────────────
+md = SRC.read_text(encoding="utf-8")
+
+def cut_section(text, heading_re):
+    """Remove one `# Heading` block, up to the next level-1 heading."""
+    m = re.search(heading_re, text, re.M)
+    if not m:
+        return text, ""
+    nxt = re.search(r"^# ", text[m.end():], re.M)
+    end = m.end() + (nxt.start() if nxt else len(text) - m.end())
+    return text[:m.start()] + text[end:], text[m.start():end]
+
+# The paper's hand-written contents is a flat list of links. It is useful on
+# GitHub and useless in print, where a link with no page number cannot be
+# followed. Dropped here and rebuilt below with real page references.
+md, _ = cut_section(md, r"^# Contents\b.*$")
+# Appendix A is regenerated from controls.yaml.
+md, _ = cut_section(md, r"^# Appendix A\b.*$")
+
+WORK.mkdir(exist_ok=True)
+(WORK / "paper.md").write_text(md, encoding="utf-8")
+body = subprocess.run(
+    ["pandoc", str(WORK / "paper.md"), "-t", "html5", "--no-highlight"],
+    capture_output=True, text=True, check=True).stdout
+
+# The paper opens with a title, a subtitle and two published lines. All four
+# are the cover's job. Left in the flow they do not simply repeat the cover —
+# they land orphaned at the foot of the contents page, under the leaders.
+body = re.sub(r"^\s*<h1[^>]*>.*?</h1>", "", body, count=1, flags=re.S)
+for _ in range(2):
+    body = re.sub(r"^\s*<p>(?:(?!</p>).)*?(?:Identify the agent|Published as).*?</p>",
+                  "", body, count=1, flags=re.S)
+
+# Images are written relative to the markdown; the build directory is one level
+# down, so every one of them resolved to nothing and printed as a broken-image
+# glyph. Absolute file URLs, resolved against the paper's own directory.
+body = re.sub(r'(<img[^>]+src=")([^":]+)(")',
+              lambda m: m.group(1) + (SRC.parent / m.group(2)).resolve().as_uri() + m.group(3),
+              body)
+
+# ── contents, with page numbers resolved by Paged.js ─────────────────────────
+toc = []
+for m in re.finditer(r'<h([12])\s+id="([^"]+)"[^>]*>(.*?)</h\1>', body, re.S):
+    lvl, anchor, label = m.group(1), m.group(2), re.sub(r"<[^>]+>", "", m.group(3))
+    label = html.unescape(label).strip()
+    if label:
+        toc.append((lvl, anchor, label))
+toc.append(("1", "appendix-a", "Appendix A. Canonical capability map"))
+toc_html = "\n".join(
+    f'<li class="l{lvl}"><a href="#{a}"><span class="t">{html.escape(l)}</span></a></li>'
+    for lvl, a, l in toc)
+
+# ── the appendix, as blocks rather than a table ──────────────────────────────
+by_outcome = {}
+for c in CONTROLS:
+    by_outcome.setdefault(c["outcome"], []).append(c)
+app = []
+for o in OUTCOMES:
+    rows = by_outcome.get(o["prefix"], [])
+    if not rows:
+        continue
+    ids = f'{rows[0]["id"]}–{rows[-1]["id"]}'
+    app.append(f'<section class="fam">'
+               f'<h2 id="app-{o["prefix"].lower()}">{html.escape(o["name"])}'
+               f'<span class="span">{ids}</span></h2>'
+               f'<p class="famreq">{html.escape(o["requirement"] or "")}</p>')
+    for c in rows:
+        app.append(
+            f'<div class="ctl" id="{c["id"]}">'
+            f'<div class="cid">{c["id"]}</div>'
+            f'<div class="cbody"><div class="chead">'
+            f'<span class="ctitle">{html.escape(c["title"] or "")}</span>'
+            f'<span class="ctype">{html.escape(c["type"] or "")}</span></div>'
+            f'<p class="creq">{html.escape(c["requirement"] or "")}</p></div></div>')
+    app.append("</section>")
+appendix_html = "\n".join(app)
+
+# ── fonts, embedded so the print engine cannot fall back silently ────────────
+FACES = [
+    ("IBM Plex Serif", 400, "normal", "ibm-plex-serif-normal-400-latin.woff2"),
+    ("IBM Plex Serif", 400, "italic", "ibm-plex-serif-italic-400-latin.woff2"),
+    ("IBM Plex Serif", 600, "normal", "ibm-plex-serif-normal-600-latin.woff2"),
+    ("IBM Plex Serif", 700, "normal", "ibm-plex-serif-normal-700-latin.woff2"),
+    ("Figtree",        400, "normal", "figtree-normal-400-latin.woff2"),
+    ("Figtree",        400, "italic", "figtree-italic-400-latin.woff2"),
+    ("Chakra Petch",   500, "normal", "chakra-petch-normal-500-latin.woff2"),
+    ("Chakra Petch",   600, "normal", "chakra-petch-normal-600-latin.woff2"),
+    ("IBM Plex Mono",  400, "normal", "ibm-plex-mono-normal-400-latin.woff2"),
+    ("IBM Plex Mono",  600, "normal", "ibm-plex-mono-normal-600-latin.woff2"),
+]
+faces = []
+for fam, wt, style, fn in FACES:
+    f = ROOT / "static" / "fonts" / fn
+    if not f.exists():
+        sys.exit(f"missing font {fn} — the PDF must not fall back to a system face")
+    b64 = base64.b64encode(f.read_bytes()).decode()
+    faces.append(f'@font-face{{font-family:"{fam}";font-weight:{wt};'
+                 f'font-style:{style};font-display:block;'
+                 f'src:url(data:font/woff2;base64,{b64}) format("woff2")}}')
+FONTS = "\n".join(faces)
+
+# Figtree ships here at 400 only — the site's 600 and 700 both alias the 400
+# file, so a bold heading has never actually been bold. Rather than let the
+# print engine synthesise a fake bold, headings are set at 400 and earn their
+# weight from size, colour and space. Fix the font files and this can change.
 CSS = """
-@page { size: A4; margin: 22mm 20mm; }
-body { font-family: Charter,'Iowan Old Style',Georgia,serif; font-size: 10.5pt;
-  line-height: 1.55; color: #1A1C1A; max-width: none; }
-h1 { font-size: 20pt; line-height: 1.2; margin: 0 0 6pt; }
-h2 { font-size: 13pt; margin: 22pt 0 6pt; break-after: avoid; }
-h3 { font-size: 11pt; margin: 14pt 0 4pt; break-after: avoid; }
-h4 { font-family: ui-monospace,Menlo,monospace; font-size: 9pt; letter-spacing: .04em;
-  color: #12457F; margin: 12pt 0 3pt; break-after: avoid; }
-p { margin: 0 0 8pt; orphans: 3; widows: 3; }
-code { font-family: ui-monospace,Menlo,monospace; font-size: 9pt; }
-table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 10pt 0;
-  break-inside: avoid; }
-th, td { border-bottom: .4pt solid #DCDDD9; padding: 4pt 6pt; text-align: left;
-  vertical-align: top; }
-th { font-family: ui-monospace,Menlo,monospace; font-size: 7.5pt;
-  text-transform: uppercase; letter-spacing: .07em; color: #6E726E; }
-img, figure { break-inside: avoid; max-width: 100%; }
-blockquote { border-left: 2pt solid #DCDDD9; margin: 10pt 0; padding-left: 10pt;
-  color: #5A5E5A; }
+@page {
+  size: A4; margin: 22mm 30mm 20mm;
+  @bottom-left  { content: "Agent Baseline"; font-family:"IBM Plex Mono",monospace;
+                  font-size:7.5pt; letter-spacing:.06em; color:#8C8878; }
+  @bottom-center{ content: "v@VERSION@ · draft for public comment";
+                  font-family:"IBM Plex Mono",monospace; font-size:7.5pt;
+                  letter-spacing:.06em; color:#B0AB99; }
+  @bottom-right { content: counter(page); font-family:"IBM Plex Mono",monospace;
+                  font-size:8pt; font-weight:600; color:#5C5850; }
+  @top-right    { content: string(section); font-family:"Chakra Petch",sans-serif;
+                  font-size:7.5pt; letter-spacing:.13em; text-transform:uppercase;
+                  color:#B0AB99; }
+}
+@page cover { margin:0;
+  @bottom-left{content:none} @bottom-center{content:none}
+  @bottom-right{content:none} @top-right{content:none} }
+.cover { page:cover; }
+
+:root { --ink:#221F18; --soft:#5C5850; --faint:#8C8878; --line:#E6E2D7;
+        --rule:#CFCBBE; --accent:#4F6B00; --wash:#F7F5EE; }
+
+* { box-sizing:border-box; }
+body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
+  line-height:1.62; color:var(--ink); margin:0;
+  font-variant-numeric:oldstyle-num proportional-nums;
+  hyphens:auto; -webkit-hyphens:auto; text-align:justify;
+  hanging-punctuation:first last; }
+
+/* ── cover ─────────────────────────────────────────────────────────────── */
+.cover { height:100%; padding:34mm 30mm 24mm; position:relative;
+  text-align:left; }
+.cover::before, .cover::after { content:""; position:absolute; left:14mm;
+  right:14mm; height:0; border-top:.4pt solid var(--rule); }
+.cover::before { top:16mm; } .cover::after { bottom:16mm; }
+.cover .mark { margin:0 0 42mm; font-family:"Chakra Petch",sans-serif; font-weight:600;
+  font-size:8.5pt; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--accent); }
+.covertitle { font-family:"Figtree",sans-serif; font-weight:400; font-size:31pt;
+  line-height:1.14; letter-spacing:-0.02em; margin:0 0 9mm; max-width:15em;
+  text-align:left; hyphens:none; }
+.cover .tenets { display:flex; gap:0; margin:0 0 10mm; padding:0; list-style:none;
+  border-top:.4pt solid var(--rule); border-bottom:.4pt solid var(--rule); }
+.cover .tenets li { flex:1; font-family:"Figtree",sans-serif; font-size:8.5pt;
+  color:var(--soft); padding:3.5mm 0 3.5mm 4mm; position:relative; hyphens:none; }
+.cover .tenets li + li { border-left:.4pt solid var(--line); }
+.cover .tenets li::before { content:""; position:absolute; left:0; top:4.4mm;
+  width:1.4mm; height:1.4mm; background:var(--accent); }
+.cover .meta { font-family:"IBM Plex Mono",monospace; font-size:8pt;
+  line-height:1.85; color:var(--soft); text-align:left; }
+.cover .meta b { font-weight:600; color:var(--ink); }
+.cover .by { font-family:"IBM Plex Serif",serif; font-size:9pt; color:var(--soft);
+  margin:0 0 6mm; max-width:34em; text-align:left; hyphens:none; }
+.cover .by { line-height:1.85; }
+.cover .by sup { font-family:"Chakra Petch",sans-serif; font-size:6pt;
+  letter-spacing:.08em; color:var(--faint); vertical-align:.42em;
+  margin-left:.5pt; }
+
+/* ── contents ──────────────────────────────────────────────────────────── */
+.toc { break-before:page; }
+.toc h2 { font-family:"Chakra Petch",sans-serif; font-weight:600; font-size:9pt;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--soft);
+  margin:0 0 6mm; padding-bottom:2.5mm; border-bottom:.5pt solid var(--rule); }
+.toc ol { list-style:none; margin:0; padding:0; }
+.toc li { margin:0; }
+.toc a { text-decoration:none; color:var(--ink); display:flex;
+  align-items:baseline; gap:0; }
+.toc .t { order:1; }
+/* the leader: a dotted rule that grows to fill, so the number always lands
+   on the right margin however long the title is */
+.toc a::before { content:""; order:2; flex:1 1 auto; margin:0 3pt;
+  border-bottom:.4pt dotted var(--rule); transform:translateY(-2px); }
+.toc a::after { content:target-counter(attr(href), page); order:3;
+  font-family:"IBM Plex Mono",monospace; font-size:8.5pt; color:var(--soft);
+  font-variant-numeric:tabular-nums; }
+.toc li.l1 > a { font-family:"Figtree",sans-serif; font-size:10.5pt;
+  padding:2.6mm 0 1mm; }
+.toc li.l1 + li.l1 > a { border-top:.4pt solid var(--line); }
+.toc li.l2 > a { font-size:9.5pt; color:var(--soft); padding:.7mm 0 .7mm 7mm; }
+.toc li.l2 > a::after { color:var(--faint); }
+
+/* ── running text ──────────────────────────────────────────────────────── */
+h1:not(.covertitle) { font-family:"Figtree",sans-serif; font-weight:400; font-size:19pt;
+  line-height:1.2; letter-spacing:-0.016em; color:var(--ink);
+  margin:0 0 5mm; padding-bottom:3mm; border-bottom:.5pt solid var(--rule);
+  break-before:page; break-after:avoid;
+  text-align:left; hyphens:none; text-wrap:balance; }
+h1:not(.covertitle) { string-set:section content(text); }
+h2 { font-family:"Figtree",sans-serif; font-weight:400; font-size:13.5pt;
+  line-height:1.25; letter-spacing:-0.01em; margin:9mm 0 2.5mm;
+  break-after:avoid; text-align:left; hyphens:none; }
+h3 { font-family:"Chakra Petch",sans-serif; font-weight:600; font-size:8.5pt;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--accent);
+  margin:6mm 0 1.8mm; break-after:avoid; text-align:left; hyphens:none; }
+h4 { font-family:"IBM Plex Mono",monospace; font-size:8.5pt; font-weight:600;
+  letter-spacing:.03em; color:var(--soft); margin:4mm 0 1.5mm;
+  break-after:avoid; text-align:left; }
+p { margin:0 0 2.6mm; orphans:3; widows:3; }
+/* The fragmenter lays a paragraph out more than once as it decides where the
+   page ends, and during that pass the closing line is treated as though more
+   text followed — so it came out stretched across the full measure. Stating
+   the last line's alignment outright rather than leaving it to `auto` costs
+   nothing and settles it. */
+p, li, dd, .creq, .famreq { text-align-last:left; }
+h1 + p, h2 + p, h3 + p { text-indent:0; }
+strong, b { font-weight:600; }
+em, i { font-style:italic; }
+a { color:var(--ink); text-decoration:none;
+  border-bottom:.4pt solid var(--rule); }
+code { font-family:"IBM Plex Mono",monospace; font-size:8.5pt;
+  background:var(--wash); padding:.3mm 1mm; }
+ul, ol { margin:0 0 3mm; padding-left:5.5mm; }
+li { margin:0 0 1.2mm; }
+blockquote { border-left:1.2pt solid var(--accent); margin:4mm 0;
+  padding:0 0 0 5mm; color:var(--soft); font-style:italic; }
+
+/* Raster figures carried over from the source document. Capped well below the
+   text measure on purpose: they are 624px wide, so filling the column would
+   print them at about 110dpi. Held to 118mm they land near 135dpi — still not
+   press quality, but visibly sharper. Remove the cap when vector art lands. */
+figure, p > img { break-inside:avoid; }
+img { display:block; max-width:118mm; height:auto; margin:5mm auto;
+  image-rendering:auto; }
+
+table { border-collapse:collapse; width:100%; font-size:8.5pt; margin:4mm 0;
+  break-inside:avoid; text-align:left; hyphens:none; }
+th, td { border-bottom:.4pt solid var(--line); padding:2mm 3mm 2mm 0;
+  text-align:left; vertical-align:top; }
+th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
+  text-transform:uppercase; letter-spacing:.1em; color:var(--faint);
+  border-bottom:.5pt solid var(--rule); }
+
+/* ── appendix ──────────────────────────────────────────────────────────── */
+.appendix { break-before:page; }
+.fam { break-before:auto; margin:0 0 7mm; }
+.fam h2 { display:flex; align-items:baseline; gap:4mm; margin:7mm 0 1mm;
+  padding-bottom:2mm; border-bottom:.5pt solid var(--rule); break-after:avoid; }
+.fam .span { margin-left:auto; font-family:"IBM Plex Mono",monospace;
+  font-size:8pt; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+.famreq { font-family:"Figtree",sans-serif; font-size:9pt; color:var(--soft);
+  margin:0 0 4mm; hyphens:none; text-align:left; }
+/* One control, one block: identifier in the margin, everything else in the
+   measure. break-inside:avoid is the whole point — a control that splits
+   across a page leaves its description with no identifier attached. */
+.ctl { display:grid; grid-template-columns:19mm 1fr; gap:0 4mm;
+  padding:2.6mm 0; border-top:.4pt solid var(--line); break-inside:avoid; }
+.ctl .cid { font-family:"IBM Plex Mono",monospace; font-size:8.5pt;
+  font-weight:600; color:var(--accent); letter-spacing:.01em; padding-top:.4mm; }
+.ctl .chead { display:flex; align-items:baseline; gap:4mm; margin:0 0 1mm; }
+.ctl .ctitle { font-family:"Figtree",sans-serif; font-size:10pt;
+  color:var(--ink); hyphens:none; }
+.ctl .ctype { margin-left:auto; font-family:"Chakra Petch",sans-serif;
+  font-weight:500; font-size:6.8pt; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--faint); white-space:nowrap; }
+.ctl .creq { margin:0; font-size:9pt; line-height:1.55; color:var(--soft); }
 """
-(ROOT / "whitepaper" / ".paper.css").write_text(CSS, encoding="utf-8")
 
-# pagetitle fills the HTML <title> without rendering a visible title block —
-# the paper's own H1 is the title, and a metadata `title` would print above it.
-subprocess.run(["pandoc", str(SRC), "-o", str(TMP), "--standalone",
-                "--metadata", "pagetitle=Agent Baseline — security outcomes for enterprise AI agents",
-                "-c", ".paper.css"], check=True)
 
-chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-OUT.parent.mkdir(exist_ok=True)
-before = OUT.stat().st_mtime if OUT.exists() else 0
-r = subprocess.run([chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
-                f"--print-to-pdf={OUT}", TMP.as_uri()], capture_output=True)
-TMP.unlink(missing_ok=True); (ROOT / "whitepaper" / ".paper.css").unlink(missing_ok=True)
-print(f"wrote static/whitepaper.pdf  ({OUT.stat().st_size:,} bytes)" if OUT.exists()
-      else "PDF FAILED")
+def render():
+    version = "1.0-draft"
+    m = re.search(r'^version:\s*"([^"]+)"',
+                  (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8"), re.M)
+    if m:
+        version = m.group(1)
+    # str.replace, not %-formatting: the stylesheet is full of
+    # percentages and every one of them is a format specifier.
+    css = CSS.replace("@VERSION@", version)
+
+    authors = ""
+    cpath = ROOT / "whitepaper" / "contributors.yaml"
+    if cpath.exists():
+        people = []
+        for blk in re.split(r"\n(?=  - )", cpath.read_text(encoding="utf-8")):
+            if not blk.lstrip().startswith("- name:"):
+                continue
+            def f(k):
+                m = re.search(rf"^[ \t-]*{k}:[ \t]*(.+)$", blk, re.M)
+                return m.group(1).strip().strip('"') if m else ""
+            # confirmed: false means the affiliation has not been agreed by the
+            # person. contributors.yaml is explicit that those must not be
+            # published, and a cover is the most published place there is.
+            if f("confirmed").lower() == "true" and f("name"):
+                people.append((f("sortkey") or f("name"), f("name"), f("affiliation")))
+        people.sort()
+        if people:
+            names = [f'{n}<sup>{a}</sup>' if a else n for _, n, a in people]
+            joined = (", ".join(names[:-1]) + " and " + names[-1]
+                      if len(names) > 1 else names[0])
+            authors = "Drafted by " + joined + "."
+
+    doc = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Agent Baseline — six security outcomes for enterprise AI agents</title>
+<style>{FONTS}</style>
+<style>{css}</style>
+</head><body>
+
+<section class="cover">
+  <p class="mark">Agent Baseline · agentbaseline.org</p>
+  <h1 class="covertitle">Six security outcomes for safely building, deploying and operating AI agents</h1>
+  <ul class="tenets">
+    <li>Identify the agent.</li><li>Bound its authority.</li>
+    <li>Control its actions.</li><li>Prove its outcomes.</li>
+  </ul>
+  <p class="by">{authors}</p>
+  <p class="meta">
+    <b>v{version}</b> · published 30 July 2026<br>
+    Draft for public comment until 30 September 2026<br>
+    {len(CONTROLS)} controls across {len(OUTCOMES)} outcomes<br>
+    Prose and figures CC BY 4.0 · schemas Apache-2.0
+  </p>
+</section>
+
+<nav class="toc"><h2>Contents</h2><ol>{toc_html}</ol></nav>
+
+{body}
+
+<section class="appendix">
+  <h1 id="appendix-a">Appendix A. Canonical capability map</h1>
+  <p>This catalogue is generated from <code>whitepaper/controls.yaml</code>, which is
+  the source of truth for the baseline. Capabilities are grouped by their primary
+  required outcome.</p>
+  {appendix_html}
+</section>
+
+<script>window.PagedConfig = {{ auto: false }};</script>
+<script src="{PAGED.as_uri()}"></script>
+</body></html>"""
+
+    page = WORK / "paper.html"
+    page.write_text(doc, encoding="utf-8")
+
+    OUT.parent.mkdir(exist_ok=True)
+    if OUT.exists():
+        OUT.unlink()
+    r = subprocess.run(["node", str(ROOT / "bin" / "print-page.mjs"),
+                        str(page), str(OUT)], capture_output=True, text=True)
+    if r.returncode or not OUT.exists():
+        sys.exit(f"PDF FAILED\n{r.stdout}\n{r.stderr}")
+    print(f"  {r.stdout.strip()}")
+    pages = len(re.findall(rb"/Type\s*/Page[^s]", OUT.read_bytes()))
+    print(f"wrote static/whitepaper.pdf  {OUT.stat().st_size:,} bytes · {pages} pages "
+          f"· {len(CONTROLS)} controls · {len(toc)} contents entries")
+
+
+if __name__ == "__main__":
+    render()

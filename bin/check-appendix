@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Prove the paper's Appendix A still says what controls.yaml says.
+
+The PDF's appendix is generated from controls.yaml rather than from the table
+in whitepaper.md, because the table cannot be typeset — five columns, four of
+them holding one to three words and the fifth a paragraph, so rows broke across
+pages and left descriptions with no identifier attached.
+
+That substitution is only honest while the two agree. If the paper's table
+drifts from the catalogue, the published PDF would quietly show the catalogue's
+version of a control under the paper's heading, and the paper/appendix
+divergence closed as issue #1 would be back with nobody able to see it.
+
+Compares identifier, title, type and requirement text. Whitespace, trailing
+full stops and quotation marks are normalised; anything else is a difference.
+"""
+import pathlib, re, sys, unicodedata
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+
+def load_yaml_controls():
+    t = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
+    out = {}
+    for blk in re.split(r"\n(?=  - )", t):
+        if not blk.lstrip().startswith("- "):
+            continue
+
+        def field(name):
+            m = re.search(rf"^[ \t-]*{name}:[ \t]*(?:>-\s*\n((?:[ ]+\S.*\n?)+)|(.+))$",
+                          blk, re.M)
+            if not m:
+                return None
+            return " ".join((m.group(1) or m.group(2) or "").split()).strip().strip('"')
+
+        cid = field("id")
+        if cid and re.fullmatch(r"[A-Z]{3}-\d{2}", cid):
+            out[cid] = {"title": field("title") or "", "type": field("type") or "",
+                        "req": field("requirement") or ""}
+    return out
+
+
+def load_paper_table():
+    md = (ROOT / "whitepaper" / "whitepaper.md").read_text(encoding="utf-8")
+    i = md.rfind("# Appendix A")
+    if i < 0:
+        return None
+    out = {}
+    for line in md[i:].splitlines():
+        if not line.startswith("|") or ":----" in line:
+            continue
+        c = [x.strip() for x in line.strip().strip("|").split("|")]
+        if len(c) >= 5 and re.fullmatch(r"[A-Z]{3}-\d{2}", c[1]):
+            out[c[1]] = {"title": c[2], "type": c[3], "req": c[4]}
+    return out
+
+
+def norm(s):
+    s = unicodedata.normalize("NFKC", s)
+    s = s.replace("’", "'").replace("‘", "'")
+    s = s.replace("“", '"').replace("”", '"')
+    s = s.replace("—", "-").replace("–", "-")
+    return re.sub(r"\s+", " ", s).strip().rstrip(".").lower()
+
+
+y = load_yaml_controls()
+p = load_paper_table()
+
+if p is None:
+    print("appendix: whitepaper.md has no Appendix A table — nothing to reconcile.")
+    print("          the PDF renders its appendix from controls.yaml regardless.")
+    sys.exit(0)
+
+print(f"appendix: {len(p)} rows in the paper · {len(y)} controls in the catalogue")
+
+findings = []
+for k in sorted(set(p) | set(y)):
+    a, b = p.get(k), y.get(k)
+    if not b:
+        findings.append(f"{k}: in the paper's table, absent from controls.yaml")
+        continue
+    if not a:
+        findings.append(f"{k}: in controls.yaml, absent from the paper's table")
+        continue
+    for fld, label in (("title", "title"), ("req", "requirement")):
+        if norm(a[fld]) != norm(b[fld]):
+            findings.append(f"{k} {label} differs\n"
+                            f"      paper: {a[fld][:96]}\n"
+                            f"      yaml : {b[fld][:96]}")
+    if a["type"] != b["type"]:
+        findings.append(f"{k} type differs — paper={a['type']} yaml={b['type']}")
+
+for f in findings:
+    print(f"  DIFF   {f}")
+print(f"\n{len(findings)} difference(s)")
+if findings:
+    print("The PDF renders Appendix A from controls.yaml. While these disagree, the\n"
+          "published appendix does not match the paper's own table — reconcile one\n"
+          "of them, or drop the table from whitepaper.md so there is a single source.")
+sys.exit(1 if findings else 0)

@@ -28,6 +28,10 @@ jobs:
       # pass a build that shipped something else.
       - name: Scripts parse — source and minified
         run: python3 bin/check-js
+      # The PDF renders Appendix A from controls.yaml rather than from the
+      # paper's own table. That substitution is only honest while they agree.
+      - name: Appendix A agrees with the catalogue
+        run: python3 bin/check-appendix
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls
