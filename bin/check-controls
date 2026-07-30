@@ -135,6 +135,34 @@ for _m in re.finditer(r'  - id: (\w+-\d+)\n(?:.*\n)*?    requirement: >-\n((?:  
         err(f"{_m.group(1)}: requirement ends in the bare word "
             f"'{_lines[-1]}' — a heading pasted in from the source document")
 
+# ── 0 · the built output must come from this configuration ───────────────────
+# Every check below that reads public/ is only as good as the build that made
+# it. A `hugo server` left running rewrites public/ continuously with a
+# localhost baseURL, so a check can validate a build nobody deployed and pass.
+# That cost three false alarms in one evening: a reorder that had worked was
+# reported as broken, twice.
+def _built_matches_config():
+    cfg = (ROOT / "hugo.toml").read_text(encoding="utf-8")
+    m = re.search(r'^baseURL\s*=\s*"([^"]+)"', cfg, re.M)
+    built = ROOT / "public" / "index.html"
+    if not m or not built.exists():
+        return None
+    want = m.group(1).rstrip("/")
+    h = built.read_text(encoding="utf-8")
+    got = re.search(r'canonical["\']?\s+href=["\']?([^"\'>\s]+)', h)
+    if got and not got.group(1).startswith(want):
+        return (want, got.group(1))
+    return None
+
+_drift = _built_matches_config()
+if _drift:
+    sys.exit(f"public/ was built with a different baseURL than hugo.toml sets.\n"
+             f"  hugo.toml : {_drift[0]}\n"
+             f"  public/   : {_drift[1]}\n"
+             f"Usually a `hugo server` is still running and rewriting public/.\n"
+             f"  pkill -f 'hugo server' && hugo --gc --minify\n"
+             f"Refusing to check a build that is not the one you would deploy.")
+
 # ── report ────────────────────────────────────────────────────────────────────
 fam = collections.Counter(c["id"].split("-")[0] for c in controls)
 print(f"controls: {len(controls)} controls across {len(outcomes)} outcomes  "
