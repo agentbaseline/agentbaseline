@@ -15,6 +15,19 @@ import base64, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
+# The count was typed into the SVG. It said 33 for the whole of the day the
+# catalogue became 35, on the og:image — the one asset nobody looks at again
+# after they make it, and the one every share of this link renders. Derived
+# from the source of truth so it cannot be wrong twice.
+def catalogue_size():
+    src = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
+    ids = re.findall(r"^\s*-\s+id:\s*([A-Z]{3}-\d{2})\s*$", src, re.M)
+    if not ids:
+        sys.exit("could not count controls in controls.yaml")
+    return len(set(ids))
+
+N_CONTROLS = catalogue_size()
+
 def face(family, style, weight, fname):
     data = base64.b64encode((ROOT / "static" / "fonts" / fname).read_bytes()).decode()
     return (f"@font-face{{font-family:'{family}';font-style:{style};"
@@ -62,7 +75,7 @@ card = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width=
   </g>
 
   <text x="80" y="562" font-family="{MONO}" font-size="15"
-    fill="{FAINT}">Six security outcomes &#183; 33 controls &#183; versioned in the open</text>
+    fill="{FAINT}">Six security outcomes &#183; {N_CONTROLS} controls &#183; versioned in the open</text>
   <text x="1120" y="562" text-anchor="end" font-family="{MONO}" font-size="15"
     fill="{FAINT}">agentbaseline.org &#183; v1.0-draft</text>
 </svg>'''
