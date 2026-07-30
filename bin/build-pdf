@@ -295,13 +295,21 @@ li { margin:0 0 1.2mm; }
 blockquote { border-left:1.2pt solid var(--accent); margin:4mm 0;
   padding:0 0 0 5mm; color:var(--soft); font-style:italic; }
 
-/* Raster figures carried over from the source document. Capped well below the
-   text measure on purpose: they are 624px wide, so filling the column would
-   print them at about 110dpi. Held to 118mm they land near 135dpi — still not
-   press quality, but visibly sharper. Remove the cap when vector art lands. */
-figure, p > img { break-inside:avoid; }
-img { display:block; max-width:118mm; height:auto; margin:5mm auto;
-  image-rendering:auto; }
+/* The figures are vector now, exported from the design file, so they can fill
+   the measure without losing anything — the raster versions were capped at
+   118mm because filling the column printed them near 110dpi. */
+figure { break-inside:avoid; margin:6mm 0; text-align:center; }
+img { display:block; max-width:100%; height:auto; margin:0 auto; }
+/* pandoc turns `![alt](src)` into a figure with a caption, which is what we
+   want in print: the alt text was empty on every one of these, so the figures
+   were unlabelled in the document and invisible to a screen reader. Set as a
+   caption rather than as body prose, and numbered, so a figure can be cited. */
+figcaption { counter-increment:fig; font-family:"Figtree",sans-serif;
+  font-size:8.5pt; line-height:1.45; color:var(--soft); margin:3mm auto 0;
+  max-width:118mm; text-align:left; hyphens:none; }
+figcaption::before { content:"Figure " counter(fig) "  "; font-family:"IBM Plex Mono",monospace;
+  font-size:7.5pt; font-weight:600; color:var(--accent); letter-spacing:.04em; }
+body { counter-reset:fig; }
 
 table { border-collapse:collapse; width:100%; font-size:8.5pt; margin:4mm 0;
   break-inside:avoid; text-align:left; hyphens:none; }
