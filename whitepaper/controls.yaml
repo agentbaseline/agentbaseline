@@ -22,27 +22,38 @@ outcomes:
   - prefix: DIS
     name: Discover
     requirement: "Discover every agent and its dependencies."
+    detail: >-
+      Maintain an accurate view of the agents in use, their components, owners, operating status and effective access.
     evidence: "Authoritative inventory reconciled with observed code, cloud, endpoint, identity, SaaS and runtime evidence."
   - prefix: CON
     name: Constrain
     requirement: "Limit components, runtime, data and reach."
+    detail: >-
+      Limit each agent and component to the environments, capabilities, data and actions its approved purpose requires.
     evidence: "Blocked unapproved releases and components, agent capabilities constrained."
   - prefix: AUT
     name: Authorize
     requirement: "Bind identity, task, target and authority."
+    detail: >-
+      Attribute consequential actions, and limit authority by purpose, task, resource, action and time.
     evidence: "Attributable identity and a purpose-, task-, resource-, action- and time-bound delegation context."
   - prefix: OBS
     name: Observe
     requirement: "Correlate activity and prove what happened."
+    detail: >-
+      Create correlated evidence connecting intent, identity, task, policy, tool use, action and outcome.
     evidence: "Correlated telemetry that joins intent, actor, task, policy, action, target, outcome and cost."
   - prefix: VAL
     name: Validate
     requirement: "Admit the system and verify outcomes."
+    detail: >-
+      Evaluate agents and their components before use, after material changes, and at intervals appropriate to their risk.
     evidence: "Tested agents and first-party components, verified third-party agents and components, and tested agent-produced artifacts."
   - prefix: RES
     name: Respond
     requirement: "Stop, revoke, quarantine and scope impact."
-    evidence: "Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping."
+    detail: >-
+      Stop execution, remove active authority, quarantine affected components, preserve evidence and determine impact.
 
 controls:
   - id: DIS-01

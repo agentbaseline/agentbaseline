@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+"""Every catalogue field a template reads must exist in controls.yaml.
+
+Hugo's `with` and `if` are silent on a missing field: the block does not render,
+the build succeeds, and every other gate passes. Not hypothetical. PR #8 rebuilt
+controls.yaml from the paper's appendix and dropped `detail:` from the six
+outcomes; layouts/index.html reads it inside a `with`, so the six one-line
+elaborations of what each outcome means vanished from the homepage — and stayed
+gone through a review, a merge and four green CI runs, because nothing asserted
+the field was still there.
+
+The dangerous shape: content disappears, nothing errors, the page still looks
+finished.
+
+Scope matters here. A first attempt matched `.foo` anywhere in the file and
+reported every CSS class in the inline stylesheets. This one tokenises the Go
+template actions only — the `{{ … }}` spans — and counts a field read only when
+it occurs inside a `range` over the catalogue, which is the only place a
+control or outcome field is in scope.
+"""
+import pathlib, re, sys
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+CATALOGUE = ROOT / "whitepaper" / "controls.yaml"
+BINDS = re.compile(r"hugo\.Data\.controls|\.Site\.Data\.controls")
+CAT_RANGE = re.compile(r"\brange\b[^}]*\$\w+\.(outcomes|controls)\b")
+# A range is often over a variable derived from the catalogue rather than over
+# the catalogue directly — `{{ $ids := where $cat.controls "outcome" .prefix }}`
+# then `{{ range $ids }}`. Without following the assignment the inner range
+# inherits the outer one's kind and every control field is reported as a
+# missing outcome field.
+ASSIGN = re.compile(r"\$(\w+)\s*:=[^}]*\$\w+\.(outcomes|controls)\b")
+VAR_RANGE = re.compile(r"\brange\b\s*\$(\w+)\s*$")
+
+
+def catalogue_fields():
+    """Field names defined on outcomes and on controls."""
+    t = CATALOGUE.read_text(encoding="utf-8")
+    outcome, control = set(), set()
+    for blk in re.split(r"\n(?=  - )", t):
+        if not blk.lstrip().startswith("- "):
+            continue
+        names = set(re.findall(r"^[ \t-]*(\w[\w-]*):", blk, re.M))
+        if "prefix" in names:
+            outcome |= names
+        elif "id" in names:
+            control |= names
+    return outcome, control
+
+
+def reads():
+    """(file, line, kind, field) for field reads inside a catalogue range."""
+    out = []
+    for p in sorted(ROOT.glob("layouts/**/*.html")):
+        text = p.read_text(encoding="utf-8")
+        if not BINDS.search(text):
+            continue
+        depth = 0          # nesting inside a catalogue range
+        stack = []         # kind at each open range, None for other blocks
+        vars_ = {m.group(1): m.group(2) for m in ASSIGN.finditer(text)}
+        for m in re.finditer(r"\{\{-?(.*?)-?\}\}", text, re.S):
+            action = m.group(1)
+            line = text.count("\n", 0, m.start()) + 1
+            opens = re.search(r"^\s*(range|with|if|block|define)\b", action)
+            closes = re.match(r"^\s*end\s*$", action)
+            if depth and not opens and not closes:
+                for f in re.findall(r"(?<![\w$])\.([a-z][A-Za-z0-9_]*)", action):
+                    out.append((p.relative_to(ROOT).as_posix(), line, stack[-1], f))
+            if opens:
+                cm = CAT_RANGE.search(action)
+                vm = VAR_RANGE.search(action.strip())
+                kind = (cm.group(1) if cm else
+                        vars_.get(vm.group(1)) if vm else
+                        (stack[-1] if stack else None))
+                stack.append(kind)
+                if kind:
+                    depth += 1
+                # a read can also sit in the opening action itself
+                if depth and not cm and not vm:
+                    for f in re.findall(r"(?<![\w$])\.([a-z][A-Za-z0-9_]*)", action):
+                        out.append((p.relative_to(ROOT).as_posix(), line, kind, f))
+            elif closes and stack:
+                if stack.pop():
+                    depth -= 1
+    return out
+
+
+OUT, CTL = catalogue_fields()
+found = reads()
+
+missing, seen = [], set()
+for f, ln, kind, field in found:
+    have = OUT if kind == "outcomes" else CTL
+    if field in have or (kind, field) in seen:
+        continue
+    missing.append((f, ln, kind, field))
+    seen.add((kind, field))
+
+print(f"bindings: {len(found)} catalogue field read(s) in the templates · "
+      f"outcomes offer {len(OUT)}, controls offer {len(CTL)}")
+for f, ln, kind, field in missing:
+    print(f"  MISSING  {f}:{ln} reads `.{field}` on a {kind[:-1]} — "
+          f"controls.yaml has no such field")
+print(f"\n{len(missing)} missing field(s)")
+if missing:
+    print("A template field that does not exist renders nothing and raises\n"
+          "nothing. Restore it in controls.yaml, or remove the template's\n"
+          "dependency — but do not leave the page quietly shorter than it was\n"
+          "designed to be.")
+sys.exit(1 if missing else 0)

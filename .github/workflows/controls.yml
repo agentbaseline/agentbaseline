@@ -32,6 +32,11 @@ jobs:
       # paper's own table. That substitution is only honest while they agree.
       - name: Appendix A agrees with the catalogue
         run: python3 bin/check-appendix
+      # A template field that vanishes from controls.yaml renders nothing
+      # and raises nothing. That is how six outcome elaborations left the
+      # homepage and stayed gone through a review and four green runs.
+      - name: Templates only read fields the catalogue has
+        run: python3 bin/check-bindings
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls
