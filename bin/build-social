@@ -11,7 +11,10 @@ showing it advertised something the page does not contain — and at the size a
 feed renders an unfurl, six cards of 8pt labels are noise rather than
 information. An unfurl has one job, which is to be legible at thumbnail size.
 """
-import base64, pathlib, re, subprocess, sys
+import base64, pathlib, subprocess, sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import controls_source
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -19,14 +22,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 # catalogue became 35, on the og:image — the one asset nobody looks at again
 # after they make it, and the one every share of this link renders. Derived
 # from the source of truth so it cannot be wrong twice.
-def catalogue_size():
-    src = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
-    ids = re.findall(r"^\s*-\s+id:\s*([A-Z]{3}-\d{2})\s*$", src, re.M)
-    if not ids:
-        sys.exit("could not count controls in controls.yaml")
-    return len(set(ids))
-
-N_CONTROLS = catalogue_size()
+#
+# Derived through the same counter Hugo's card filename has to match, because
+# deriving it separately only moved the failure: this counted `[A-Z]{3}-\d{2}`
+# and social-meta.html counts YAML list entries, so a three-digit identifier
+# wrote social-card-34.png while the og:image pointed at social-card-35.png.
+N_CONTROLS = controls_source.catalogue_size()
 
 def face(family, style, weight, fname):
     data = base64.b64encode((ROOT / "static" / "fonts" / fname).read_bytes()).decode()

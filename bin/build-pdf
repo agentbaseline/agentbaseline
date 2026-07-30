@@ -26,6 +26,9 @@ and which check-appendix proves still agrees with the paper's own table.
 """
 import pathlib, subprocess, sys, shutil, re, base64, html, os, calendar, datetime
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import controls_source
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "whitepaper" / "whitepaper.md"
 OUT = ROOT / "static" / "whitepaper.pdf"
@@ -43,31 +46,22 @@ if not PAGED.exists():
 # this pinned the field order and silently matched zero controls when a new
 # `type:` field was inserted, which is the failure mode to avoid in the script
 # that renders the reference appendix.
+#
+# The reader itself now lives in bin/controls_source.py, because check-appendix
+# proves this appendix against the paper using the same file and the two had
+# drifted into different regexes. Its own copy read a folded scalar as "every
+# indented line that follows", which swallowed the next sibling key, and
+# recognised only `>-` of the six block-scalar indicators.
+#
+# The count it reports on the cover is the count the social card and the page
+# report, because control_ids() is the one that answers that question. This
+# script used to accept any block carrying an `id:` in any shape, so it could
+# print a number the card and the og:image did not have.
 def load_controls():
-    t = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
-    outcomes, controls = [], []
-    for blk in re.split(r"\n(?=  - )", t):
-        if not blk.lstrip().startswith("- "):
-            continue
-        def field(name):
-            # `[ \t-]*` and not `\s+`: the first field of a list entry carries
-            # the dash — `  - id: DIS-01` — and an anchor that only allows
-            # whitespace matches every field except the one that identifies
-            # the record.
-            m = re.search(rf"^[ \t-]*{name}:[ \t]*(?:>-\s*\n((?:[ ]+\S.*\n?)+)|(.+))$",
-                          blk, re.M)
-            if not m:
-                return None
-            v = m.group(1) or m.group(2) or ""
-            return " ".join(v.split()).strip().strip('"')
-        if field("prefix"):
-            outcomes.append({k: field(k) for k in
-                             ("prefix", "name", "requirement", "detail", "evidence")})
-        elif field("id"):
-            controls.append({k: field(k) for k in
-                             ("id", "outcome", "title", "type", "status", "requirement")})
+    outcomes, controls = controls_source.load()
     if not outcomes or not controls:
         sys.exit("could not read controls.yaml — refusing to render an empty appendix")
+    controls_source.control_ids()
     return outcomes, controls
 
 OUTCOMES, CONTROLS = load_controls()

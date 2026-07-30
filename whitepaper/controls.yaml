@@ -54,6 +54,7 @@ outcomes:
     requirement: "Stop, revoke, quarantine and scope impact."
     detail: >-
       Stop execution, remove active authority, quarantine affected components, preserve evidence and determine impact.
+    evidence: "Tested circuit breakers, revocation, quarantine, escalation, evidence preservation and impact scoping."
 
 controls:
   - id: DIS-01
