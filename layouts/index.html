@@ -82,6 +82,21 @@
   a svg.ph { color:inherit; }
   a:visited { color:var(--visited); }
   a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* Thirty-one focusable elements sit between the top of the document and its
+     first sentence — the event strip, the utility bar, the artifacts menu. A
+     keyboard reader clears them in one tab. Off-canvas until focused, then a
+     chip in the top-left corner; fixed, so it never lengthens the page. */
+  .skip { position:fixed; top:8px; left:8px; z-index:100;
+    transform:translateY(-250%);
+    background:var(--paper); color:var(--ink);
+    border:1px solid var(--line); border-radius:3px; padding:8px 12px;
+    font-family:var(--labelfont); font-weight:500; font-size:12px;
+    letter-spacing:.07em; text-transform:uppercase; }
+  .skip:focus { transform:none; color:var(--ink);
+    outline:2px solid var(--accent); outline-offset:2px; }
+  /* The target is a destination, not a control: it takes focus so the next tab
+     starts inside the content, and draws no ring of its own. */
+  #main:focus { outline:none; }
   /* Text selection carries the accent — a translucent wash so the ink beneath
      stays its own colour. */
   ::selection { background:color-mix(in srgb, var(--accent) 30%, transparent); }
@@ -486,6 +501,8 @@
 </head>
 <body>
 
+<a class="skip" href="#main">Skip to content</a>
+
 {{ partial "event-bar.html" . }}
 
 <nav class="utility">
@@ -513,7 +530,7 @@
   </div>
 </nav>
 
-<main class="sheet">
+<main class="sheet" id="main" tabindex="-1">
 <div class="page">
 
   <header class="titleblock wide">
