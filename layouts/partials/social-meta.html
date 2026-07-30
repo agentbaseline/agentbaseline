@@ -15,15 +15,21 @@
        readers two different URLs for the same page. The root keeps its
        slash; everything else loses it. */ -}}
 {{- if ne $u .ctx.Site.BaseURL -}}{{- $u = strings.TrimSuffix "/" $u -}}{{- end -}}
+{{- /* The card carries the control count, and platforms cache og:image by URL —
+       so fixing the bytes in place leaves the old number in every preview that
+       has already been fetched. Putting the count in the filename means the URL
+       changes exactly when the number does, which is the only thing on the card
+       that has ever been wrong. */ -}}
+{{- $card := printf "%ssocial-card-%d.png" .ctx.Site.BaseURL (len hugo.Data.controls.controls) -}}
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Agent Baseline">
 <meta property="og:title" content="{{ $t }}">
 <meta property="og:description" content="{{ $d }}">
 <meta property="og:url" content="{{ $u }}">
-<meta property="og:image" content="{{ .ctx.Site.BaseURL }}social-card.png">
+<meta property="og:image" content="{{ $card }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $t }}">
 <meta name="twitter:description" content="{{ $d }}">
-<meta name="twitter:image" content="{{ .ctx.Site.BaseURL }}social-card.png">
+<meta name="twitter:image" content="{{ $card }}">

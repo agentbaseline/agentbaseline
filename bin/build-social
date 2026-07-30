@@ -15,6 +15,19 @@ import base64, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
+# The count was typed into the SVG. It said 33 for the whole of the day the
+# catalogue became 35, on the og:image — the one asset nobody looks at again
+# after they make it, and the one every share of this link renders. Derived
+# from the source of truth so it cannot be wrong twice.
+def catalogue_size():
+    src = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
+    ids = re.findall(r"^\s*-\s+id:\s*([A-Z]{3}-\d{2})\s*$", src, re.M)
+    if not ids:
+        sys.exit("could not count controls in controls.yaml")
+    return len(set(ids))
+
+N_CONTROLS = catalogue_size()
+
 def face(family, style, weight, fname):
     data = base64.b64encode((ROOT / "static" / "fonts" / fname).read_bytes()).decode()
     return (f"@font-face{{font-family:'{family}';font-style:{style};"
@@ -62,7 +75,7 @@ card = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width=
   </g>
 
   <text x="80" y="562" font-family="{MONO}" font-size="15"
-    fill="{FAINT}">Six security outcomes &#183; 33 controls &#183; versioned in the open</text>
+    fill="{FAINT}">Six security outcomes &#183; {N_CONTROLS} controls &#183; versioned in the open</text>
   <text x="1120" y="562" text-anchor="end" font-family="{MONO}" font-size="15"
     fill="{FAINT}">agentbaseline.org &#183; v1.0-draft</text>
 </svg>'''
@@ -71,6 +84,11 @@ tmp = ROOT / "whitepaper" / "figures" / ".social.svg"
 tmp.write_text(card, encoding="utf-8")
 
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# Written under two names on purpose. The versioned one is what the pages point
+# at, so a changed count changes the URL and defeats the platforms' og:image
+# caches — correcting the bytes in place would leave the old number in every
+# preview already fetched. The plain name stays because previews posted before
+# this resolve it, and a correct card at the old URL beats a 404.
 out = ROOT / "static" / "social-card.png"
 out.parent.mkdir(exist_ok=True)
 if not pathlib.Path(chrome).exists():
@@ -84,5 +102,7 @@ r = subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
 if r.returncode != 0:
     sys.exit(f"chrome failed ({r.returncode}): {r.stderr.decode()[:400]}")
 tmp.unlink(missing_ok=True)
-print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)"
+versioned = ROOT / "static" / f"social-card-{N_CONTROLS}.png"
+versioned.write_bytes(out.read_bytes())
+print(f"wrote social-card.png + {versioned.name}  ({out.stat().st_size:,} bytes)"
       if out.exists() else "social card FAILED")
