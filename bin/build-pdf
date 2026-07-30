@@ -37,8 +37,10 @@ blockquote { border-left: 2pt solid #DCDDD9; margin: 10pt 0; padding-left: 10pt;
 """
 (ROOT / "whitepaper" / ".paper.css").write_text(CSS, encoding="utf-8")
 
+# pagetitle fills the HTML <title> without rendering a visible title block —
+# the paper's own H1 is the title, and a metadata `title` would print above it.
 subprocess.run(["pandoc", str(SRC), "-o", str(TMP), "--standalone",
-                "--metadata", "title=Agent Baseline — security outcomes for enterprise AI agents",
+                "--metadata", "pagetitle=Agent Baseline — security outcomes for enterprise AI agents",
                 "-c", ".paper.css"], check=True)
 
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"

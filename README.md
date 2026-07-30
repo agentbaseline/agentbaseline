@@ -1,6 +1,6 @@
 # Agent Baseline
 
-**Six security outcomes an enterprise must achieve to run AI agents, and the 33 controls
+**Six security outcomes an enterprise must achieve to run AI agents, and the 35 controls
 that evidence them.**
 
 A draft for public comment, versioned in the open, and intended for donation to a community
@@ -25,11 +25,11 @@ rather than by product category.
 | | Outcome | Requirement | Controls |
 |---|---|---|---|
 | **DIS** | Discover | Discover every agent and its dependencies | `DIS-01`–`DIS-07` |
-| **CON** | Constrain | Limit components, runtime, data and reach | `CON-01`–`CON-07` |
-| **AUT** | Authorize | Bind identity, task, target and authority | `AUT-01`–`AUT-06` |
-| **VAL** | Validate | Admit the system and verify outcomes | `VAL-01`–`VAL-05` |
-| **OBS** | Observe | Correlate activity and prove what happened | `OBS-01`–`OBS-04` |
-| **RES** | Respond | Stop, revoke, quarantine, scope impact | `RES-01`–`RES-04` |
+| **CON** | Constrain | Limit components, runtime, data and reach | `CON-01`–`CON-04` |
+| **AUT** | Authorize | Bind identity, task, target and authority | `AUT-01`–`AUT-09` |
+| **OBS** | Observe | Correlate activity and prove what happened | `OBS-01`–`OBS-06` |
+| **VAL** | Validate | Admit the system and verify outcomes | `VAL-01`–`VAL-04` |
+| **RES** | Respond | Stop, revoke, quarantine and scope impact | `RES-01`–`RES-05` |
 
 A **category test, not a certification scheme** — and by it, none of the three organizations
 that convened this is a complete implementation.
@@ -62,10 +62,11 @@ controls:
   - id: DIS-01              # bare, permanent, never reused
     outcome: DIS            # matches an outcomes[].prefix
     title: "Authoritative agent registry"
+    type: Record            # Record | Detection | Enforcement | Decision | Evidence | Assurance | Response
     status: draft           # draft | stable | superseded | withdrawn
     requirement: >-
-      The organization shall maintain an authoritative record with a stable
-      identifier for every agent proposed for corporate use…
+      Maintains a stable identifier and authoritative record for each in-scope
+      agent definition or deployment.
 ```
 
 A withdrawn control stays in the file forever, marked, because somebody's audit report cites
