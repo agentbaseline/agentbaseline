@@ -156,6 +156,8 @@ FACES = [
     ("IBM Plex Serif", 600, "normal", "ibm-plex-serif-normal-600-latin.woff2"),
     ("IBM Plex Serif", 700, "normal", "ibm-plex-serif-normal-700-latin.woff2"),
     ("Figtree",        400, "normal", "figtree-normal-400-latin.woff2"),
+    ("Figtree",        500, "normal", "figtree-normal-400-latin.woff2"),
+    ("Figtree",        600, "normal", "figtree-normal-400-latin.woff2"),
     ("Figtree",        400, "italic", "figtree-italic-400-latin.woff2"),
     ("Chakra Petch",   500, "normal", "chakra-petch-normal-500-latin.woff2"),
     ("Chakra Petch",   600, "normal", "chakra-petch-normal-600-latin.woff2"),
@@ -173,10 +175,10 @@ for fam, wt, style, fn in FACES:
                  f'src:url(data:font/woff2;base64,{b64}) format("woff2")}}')
 FONTS = "\n".join(faces)
 
-# Figtree ships here at 400 only — the site's 600 and 700 both alias the 400
-# file, so a bold heading has never actually been bold. Rather than let the
-# print engine synthesise a fake bold, headings are set at 400 and earn their
-# weight from size, colour and space. Fix the font files and this can change.
+# figtree-normal-400-latin.woff2 is a variable font (fvar/gvar, wght 300-900),
+# so every weight below is a real instance cut from the one file rather than a
+# synthesised bold. The filename says 400 and means "the 400 named instance is
+# the default" — it is not the only weight in there.
 CSS = """
 @page {
   size: A4; margin: 22mm 30mm 20mm;
@@ -215,7 +217,7 @@ body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
 .cover .mark { margin:0 0 42mm; font-family:"Chakra Petch",sans-serif; font-weight:600;
   font-size:8.5pt; letter-spacing:.18em; text-transform:uppercase;
   color:var(--accent); }
-.covertitle { font-family:"Figtree",sans-serif; font-weight:400; font-size:31pt;
+.covertitle { font-family:"Figtree",sans-serif; font-weight:600; font-size:31pt;
   line-height:1.14; letter-spacing:-0.02em; margin:0 0 9mm; max-width:15em;
   text-align:left; hyphens:none; }
 .cover .tenets { display:flex; gap:0; margin:0 0 10mm; padding:0; list-style:none;
@@ -252,20 +254,20 @@ body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
 .toc a::after { content:target-counter(attr(href), page); order:3;
   font-family:"IBM Plex Mono",monospace; font-size:8.5pt; color:var(--soft);
   font-variant-numeric:tabular-nums; }
-.toc li.l1 > a { font-family:"Figtree",sans-serif; font-size:10.5pt;
+.toc li.l1 > a { font-family:"Figtree",sans-serif; font-weight:500; font-size:10.5pt;
   padding:2.6mm 0 1mm; }
 .toc li.l1 + li.l1 > a { border-top:.4pt solid var(--line); }
 .toc li.l2 > a { font-size:9.5pt; color:var(--soft); padding:.7mm 0 .7mm 7mm; }
 .toc li.l2 > a::after { color:var(--faint); }
 
 /* ── running text ──────────────────────────────────────────────────────── */
-h1:not(.covertitle) { font-family:"Figtree",sans-serif; font-weight:400; font-size:19pt;
+h1:not(.covertitle) { font-family:"Figtree",sans-serif; font-weight:600; font-size:19pt;
   line-height:1.2; letter-spacing:-0.016em; color:var(--ink);
   margin:0 0 5mm; padding-bottom:3mm; border-bottom:.5pt solid var(--rule);
   break-before:page; break-after:avoid;
   text-align:left; hyphens:none; text-wrap:balance; }
 h1:not(.covertitle) { string-set:section content(text); }
-h2 { font-family:"Figtree",sans-serif; font-weight:400; font-size:13.5pt;
+h2 { font-family:"Figtree",sans-serif; font-weight:600; font-size:13.5pt;
   line-height:1.25; letter-spacing:-0.01em; margin:9mm 0 2.5mm;
   break-after:avoid; text-align:left; hyphens:none; }
 h3 { font-family:"Chakra Petch",sans-serif; font-weight:600; font-size:8.5pt;
@@ -312,7 +314,7 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
 /* ── appendix ──────────────────────────────────────────────────────────── */
 .appendix { break-before:page; }
 .fam { break-before:auto; margin:0 0 7mm; }
-.fam h2 { display:flex; align-items:baseline; gap:4mm; margin:7mm 0 1mm;
+.fam h2 { font-weight:600; display:flex; align-items:baseline; gap:4mm; margin:7mm 0 1mm;
   padding-bottom:2mm; border-bottom:.5pt solid var(--rule); break-after:avoid; }
 .fam .span { margin-left:auto; font-family:"IBM Plex Mono",monospace;
   font-size:8pt; font-weight:600; color:var(--accent); letter-spacing:.02em; }
@@ -326,7 +328,7 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
 .ctl .cid { font-family:"IBM Plex Mono",monospace; font-size:8.5pt;
   font-weight:600; color:var(--accent); letter-spacing:.01em; padding-top:.4mm; }
 .ctl .chead { display:flex; align-items:baseline; gap:4mm; margin:0 0 1mm; }
-.ctl .ctitle { font-family:"Figtree",sans-serif; font-size:10pt;
+.ctl .ctitle { font-family:"Figtree",sans-serif; font-weight:500; font-size:10pt;
   color:var(--ink); hyphens:none; }
 .ctl .ctype { margin-left:auto; font-family:"Chakra Petch",sans-serif;
   font-weight:500; font-size:6.8pt; letter-spacing:.13em;
