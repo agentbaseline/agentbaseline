@@ -16,27 +16,24 @@ full stops and quotation marks are normalised; anything else is a difference.
 """
 import pathlib, re, sys, unicodedata
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import controls_source
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
+# Reads through bin/controls_source.py so this gate and build-pdf agree on what
+# a control's requirement text is. They did not: both carried a copy of a folded
+# scalar reader whose continuation group matched any indented line, so a key
+# added after `requirement:` was folded into the requirement, and only `>-` of
+# the six block-scalar indicators was recognised at all.
 def load_yaml_controls():
-    t = (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8")
     out = {}
-    for blk in re.split(r"\n(?=  - )", t):
-        if not blk.lstrip().startswith("- "):
-            continue
-
-        def field(name):
-            m = re.search(rf"^[ \t-]*{name}:[ \t]*(?:>-\s*\n((?:[ ]+\S.*\n?)+)|(.+))$",
-                          blk, re.M)
-            if not m:
-                return None
-            return " ".join((m.group(1) or m.group(2) or "").split()).strip().strip('"')
-
-        cid = field("id")
+    for c in controls_source.load()[1]:
+        cid = c["id"]
         if cid and re.fullmatch(r"[A-Z]{3}-\d{2}", cid):
-            out[cid] = {"title": field("title") or "", "type": field("type") or "",
-                        "req": field("requirement") or ""}
+            out[cid] = {"title": c["title"] or "", "type": c["type"] or "",
+                        "req": c["requirement"] or ""}
     return out
 
 
