@@ -88,8 +88,13 @@
     var h = a.getAttribute('href') || '';
     if (/\.pdf($|[?#])/.test(h)) return ['download', { file: 'whitepaper.pdf' }];
     if (h.indexOf('luma.com') > -1) {
+      /* Two links now point at the same event: the strip above the masthead and
+         the block that closes the page. Without `from` they collapse into one
+         number, and the only question worth asking — does anyone reach the
+         bottom, or does the ticker do all the work — becomes unanswerable. */
       var b = document.getElementById('eventbar');
-      return ['rsvp', { event: (b && b.dataset.event) || 'event' }];
+      return ['rsvp', { event: (b && b.dataset.event) || 'event',
+                        from: a.dataset.rsvp || 'other' }];
     }
     var oc = h.match(/^(?:\/controls)?#(discover|constrain|authorize|validate|observe|respond)$/);
     if (oc) {

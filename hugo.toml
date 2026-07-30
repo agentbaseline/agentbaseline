@@ -35,3 +35,10 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404", "section"]
   cta   = "RSVP"
   url   = "https://luma.com/insecure-wbn3"
   until = "2026-08-08"
+  # The closing block renders from the same table, so the strip and the block
+  # expire together and can never disagree about the event.
+  pull  = "Filing an issue is the durable way to disagree with this. Being in the room is the faster one."
+  when  = "Black Hat week · 3–7 August 2026"
+  where = "Marquee, Las Vegas"
+  what  = "Securing Your Coding Agent: The Road to the Software Factory"
+  who   = "A panel with Docker, Keycard and Snyk"

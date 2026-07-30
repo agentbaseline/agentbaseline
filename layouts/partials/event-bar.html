@@ -64,7 +64,7 @@
     <span class="mark" aria-hidden="true"></span>
     <span class="tag">{{ $e.label }}</span>
     <span class="say">{{ $e.say }}</span>
-    <a class="go" href="{{ $e.url }}">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a>
+    <a class="go" href="{{ $e.url }}" data-rsvp="strip">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a>
     <button type="button" class="x" data-eventbar-close
             aria-label="Dismiss event announcement">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"

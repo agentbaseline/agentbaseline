@@ -1,0 +1,97 @@
+{{/* The closing counterpart to the strip at the top of the page.
+
+     The two are not the same component wearing different clothes. The strip is
+     a ticker: one line, dismissible, above the masthead, gone the moment you
+     scroll. This is a landing — it is the last thing in <main>, it cannot be
+     dismissed, and it carries the detail the strip has no room for.
+
+     It earns its place by continuing the argument the section above it makes
+     rather than repeating the strip. The page has just said that comment runs
+     until September and that disagreement belongs in the open. This says there
+     is one week where that happens out loud, and names it. Written comment and
+     a room are different contribution channels, not one channel advertised
+     twice.
+
+     Same [params.event] table as the strip, so the two expire on the same day
+     and cannot drift into disagreeing about the event. */}}
+{{- $e := .Site.Params.event -}}
+{{- if and $e $e.pull -}}
+{{- $live := true -}}
+{{- if $e.until -}}
+  {{- $live = lt now.Unix (time $e.until).Unix -}}
+{{- end -}}
+{{- if $live -}}
+<style>
+
+  /* Breaks the prose column the way the questions band does, and to the same
+     overhang, so the page opens and closes on the same gesture. Wash rather
+     than a card: a bordered box at the foot of a document reads as an advert,
+     and the wash panel is already this page's word for "an aside with weight".
+     Hairline above only — the footer's own rule closes it underneath. */
+  .meetup { background:var(--wash); margin:56px 0 0; padding:30px 32px 32px;
+    border-top:1px solid var(--line); }
+  @media (min-width:720px) {
+    .meetup { margin-inline:calc(-1 * min(70px, 5vw)); }
+  }
+
+  /* The label layer, matching the section marks: Chakra Petch, tracked, upper.
+     The filled square is the same "now" fiducial the strip uses — the one mark
+     the two share, which is what makes them read as one announcement in two
+     places instead of two announcements. */
+  .meetup .lbl { display:flex; align-items:center; gap:9px; margin:0 0 16px;
+    font-family:var(--labelfont); font-weight:600; font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+  .meetup .lbl::before { content:""; width:7px; height:7px; flex:none;
+    background:var(--accent); }
+
+  /* Figtree, near the questions' scale. This is the only line here meant to be
+     read rather than scanned, so it gets the size and everything else stays
+     small — punch from contrast, not from a second colour. */
+  .meetup .pull { font-family:var(--head); font-weight:600; font-size:21px;
+    line-height:1.38; letter-spacing:-0.011em; color:var(--ink);
+    margin:0 0 22px; max-width:34ch; text-wrap:balance; }
+
+  /* When / where / what as a definition list, because that is what it is —
+     and the datum-sheet grammar the rest of the page uses for artifacts and
+     identifiers. Terms in the label face, values in mono: dates and places are
+     data, and on this page data is never anything but mono. */
+  .meetup .det { margin:0; display:grid; gap:11px 26px; }
+  @media (min-width:640px) {
+    .meetup .det { grid-template-columns:auto 1fr; }
+  }
+  .meetup .det > div { display:contents; }
+  .meetup dt { font-family:var(--labelfont); font-weight:500; font-size:10.5px;
+    letter-spacing:.11em; text-transform:uppercase; color:var(--faint);
+    padding-top:3px; }
+  .meetup dd { margin:0; font-family:var(--mono); font-size:13px;
+    line-height:1.5; color:var(--soft); }
+  @media (max-width:639px) {
+    .meetup dt { padding-top:8px; }
+  }
+
+  /* The same chip the outcome links wear under each question, so the one thing
+     to click here looks like the things to click there. */
+  .meetup .go { margin:24px 0 0; }
+  .meetup .go a { display:inline-block; font-family:var(--labelfont);
+    font-weight:500; font-size:11.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); text-decoration:none;
+    border-radius:3px; padding:7px 14px;
+    background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  .meetup .go a:hover {
+    background:color-mix(in srgb, var(--accent) 20%, transparent); }
+  .meetup .go a:focus-visible { outline:2px solid var(--accent);
+    outline-offset:2px; }
+</style>
+<aside class="meetup" aria-labelledby="meetup-lbl">
+  <p class="lbl" id="meetup-lbl">In person</p>
+  <p class="pull">{{ $e.pull }}</p>
+  <dl class="det">
+    <div><dt>When</dt><dd>{{ $e.when }}</dd></div>
+    <div><dt>Where</dt><dd>{{ $e.where }}</dd></div>
+    <div><dt>What</dt><dd>{{ $e.what }}</dd></div>
+    <div><dt>Who</dt><dd>{{ $e.who }}</dd></div>
+  </dl>
+  <p class="go"><a href="{{ $e.url }}" data-rsvp="close">{{ $e.cta | default "RSVP" }}<span aria-hidden="true">&#8202;→</span></a></p>
+</aside>
+{{- end -}}
+{{- end -}}
