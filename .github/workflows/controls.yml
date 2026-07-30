@@ -23,6 +23,11 @@ jobs:
         run: |
           hugo --gc --minify
           python3 bin/check-copy --strict
+      # After the build, so the minified output is parsed too — the minifier is
+      # the last thing to touch these files, and checking only static/ would
+      # pass a build that shipped something else.
+      - name: Scripts parse — source and minified
+        run: python3 bin/check-js
       - name: Rebuild CONTROLS.md and fail on drift
         run: |
           python3 bin/render-controls

@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""Parse every script the site ships.
+
+Written the day a comment closed early. Four lines of prose became bare
+statements, the file stopped parsing, and nothing anywhere said so: Hugo does
+not read JavaScript, and check-controls and check-copy read HTML. The build was
+green, the deploy succeeded, and the theme toggle, the event strip's dismissal
+and every analytics event would have died together — silently, because a script
+that fails to parse throws once in the console and is never mentioned again.
+
+Checks both the source and the minified output. The second matters more: the
+minifier is the last thing to touch the file, and a check that only reads
+static/ passes a build that shipped something else.
+"""
+import pathlib, subprocess, shutil, sys
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+TARGETS = sorted(ROOT.glob("static/js/*.js")) + sorted(ROOT.glob("public/js/*.js"))
+
+node = shutil.which("node")
+if not node:
+    # Not a pass. A gate that reports success when it did not run is worse than
+    # no gate, because it is the one you stop checking.
+    sys.exit("node is not on PATH — cannot parse the scripts, so this is a fail")
+
+if not TARGETS:
+    sys.exit("no scripts found under static/js or public/js — is the path right?")
+
+bad = []
+for p in TARGETS:
+    r = subprocess.run([node, "--check", str(p)], capture_output=True, text=True)
+    rel = p.relative_to(ROOT).as_posix()
+    if r.returncode:
+        first = (r.stderr.strip().splitlines() or ["?"])
+        bad.append((rel, "\n    ".join(first[:4])))
+    print(f"  {'FAIL' if r.returncode else 'ok  '}  {rel}")
+
+print(f"\njs: {len(TARGETS)} script(s) · {len(bad)} failed")
+for rel, err in bad:
+    print(f"\n{rel}\n    {err}")
+sys.exit(1 if bad else 0)
