@@ -196,10 +196,23 @@ CSS = """
         --rule:#CFCBBE; --accent:#4F6B00; --wash:#F7F5EE; }
 
 * { box-sizing:border-box; }
+/* hyphens:manual, not auto. A hyphenated final line is what the fragmenter
+   mismeasured at the page 7 → 8 break: it wrote a break token into the middle of
+   "threshold", and the line it thought it had placed was actually sitting in the
+   off-sheet overflow column, so 92 characters were laid out and never painted.
+   Automatic hyphenation also corrupted the text layer wherever it fired at a
+   break — "mishandles instruct-" / "-ions" extracts with the running footer
+   wedged inside the word, so copy-paste out of the PDF produced garbage. Turning
+   it off costs a little evenness in the justified rag and removes both; the
+   measure is ~85 characters, wide enough not to need it.
+
+   This only changes where the lines fall. It does not fix the fragmenter, so it
+   would not stop the same bug reappearing after an edit to the prose — the guard
+   in bin/print-page.mjs is what makes that loud instead of silent. */
 body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
   line-height:1.62; color:var(--ink); margin:0;
   font-variant-numeric:oldstyle-num proportional-nums;
-  hyphens:auto; -webkit-hyphens:auto; text-align:justify;
+  hyphens:manual; -webkit-hyphens:manual; text-align:justify;
   hanging-punctuation:first last; }
 
 /* ── cover ─────────────────────────────────────────────────────────────── */
@@ -320,8 +333,17 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
   padding-bottom:2mm; border-bottom:.5pt solid var(--rule); break-after:avoid; }
 .fam .span { margin-left:auto; font-family:"IBM Plex Mono",monospace;
   font-size:8pt; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+/* An outcome heading, its requirement line and its first control are one unit.
+   .fam h2 already declined to be the last thing on a page, but break-after:avoid
+   binds a heading only to the element immediately following it — the requirement
+   paragraph was then free to break away and take the first control with it,
+   leaving "Constrain" and "Respond" stranded on their rules at the foot of a page
+   under an inch and a half of white. Carrying the avoid along the chain keeps the
+   group together. */
 .famreq { font-family:"Figtree",sans-serif; font-size:9pt; color:var(--soft);
-  margin:0 0 4mm; hyphens:none; text-align:left; }
+  margin:0 0 4mm; hyphens:none; text-align:left;
+  break-before:avoid; break-after:avoid; }
+.famreq + .ctl { break-before:avoid; }
 /* One control, one block: identifier in the margin, everything else in the
    measure. break-inside:avoid is the whole point — a control that splits
    across a page leaves its description with no identifier attached. */

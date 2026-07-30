@@ -229,6 +229,57 @@ try {
   const out = res.result?.value;
   if (!out?.ok) throw new Error(out?.why || "pagination failed");
 
+  /* Paged.js finds page breaks by letting content spill into a second CSS column
+   * that it pushes about 1200px to the right, off the sheet, where
+   * `.pagedjs_sheet { overflow: hidden }` clips it away. Content the fragmenter
+   * fails to carry onto the next page stays laid out in that column: present in
+   * the DOM, absent from the paint, invisible in the PDF. Nothing failed, nothing
+   * warned, the page count did not change, and the file published missing 92
+   * characters of the Discover section — the sentences establishing that
+   * observation is universal while registration is threshold-based, so the
+   * paragraph that follows no longer parsed.
+   *
+   * pdftotext is the only reason anyone found it. So check it here, while the
+   * laid-out document still exists: anything to the right of its own page's
+   * content box is stranded and will not be printed. Fail the build rather than
+   * write a PDF that is quietly missing a sentence. */
+  const stranded = await send(ws, "Runtime.evaluate", {
+    expression: `(() => {
+      const found = [];
+      for (const [i, page] of [...document.querySelectorAll(".pagedjs_page")].entries()) {
+        const content = page.querySelector(".pagedjs_page_content");
+        if (!content) continue;
+        const edge = content.getBoundingClientRect().right;
+        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) {
+          if (!(node.textContent || "").trim()) continue;
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          // 1px of tolerance, for sub-pixel rounding on a line that does fit.
+          const off = [...range.getClientRects()].some((r) => r.width > 0 && r.left > edge + 1);
+          if (off) {
+            found.push({ page: i + 1, text: (node.textContent || "").trim().slice(-90) });
+            break; // one report per page is enough to locate it
+          }
+        }
+      }
+      return found;
+    })()`,
+    returnByValue: true,
+  });
+  const orphans = stranded.result?.value || [];
+  if (orphans.length) {
+    throw new Error(
+      `pagination stranded text off-sheet on ${orphans.length} page(s); it would be ` +
+      `missing from the PDF:\n` +
+      orphans.map((o) => `  page ${o.page}: …${o.text}`).join("\n") +
+      `\nThe fragmenter put a break in the wrong place. Changing where the lines ` +
+      `fall — hyphenation, the measure, the page margins — moves the boundary and ` +
+      `hides this again; it does not fix it. Do not publish the PDF until it is clean.`
+    );
+  }
+
   const { data } = await send(ws, "Page.printToPDF", {
     printBackground: true,
     preferCSSPageSize: true,
