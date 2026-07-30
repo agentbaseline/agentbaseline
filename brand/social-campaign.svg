@@ -22,7 +22,7 @@
   <text x="120" y="622" font-family="Figtree,'Avenir Next',sans-serif" font-size="26" font-weight="500" letter-spacing="-0.1" fill="#A7ABA7">Identify the agent.</text><circle cx="227" cy="672" r="6.5" fill="#151714" stroke="#C6F13F" stroke-width="1.8"/><line x1="241" y1="672" x2="576" y2="672" stroke="#333531" stroke-width="1"/><text x="476" y="622" font-family="Figtree,'Avenir Next',sans-serif" font-size="26" font-weight="500" letter-spacing="-0.1" fill="#A7ABA7">Bound its authority.</text><circle cx="590" cy="672" r="6.5" fill="#151714" stroke="#C6F13F" stroke-width="1.8"/><line x1="604" y1="672" x2="928" y2="672" stroke="#333531" stroke-width="1"/><text x="832" y="622" font-family="Figtree,'Avenir Next',sans-serif" font-size="26" font-weight="500" letter-spacing="-0.1" fill="#A7ABA7">Control its actions.</text><circle cx="942" cy="672" r="6.5" fill="#151714" stroke="#C6F13F" stroke-width="1.8"/><line x1="956" y1="672" x2="1288" y2="672" stroke="#333531" stroke-width="1"/><text x="1188" y="622" font-family="Figtree,'Avenir Next',sans-serif" font-size="26" font-weight="500" letter-spacing="-0.1" fill="#A7ABA7">Prove its outcomes.</text><circle cx="1302" cy="672" r="6.5" fill="#151714" stroke="#C6F13F" stroke-width="1.8"/>
 
   <text x="120" y="800" font-family="'IBM Plex Mono',Menlo,monospace" font-size="19"
-    fill="#8B8F8B">Six security outcomes · 33 controls · versioned in the open</text>
+    fill="#8B8F8B">Six security outcomes · 35 controls · versioned in the open</text>
   <text x="1480" y="800" text-anchor="end" font-family="'IBM Plex Mono',Menlo,monospace" font-size="17"
     fill="#8B8F8B">v1.0-draft</text>
 </svg>

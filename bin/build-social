@@ -84,6 +84,11 @@ tmp = ROOT / "whitepaper" / "figures" / ".social.svg"
 tmp.write_text(card, encoding="utf-8")
 
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# Written under two names on purpose. The versioned one is what the pages point
+# at, so a changed count changes the URL and defeats the platforms' og:image
+# caches — correcting the bytes in place would leave the old number in every
+# preview already fetched. The plain name stays because previews posted before
+# this resolve it, and a correct card at the old URL beats a 404.
 out = ROOT / "static" / "social-card.png"
 out.parent.mkdir(exist_ok=True)
 if not pathlib.Path(chrome).exists():
@@ -97,5 +102,7 @@ r = subprocess.run([chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
 if r.returncode != 0:
     sys.exit(f"chrome failed ({r.returncode}): {r.stderr.decode()[:400]}")
 tmp.unlink(missing_ok=True)
-print(f"wrote static/social-card.png  ({out.stat().st_size:,} bytes)"
+versioned = ROOT / "static" / f"social-card-{N_CONTROLS}.png"
+versioned.write_bytes(out.read_bytes())
+print(f"wrote social-card.png + {versioned.name}  ({out.stat().st_size:,} bytes)"
       if out.exists() else "social card FAILED")
