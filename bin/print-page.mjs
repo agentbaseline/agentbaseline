@@ -28,6 +28,72 @@ if (!input || !output) {
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9333 + (process.pid % 500);
 
+/* Two builds of identical source produced PDFs differing in 32 bytes, so the
+ * committed static/whitepaper.pdf showed as modified on every rebuild. On a 1MB
+ * binary that diff is unreadable, which means review cannot tell "rebuilt" from
+ * "the text changed" — the same blindness that let a missing sentence publish.
+ *
+ * Only two things vary, and neither is content:
+ *
+ *   /CreationDate and /ModDate — wall-clock, straight from Skia.
+ *   node00000534 → node00000532 — Chrome names tagged-PDF structure nodes from a
+ *     counter that is not document-relative, so the base shifts between browser
+ *     launches. 26 bytes across 22 objects, all inside the /O /Table structures.
+ *
+ * Both are rewritten here. Every substitution is LENGTH-PRESERVING and that is
+ * not a stylistic choice: a PDF's xref table stores absolute byte offsets, so a
+ * replacement one byte shorter silently corrupts every object after it. The
+ * helper refuses any edit that would change the length, and the whole function
+ * refuses to return a buffer whose size has moved.
+ *
+ * Dates come from SOURCE_DATE_EPOCH (the reproducible-builds convention);
+ * bin/build-pdf sets it from the paper's own published date, so the PDF is
+ * stamped with the date of the document rather than the date of the build. With
+ * the variable unset the dates are left alone — a standalone invocation is not
+ * expected to be reproducible, and inventing a 1970 timestamp would be worse. */
+function sameLength(replacement, original) {
+  if (replacement.length !== original.length) {
+    throw new Error(
+      `refusing a normalisation that changes length (${original.length} -> ` +
+      `${replacement.length}); it would invalidate every xref offset after it`
+    );
+  }
+  return replacement;
+}
+
+function normalise(buf) {
+  // latin1 is a byte-for-byte round trip, so string length is byte length.
+  const before = buf.length;
+  let s = buf.toString("latin1");
+
+  const epoch = process.env.SOURCE_DATE_EPOCH;
+  if (epoch && /^\d+$/.test(epoch)) {
+    const d = new Date(Number(epoch) * 1000);
+    const p = (n, w = 2) => String(n).padStart(w, "0");
+    const stamp = `D:${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}` +
+                  `${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}+00'00'`;
+    s = s.replace(/\/(CreationDate|ModDate) \(D:[^)]*\)/g, (m, key) =>
+      sameLength(`/${key} (${stamp})`, m));
+  }
+
+  // Renumber the structure-tree nodes from 1, in their existing order. The names
+  // are opaque identifiers referenced from /ID, /Headers, /Limits and /Names; a
+  // consistent rename keeps every reference intact. Sorting the originals and
+  // assigning sequentially also preserves the ordering the /Names tree requires,
+  // because the only difference between builds is a constant offset.
+  const names = [...new Set(s.match(/node\d{8}/g) ?? [])].sort();
+  if (names.length && names.length < 1e8) {
+    const map = new Map(names.map((n, i) => [n, `node${String(i + 1).padStart(8, "0")}`]));
+    s = s.replace(/node\d{8}/g, (n) => sameLength(map.get(n) ?? n, n));
+  }
+
+  const outBuf = Buffer.from(s, "latin1");
+  if (outBuf.length !== before) {
+    throw new Error(`normalisation changed the file size (${before} -> ${outBuf.length})`);
+  }
+  return outBuf;
+}
+
 const chrome = spawn(CHROME, [
   "--headless", "--disable-gpu", "--no-sandbox",
   "--allow-file-access-from-files",
@@ -162,7 +228,7 @@ try {
     marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0,
     displayHeaderFooter: false,
   });
-  writeFileSync(output, Buffer.from(data, "base64"));
+  writeFileSync(output, normalise(Buffer.from(data, "base64")));
   console.log(`paginated ${out.pages} page(s)`);
 } finally {
   ws.close();

@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Prove static/whitepaper.pdf is exactly what the current source builds.
+
+The PDF is committed, which is what makes the repo the product: the paper, the
+page and the artifact version together. It is also what makes this check
+necessary. Chrome stamped the wall clock into /CreationDate and /ModDate and
+named the tagged-PDF structure nodes from a counter that is not
+document-relative, so two builds of untouched source differed in 32 bytes. On a
+1MB binary `git diff` cannot show that, so the artifact read as modified after
+every rebuild and nobody could tell a rebuild from an edit. A missing sentence
+published under exactly that cover.
+
+Rebuilding and comparing bytes answers two questions at once:
+
+  * is the build reproducible — same source, same bytes;
+  * is the artifact in the tree current — nobody edited the paper and forgot to
+    rebuild, and nobody hand-patched the PDF. On a clean CI checkout that file is
+    the committed one, so there the second question is about the commit.
+
+The working tree is left as it was found. On a mismatch the committed file is
+restored, so a failing check never rewrites the artifact it is complaining about.
+"""
+import pathlib, shutil, subprocess, sys, tempfile
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+PDF = ROOT / "static" / "whitepaper.pdf"
+
+if not PDF.exists():
+    sys.exit("static/whitepaper.pdf is missing — run bin/build-pdf")
+
+with tempfile.TemporaryDirectory() as tmp:
+    committed = pathlib.Path(tmp) / "committed.pdf"
+    shutil.copy2(PDF, committed)
+
+    r = subprocess.run([sys.executable, str(ROOT / "bin" / "build-pdf")],
+                       capture_output=True, text=True)
+    if r.returncode:
+        shutil.copy2(committed, PDF)
+        sys.exit(f"rebuild failed, cannot judge reproducibility\n{r.stdout}\n{r.stderr}")
+
+    rebuilt = PDF.read_bytes()
+    original = committed.read_bytes()
+
+    if rebuilt == original:
+        print(f"reproducible · {len(rebuilt):,} bytes identical to the committed artifact")
+        sys.exit(0)
+
+    # Put the committed file back before reporting, so the tree is untouched.
+    fresh = pathlib.Path(tmp) / "rebuilt.pdf"
+    fresh.write_bytes(rebuilt)
+    shutil.copy2(committed, PDF)
+
+    if len(rebuilt) != len(original):
+        sys.exit(f"NOT reproducible: rebuild is {len(rebuilt):,} bytes, committed is "
+                 f"{len(original):,}. The source and the committed PDF disagree — "
+                 f"if the paper changed, run bin/build-pdf and commit the result.")
+
+    diff = [i for i, (a, b) in enumerate(zip(original, rebuilt)) if a != b]
+    # Same length but different bytes is the signature of a stamp that varies:
+    # a timestamp, an id, a counter. Name where, so it can be normalised.
+    where = ", ".join(str(i) for i in diff[:8]) + (" …" if len(diff) > 8 else "")
+    sys.exit(f"NOT reproducible: {len(diff)} byte(s) differ at identical length "
+             f"(offsets {where}).\nA varying stamp is leaking into the file. "
+             f"normalise() in bin/print-page.mjs is where the known ones are "
+             f"rewritten; add this one there rather than accepting the churn.")

@@ -24,7 +24,7 @@ Three things the previous version got wrong, all visible in the shipped file:
 The appendix is now generated from controls.yaml, which is the source of truth
 and which check-appendix proves still agrees with the paper's own table.
 """
-import pathlib, subprocess, sys, shutil, re, base64, html
+import pathlib, subprocess, sys, shutil, re, base64, html, os, calendar, datetime
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "whitepaper" / "whitepaper.md"
@@ -367,6 +367,30 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
 """
 
 
+def published_epoch():
+    """The paper's own published date, as a UTC epoch, for the PDF's timestamps.
+
+    Read from the front matter's "Published as ... · 30 July 2026 ·" line rather
+    than from the clock, so the same source always yields the same bytes. Falls
+    back to the draft-comment deadline's year-start if the line is ever reworded —
+    a fixed wrong date still builds reproducibly, whereas raising here would break
+    the build over metadata.
+    """
+    text = SRC.read_text(encoding="utf-8")
+    m = re.search(r"Published as\b[^\n]*?·\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})", text)
+    if m:
+        try:
+            d = datetime.datetime.strptime(m.group(1), "%d %B %Y")
+            # Midday rather than midnight: the stored value is UTC but readers see
+            # it in local time, and a midnight stamp displays as the previous day
+            # anywhere west of Greenwich — a PDF of the 30th reporting the 29th
+            # looks like a bug in the date. Noon survives every offset.
+            return calendar.timegm(d.timetuple()) + 12 * 3600
+        except ValueError:
+            pass
+    return calendar.timegm((2026, 1, 1, 12, 0, 0, 0, 1, 0))
+
+
 def render():
     version = "1.0-draft"
     m = re.search(r'^version:\s*"([^"]+)"',
@@ -444,8 +468,18 @@ def render():
     OUT.parent.mkdir(exist_ok=True)
     if OUT.exists():
         OUT.unlink()
+    # The PDF is committed, so it must be reproducible: two builds of unchanged
+    # source have to produce the same bytes, or `git diff` reports the artifact as
+    # modified on every rebuild and a reviewer cannot tell a rebuild from an edit.
+    # Chrome stamps the wall clock into /CreationDate and /ModDate; print-page.mjs
+    # rewrites them from SOURCE_DATE_EPOCH, which is set here from the paper's own
+    # published date. The document's date is the honest thing for it to carry, and
+    # it only moves when the paper does. An epoch already in the environment wins,
+    # so a release process can pin it.
+    env = dict(os.environ)
+    env.setdefault("SOURCE_DATE_EPOCH", str(published_epoch()))
     r = subprocess.run(["node", str(ROOT / "bin" / "print-page.mjs"),
-                        str(page), str(OUT)], capture_output=True, text=True)
+                        str(page), str(OUT)], capture_output=True, text=True, env=env)
     if r.returncode or not OUT.exists():
         sys.exit(f"PDF FAILED\n{r.stdout}\n{r.stderr}")
     print(f"  {r.stdout.strip()}")
