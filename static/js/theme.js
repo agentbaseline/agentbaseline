@@ -21,6 +21,38 @@
     try { localStorage.setItem('ab-theme', r.dataset.theme); } catch (e) {}
   }
 
+  /* Outbound and artifact clicks, by delegation rather than per-link handlers —
+     a new link is counted without anyone remembering to instrument it, and
+     nothing drifts when the markup moves.
+
+     One property per event: the Pro plan allows two, and one is enough to say
+     which artifact. Nothing here identifies a person; it records which of the
+     four things on the page a reader actually went to. */
+  function tracked(a) {
+    var h = a.getAttribute('href') || '';
+    if (/\.pdf($|[?#])/.test(h)) return ['download', { file: 'whitepaper.pdf' }];
+    if (h.indexOf('luma.com') > -1) {
+      var b = document.getElementById('eventbar');
+      return ['rsvp', { event: (b && b.dataset.event) || 'event' }];
+    }
+    if (h.indexOf('github.com/') > -1) {
+      var seg = h.replace(/[?#].*$/, '').split('/').filter(Boolean);
+      var last = seg[seg.length - 1] || '';
+      var what = /\.(ya?ml|md)$/.test(last) ? last
+               : last === 'issues' ? 'issues'
+               : 'repository';
+      return ['source', { path: what }];
+    }
+    return null;
+  }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var t = tracked(a);
+    if (t && typeof va === 'function') va('event', { name: t[0], data: t[1] });
+  });
+
   /* Delegated, so the listener can bind before the body exists. Keyboard
      activation of the button arrives here as a click event. */
   /* Event strip: dismissed per event id, so a new event shows again to someone
