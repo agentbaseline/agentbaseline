@@ -262,8 +262,26 @@
   ol.controls li:target { background:var(--wash); box-shadow:-10px 0 0 var(--wash),10px 0 0 var(--wash); }
   ol.controls .cid { grid-row:1/3; font-family:var(--mono); font-size:12px; font-weight:700;
     color:var(--accent); text-decoration:none; padding-top:3px;
-    font-variant-numeric:tabular-nums; }
+    font-variant-numeric:tabular-nums;
+    /* align-self so the box hugs its text rather than stretching across both
+       rows — the text does not move, but the badge below can be positioned
+       against the identifier instead of against the bottom of the row. */
+    align-self:start; position:relative; }
   ol.controls .cid:hover { color:var(--link-hover); }
+  /* Confirmation that the address is on the clipboard. Absolute and
+     pointer-events:none so a badge appearing cannot reflow the roster or
+     swallow the second click. The class is only ever added by script, after the
+     clipboard write resolves — nothing here claims a copy that did not happen. */
+  ol.controls .cid::after { content:"copied"; position:absolute; left:0;
+    top:calc(100% + 3px); font-family:var(--labelfont); font-size:9.5px;
+    font-weight:500; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--paper); background:var(--accent); padding:1px 5px;
+    border-radius:2px; white-space:nowrap; pointer-events:none;
+    opacity:0; transition:opacity .12s ease-out; }
+  ol.controls .cid.copied::after { opacity:1; }
+  @media (prefers-reduced-motion:reduce) {
+    ol.controls .cid::after { transition:none; }
+  }
   ol.controls .ctitle { font-family:var(--head); font-size:15.5px;
     font-weight:600; letter-spacing:-0.005em; }
   ol.controls .creq { font-size:15px; color:var(--soft); line-height:1.6; }
@@ -271,6 +289,10 @@
   .cite { font-family:var(--mono); font-size:13px; background:var(--wash);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px;
     overflow-x:auto; margin:0 0 16px; }
+  /* One exhibit per line without pre-wrapping the block, so a long address
+     still scrolls rather than forcing the page wide. */
+  .cite span { display:block; }
+  .cite span + span { margin-top:2px; color:var(--soft); }
   p.note { color:var(--soft); font-size:16px; max-width:66ch; margin:0 0 14px; }
 
   /* A sibling of <main>, not a child of it: contentinfo is a landmark of the
@@ -383,12 +405,22 @@
   {{- end }}
 
   <h2>Referencing a control</h2>
-  <div class="cite">DIS-01 (Agent Baseline v{{ .Site.Params.version }})</div>
-  <p class="note">That is the form for an audit finding, a policy document or an RFP
+  {{/* Two forms, because the page's own test — "the identifier, and enough to
+       resolve it" — is not met by the bare form alone. A reader who meets
+       DIS-01 in a vendor questionnaire has nothing to follow and has to go
+       searching; the address is what makes the citation resolvable by a machine
+       and by someone in a hurry. The bare form stays first and stays the
+       canonical one: the portability argument below is load-bearing. */}}
+  <div class="cite"><span>DIS-01 (Agent Baseline v{{ .Site.Params.version }})</span>
+    <span>{{ strings.TrimPrefix "https://" (strings.TrimSuffix "/" .Permalink) }}#DIS-01</span></div>
+  <p class="note">The first is the form for an audit finding, a policy document or an RFP
   response — the identifier, and enough to resolve it. Identifiers are bare and
   permanent: superseded, never renumbered, never reused, and carrying no project name
   so that a rename or a transfer to a community body never breaks a reference you have
   already published.</p>
+  <p class="note">The second is the same control as an address, for a ticket, a review
+  comment or anywhere else a link can travel. Every identifier above is one — click it
+  and the full address is on your clipboard.</p>
   <p class="note">To cite the document itself: Agent Baseline, v{{ .Site.Params.version }},
   agentbaseline.org, {{ .Site.Params.published }}.</p>
 
