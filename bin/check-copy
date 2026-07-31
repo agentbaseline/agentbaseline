@@ -175,6 +175,43 @@ if _y.exists() and _r.exists():
             findings.append(("contra", f"README: {_f} range is stale — controls.yaml has "
                                        f"{_f}-{_n:02d} as the highest identifier"))
 
+# ── 3c-bis · the paper has one published date, not three ─────────────────────
+# The date lived in three independent places: the paper's own front matter, a
+# hardcoded string on the PDF cover, and hugo.toml for the site. Nothing compared
+# any of them, so moving one moved one — a PDF whose Document Properties said 14
+# August and whose cover, printed by the same script in the same run, said 30
+# July. bin/build-pdf now prints the cover from the front matter, so those two
+# cannot disagree; hugo.toml cannot be folded in the same way, because the
+# templates need a param and the paper is not a Hugo page. So it is compared here.
+#
+# A publication date is the one field a citation carries, which is why it is worth
+# a check of its own rather than a note in a contributing guide.
+_wp = ROOT / "whitepaper" / "whitepaper.md"
+_cfg = ROOT / "hugo.toml"
+if _wp.exists() and _cfg.exists():
+    _w, _c = _wp.read_text(encoding="utf-8"), _cfg.read_text(encoding="utf-8")
+    for _label, _paper_re, _param in (
+        ("published date",
+         r"Published as\b[^\n]*?·\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})", "published"),
+        ("comment deadline",
+         r"Draft for public comment until\s+(\d{1,2}\s+[A-Za-z]+\s+\d{4})", "commentsUntil"),
+        ("version",
+         r"Published as\b[^\n]*?·\s*v([0-9][^\s·]*)", "version"),
+    ):
+        _pm = re.search(_paper_re, _w)
+        _cm = re.search(rf'^\s*{_param}\s*=\s*"([^"]+)"', _c, re.M)
+        if not _pm:
+            findings.append(("contra", f"whitepaper.md: cannot find the {_label} in the "
+                                       f"front matter — bin/build-pdf prints the cover "
+                                       f"from that line and will refuse to build"))
+        elif not _cm:
+            findings.append(("contra", f"hugo.toml: no `{_param}` param, so the site "
+                                       f"cannot state the {_label} the paper does"))
+        elif _pm.group(1).strip() != _cm.group(1).strip():
+            findings.append(("contra", f"the {_label} disagrees between the paper and the "
+                                       f"site — whitepaper.md says “{_pm.group(1)}”, "
+                                       f"hugo.toml says “{_cm.group(1)}”"))
+
 # ── 3d · no two consecutive authors from the same organization ────────────────
 # A jointly published document is read for whose document it really is, and the
 # author order is the first evidence. Surname order interleaves the current six
