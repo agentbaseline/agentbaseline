@@ -86,11 +86,11 @@ No single enforcement point can deliver this control system. The required contro
 
 The six outcomes are not an exhaustive list of controls. They are the baseline architectural coverage test because together they answer three questions: 
 
-* What is operating and under whose authority? 
+* What is operating, with what capabilities? 
 
-* Is it staying within approved boundaries? 
+* Is it staying inside approved boundaries? 
 
-* Can the enterprise prove what happened and stop it when necessary?
+* Can you prove what happened and stop it?
 
 Discover, Constrain, Authorize, Observe, Validate and Respond cover that full path from business intent to action, evidence and containment. A product may implement one or more components, but end-to-end governance requires all six outcomes to be addressed through an integrated architecture.
 
@@ -320,7 +320,7 @@ The linked records show which repositories the run touched and which actions rea
 
 An AI agent changes what enterprise security has to govern. The object is no longer a fixed piece of software moving through a release pipeline. It is a nondeterministic actor, reprogrammed at runtime by whatever content it processes. It acts under a real user's identity, hands work on to other agents, and turns an instruction into a consequential action before anyone can step in. The risk is the path from business intent to action, because everything on that path can change while nobody is watching.
 
-No single enforcement point can secure that path, and no shopping list of product categories can either. Security has to be defined by outcomes. Discover, Constrain, Authorize, Observe, Validate and Respond are the baseline architectural coverage test because together they answer the three questions at the centre of this paper. What is operating, and under whose authority? Is it staying within its approved boundaries? Can the enterprise prove what happened, and stop it when it must? The six work as one loop: every request an agent acts on passes through them, from the intent that starts it to the evidence it leaves behind, and back into the next request.
+No single enforcement point can secure that path, and no shopping list of product categories can either. Security has to be defined by outcomes. Discover, Constrain, Authorize, Observe, Validate and Respond are the baseline architectural coverage test because together they answer the three questions at the centre of this paper. What is operating, with what capabilities? Is it staying inside approved boundaries? Can you prove what happened and stop it? The six work as one loop: every request an agent acts on passes through them, from the intent that starts it to the evidence it leaves behind, and back into the next request.
 
 None of this requires a new agent platform or a single mandatory proxy. The controls stay where they already live: the identity provider, the admission gate, the sandbox, the credential broker, the testing pipeline, the SIEM. Each one is extended to understand agents. Common contracts for identity, policy, action and evidence tie them together, and shared identifiers let decisions and evidence follow the agent wherever it runs. A product may implement one piece. The architecture is complete only when all six outcomes are covered and connected.
 
