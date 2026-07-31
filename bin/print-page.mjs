@@ -107,12 +107,25 @@ function normalise(buf) {
   // Renumber the structure-tree nodes from 1, in their existing order. The names
   // are opaque identifiers referenced from /ID, /Headers, /Limits and /Names; a
   // consistent rename keeps every reference intact. Sorting the originals and
-  // assigning sequentially also preserves the ordering the /Names tree requires,
-  // because the only difference between builds is a constant offset.
-  const names = [...new Set(s.match(/node\d{8}/g) ?? [])].sort();
-  if (names.length && names.length < 1e8) {
+  // assigning sequentially preserves the ordering the /Names tree requires —
+  // and that holds because the mapping is order-preserving, not because the
+  // inter-build difference happens to be a constant offset.
+  //
+  // The match is the WHOLE parenthesised string, never a substring. An earlier
+  // version matched /node\d{8}/ anywhere in the file, which is the same byte
+  // pattern a URL or a named destination can contain: a link to
+  // `https://example.org/node00000123` was silently rewritten to a different
+  // URL. Every guard stayed green — the edit is length-preserving, so
+  // sameLength passed, the size assertion passed, and check-pdf-reproducible
+  // passed because both builds were mangled identically. A structure ID is
+  // always the entire string `(node…)`; a URL is `(https://…)` and a
+  // destination is the name `/node…`, so anchoring on the parentheses excludes
+  // both.
+  const NODE = /\((node\d{8})\)/g;
+  const names = [...new Set([...s.matchAll(NODE)].map((m) => m[1]))].sort();
+  if (names.length) {
     const map = new Map(names.map((n, i) => [n, `node${String(i + 1).padStart(8, "0")}`]));
-    s = s.replace(/node\d{8}/g, (n) => sameLength(map.get(n) ?? n, n));
+    s = s.replace(NODE, (whole, n) => sameLength(`(${map.get(n) ?? n})`, whole));
   }
 
   const outBuf = Buffer.from(s, "latin1");
