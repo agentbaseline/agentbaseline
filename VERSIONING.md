@@ -28,6 +28,11 @@ agentbaseline.org/DIS-01
 The identifier stays byte-stable. The namespace is metadata and may change; a citation written
 against the bare identifier survives that change.
 
+The second form resolves: `agentbaseline.org/DIS-01` redirects to the control on the controls
+page. That is a redirect rather than a page of its own, so **the address is not the
+identifier** — it is one way to look one up, it moves if this work moves, and the bare
+identifier is the thing you cite. `/controls#DIS-01` is the same destination written out.
+
 ## The stability promise
 
 **Identifiers are superseded, never renumbered, and never reused.**
