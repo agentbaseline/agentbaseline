@@ -432,5 +432,15 @@ try {
 } finally {
   try { ws?.close(); } catch { /* already gone */ }
   await shutdown();
-  rmSync(profile, { recursive: true, force: true, maxRetries: 3 });
+  // Cleanup must not decide the exit code. Chrome keeps writing into its
+  // profile as it goes down, so on a slower filesystem the directory refills
+  // between the walk and the rmdir and this throws ENOTEMPTY — which failed a
+  // determinism run on Linux that had already produced two identical PDFs. A
+  // temp directory that outlives us is a leak the OS clears; a build that goes
+  // red because a delete raced is a gate nobody can trust.
+  try {
+    rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+  } catch (e) {
+    console.error(`print-page: could not remove ${profile} (${e.code}); leaving it behind`);
+  }
 }
