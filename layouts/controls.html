@@ -58,6 +58,8 @@
   a svg.ph { color:inherit; }
   a:visited { color:var(--visited); }
   a:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   /* Ninety-six focusable elements sit ahead of the catalogue here — the whole
      identifier rail is in front of it. A keyboard reader clears them in one
      tab. Off-canvas until focused; fixed, so it never lengthens the page. */
@@ -260,27 +262,54 @@
     display:grid; grid-template-columns:82px 1fr; gap:2px 14px; scroll-margin-top:72px; }
   ol.controls li:first-child { border-top:1px solid var(--line); }
   ol.controls li:target { background:var(--wash); box-shadow:-10px 0 0 var(--wash),10px 0 0 var(--wash); }
-  ol.controls .cid { grid-row:1/3; font-family:var(--mono); font-size:12px; font-weight:700;
+  /* The utility bar is sticky and wraps, so its height is a function of width:
+     measured 50.25px at 1100px and up, 89-92px from 540-900px, 132.25px at
+     520px and below. A flat 72px put the top of the targeted row underneath it
+     at every width below 1100px, and once a click had a confirmation to show,
+     that landed under the header too — on a phone the feature read as doing
+     nothing at all. Keep these values above the heights above.
+
+     These sit after the two rules they override, not before: a media query adds
+     no specificity, so `ol.controls li` inside one ties with `ol.controls li`
+     outside it and source order is the only thing that decides. */
+  @media (max-width:1099px) { h2[id], ol.controls li { scroll-margin-top:104px; } }
+  @media (max-width:539px)  { h2[id], ol.controls li { scroll-margin-top:148px; } }
+  /* The cell spans both rows and is the positioning context, so the anchor can
+     stay stretched. An earlier version shrank the anchor to its text to give
+     the badge something to hang off, which cost 69% of the click target — the
+     text did not move but the target collapsed from 82x77 to 82x24, and a click
+     in the gutter that used to jump to the control did nothing at all. */
+  ol.controls .cidcell { grid-row:1/3; position:relative; display:flex;
+    flex-direction:column; align-items:flex-start; }
+  ol.controls .cid { flex:1 1 auto; min-height:24px; box-sizing:border-box;
+    font-family:var(--mono); font-size:12px; font-weight:700;
     color:var(--accent); text-decoration:none; padding-top:3px;
     font-variant-numeric:tabular-nums;
-    /* align-self so the box hugs its text rather than stretching across both
-       rows — the text does not move, but the badge below can be positioned
-       against the identifier instead of against the bottom of the row. */
-    align-self:start; position:relative; }
+    display:flex; align-items:baseline; gap:5px; }
   ol.controls .cid:hover { color:var(--link-hover); }
+  /* The glyph advertises the second effect. Without it the identifier looks
+     exactly like the plain self-link it used to be, and clicking it silently
+     replaces whatever the reader had on their clipboard. aria-hidden, so the
+     accessible name stays the bare identifier. */
+  ol.controls .cid svg.ph { width:10px; height:10px; flex:none;
+    opacity:.45; transition:opacity .12s ease-out; }
+  ol.controls .cid:hover svg.ph, ol.controls .cid:focus-visible svg.ph { opacity:1; }
   /* Confirmation that the address is on the clipboard. Absolute and
-     pointer-events:none so a badge appearing cannot reflow the roster or
-     swallow the second click. The class is only ever added by script, after the
-     clipboard write resolves — nothing here claims a copy that did not happen. */
-  ol.controls .cid::after { content:"copied"; position:absolute; left:0;
-    top:calc(100% + 3px); font-family:var(--labelfont); font-size:9.5px;
+     pointer-events:none so it cannot reflow the roster or swallow a second
+     click. Rendered empty and only filled by script after the clipboard write
+     resolves, so nothing claims a copy that did not happen. */
+  /* 27px = the identifier's own line box (12px x 1.75 line-height, + 3px
+     padding-top) plus a 3px gap, so the chip sits under the text rather than
+     over it now that the anchor fills the whole two-row cell. */
+  ol.controls .cidflag { position:absolute; left:0; top:27px;
+    font-family:var(--labelfont); font-size:9.5px;
     font-weight:500; letter-spacing:.1em; text-transform:uppercase;
     color:var(--paper); background:var(--accent); padding:1px 5px;
     border-radius:2px; white-space:nowrap; pointer-events:none;
     opacity:0; transition:opacity .12s ease-out; }
-  ol.controls .cid.copied::after { opacity:1; }
+  ol.controls .cidcell.copied .cidflag { opacity:1; }
   @media (prefers-reduced-motion:reduce) {
-    ol.controls .cid::after { transition:none; }
+    ol.controls .cidflag, ol.controls .cid svg.ph { transition:none; }
   }
   ol.controls .ctitle { font-family:var(--head); font-size:15.5px;
     font-weight:600; letter-spacing:-0.005em; }
@@ -289,9 +318,13 @@
   .cite { font-family:var(--mono); font-size:13px; background:var(--wash);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px;
     overflow-x:auto; margin:0 0 16px; }
-  /* One exhibit per line without pre-wrapping the block, so a long address
-     still scrolls rather than forcing the page wide. */
-  .cite span { display:block; }
+  /* One exhibit per line. nowrap is what makes the existing overflow-x:auto do
+     any work: without it the address wrapped at the hyphen in the identifier
+     and rendered as "agentbaseline.org/controls#DIS-" / "01" at 340px and
+     below, because a hyphen is a soft-wrap opportunity and overflow-x only
+     engages when there is no break opportunity at all. A block whose whole job
+     is to show one exact string a reader will paste must not break it. */
+  .cite span { display:block; white-space:nowrap; }
   .cite span + span { margin-top:2px; color:var(--soft); }
   p.note { color:var(--soft); font-size:16px; max-width:66ch; margin:0 0 14px; }
 
@@ -395,8 +428,22 @@
   <p class="outcome-req">{{ .requirement }}</p>
   <ol class="controls">
     {{- range $ids }}
+    {{/* The confirmation is a sibling of the anchor, never inside it. As a
+         ::after on the link it put the word "copied" into the accessible name of
+         all 35 identifiers from page load — opacity:0 hides pixels, not the
+         accessibility tree — so every control announced a copy that had not
+         happened, in Chromium, Firefox and WebKit alike. aria-hidden cannot
+         apply to a pseudo element, which is why this is a real span.
+
+         Class names are written bare here on purpose. check-bindings scans this
+         block for dot-prefixed tokens and cannot tell a catalogue field from
+         prose, so naming a CSS class the way CSS does makes it report a missing
+         field that was only ever a comment. */}}
     <li id="{{ .id }}">
-      <a class="cid" href="#{{ .id }}">{{ .id }}</a>
+      <span class="cidcell">
+        <a class="cid" href="#{{ .id }}">{{ .id }}{{ partial "icons/copy.svg" $ }}</a>
+        <span class="cidflag" aria-hidden="true">copied</span>
+      </span>
       <span class="ctitle">{{ .title }}</span>
       <span class="creq">{{ .requirement }}</span>
     </li>
@@ -412,19 +459,36 @@
        and by someone in a hurry. The bare form stays first and stays the
        canonical one: the portability argument below is load-bearing. */}}
   <div class="cite"><span>DIS-01 (Agent Baseline v{{ .Site.Params.version }})</span>
-    <span>{{ strings.TrimPrefix "https://" (strings.TrimSuffix "/" .Permalink) }}#DIS-01</span></div>
+    <span>{{ strings.TrimSuffix "/" .Permalink }}#DIS-01</span></div>
   <p class="note">The first is the form for an audit finding, a policy document or an RFP
   response — the identifier, and enough to resolve it. Identifiers are bare and
   permanent: superseded, never renumbered, never reused, and carrying no project name
   so that a rename or a transfer to a community body never breaks a reference you have
   already published.</p>
+  {{/* The scheme is shown rather than trimmed, because the clipboard receives
+       the absolute form and an exhibit that differs from what the button
+       produces is a defect on a page about citation precision. It also autolinks
+       in trackers, which is the stated use.
+
+       "Every identifier above" was the previous wording and it was false: the
+       rail at the top of this page renders all 35 identifiers, is physically
+       above this block, and does not copy. Name the roster instead. */}}
   <p class="note">The second is the same control as an address, for a ticket, a review
-  comment or anywhere else a link can travel. Every identifier above is one — click it
-  and the full address is on your clipboard.</p>
+  comment or anywhere else a link can travel. Each identifier in the list of controls
+  copies its address when you click it. Note that the address is the one thing here
+  that can perish: if this work moves, the address moves with it and the bare
+  identifier does not.</p>
   <p class="note">To cite the document itself: Agent Baseline, v{{ .Site.Params.version }},
   agentbaseline.org, {{ .Site.Params.published }}.</p>
 
 </main>
+
+{{/* Rendered empty, and filled by theme.js when an address reaches the
+     clipboard. In the template rather than created on first copy: a region
+     created and mutated ~60ms apart is the case assistive technologies are
+     least reliable about, and it is the first copy of a session that pays for
+     it. Inert without the script. */}}
+<div id="copystatus" role="status" aria-live="polite" class="sr-only"></div>
 
 <footer>
   <span>Prose and figures CC BY 4.0 · schemas Apache-2.0 ·
