@@ -16,6 +16,11 @@
       ],
       "destination": "https://agentbaseline.org/$1",
       "permanent": true
+    },
+    {
+      "source": "/(DIS|CON|AUT|VAL|OBS|RES)-(\\d{2})",
+      "destination": "/controls#$1-$2",
+      "permanent": false
     }
   ],
   "headers": [

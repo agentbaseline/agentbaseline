@@ -47,6 +47,17 @@ jobs:
           python3 whitepaper/figures/build-figure-1.py
           git diff --exit-code whitepaper/figures/*.svg \
             || { echo "::error::figure-1.svg is stale — regenerate it from controls.yaml"; exit 1; }
+      # The step above gates whitepaper/figures/*.svg. The site does not render
+      # those: it renders layouts/partials/figure-1*.svg, which bin/sync-figure-partial
+      # generates from them, and which nothing gated. Rebuild the figure, forget the
+      # sync, commit — every check above passes and the page keeps serving the
+      # previous figure. The same "green run over an unchecked derived artifact"
+      # shape the comments above keep describing, on the copy a reader actually sees.
+      - name: Re-sync the rendered figure partials and fail on drift
+        run: |
+          python3 bin/sync-figure-partial
+          git diff --exit-code layouts/partials/figure-1.svg layouts/partials/figure-1-narrow.svg \
+            || { echo "::error::layouts/partials/figure-1*.svg are stale — run bin/sync-figure-partial"; exit 1; }
       # static/whitepaper.pdf is the handout. It is committed, so it can go stale
       # the same way CONTROLS.md and figure-1.svg can, and it is the one artifact
       # where `git diff` cannot show it: a megabyte of binary reads as "modified"
