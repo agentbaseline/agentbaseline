@@ -1,15 +1,15 @@
 {
   "artifact": "static/whitepaper.pdf",
-  "bytes": 1033311,
+  "bytes": 1033374,
   "pages": 27,
-  "sha256": "1055cf549b2333ff94b116655c5d4f433c0c6ea36238f5ed1bb0a164ed6fa1e2",
+  "sha256": "5fc4ce7fb8ef78f4c2590f1f239b6149e09bae9969cade3a7012d6672d94c687",
   "source_date_epoch": "1785412800",
   "built_by": {
     "producer": "Skia/PDF m150",
     "creator": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36"
   },
   "inputs": {
-    "bin/build-pdf": "de2a89ad3fea45304903b38119bc01d9d729e969ef2a3b91c81ca53181b6423b",
+    "bin/build-pdf": "9780cdc7b6d8bb04cf5ea76f6e4135d565bc4f0ccda065f5b30b2fbac4227f1f",
     "bin/controls_source.py": "ade276753e0ac230bfde2e0836c4abe74cab4b9c2e5accd586c3cd8a2f156b9d",
     "bin/print-page.mjs": "884b76c7338edb53597b49d9617491e2484f3f72276ab313007c36d5a571a4d9",
     "bin/vendor/paged.polyfill.js": "f59f361802416c770d549a647958649af2cf6601999924bc00e4f507dad5269f",
