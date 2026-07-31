@@ -229,11 +229,20 @@ body { font-family:"IBM Plex Serif",Georgia,serif; font-size:10pt;
   text-align:left; hyphens:none; }
 .cover .tenets { display:flex; gap:0; margin:0 0 10mm; padding:0; list-style:none;
   border-top:.4pt solid var(--rule); border-bottom:.4pt solid var(--rule); }
-.cover .tenets li { flex:1; font-family:"Figtree",sans-serif; font-size:8.5pt;
-  color:var(--soft); padding:3.5mm 0 3.5mm 4mm; position:relative; hyphens:none; }
+/* Mark and text share a baseline rather than being positioned independently.
+   The mark used to be absolute at a fixed `top`, so it sat wherever that
+   number put it — high against the type, and drifting the moment the size
+   changed. Aligning on the baseline ties it to the text it belongs to, and
+   the gap becomes one value instead of the difference between a padding and
+   an offset. */
+.cover .tenets li { flex:1; display:flex; align-items:baseline; gap:1.6mm;
+  font-family:"Figtree",sans-serif; font-size:8.5pt; color:var(--soft);
+  padding:3.4mm 3mm 3.4mm 3mm; hyphens:none; }
 .cover .tenets li + li { border-left:.4pt solid var(--line); }
-.cover .tenets li::before { content:""; position:absolute; left:0; top:4.4mm;
-  width:1.4mm; height:1.4mm; background:var(--accent); }
+/* Sitting exactly on the baseline reads low beside lowercase text, so the
+   square is lifted to centre on the x-height. */
+.cover .tenets li::before { content:""; flex:none; width:1.25mm; height:1.25mm;
+  background:var(--accent); transform:translateY(-0.35mm); }
 .cover .meta { font-family:"IBM Plex Mono",monospace; font-size:8pt;
   line-height:1.85; color:var(--soft); text-align:left; }
 .cover .meta b { font-weight:600; color:var(--ink); }
