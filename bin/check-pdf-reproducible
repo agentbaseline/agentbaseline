@@ -1,65 +1,174 @@
 #!/usr/bin/env python3
-"""Prove static/whitepaper.pdf is exactly what the current source builds.
+"""Rebuild the paper and prove the build is deterministic on this machine.
 
 The PDF is committed, which is what makes the repo the product: the paper, the
 page and the artifact version together. It is also what makes this check
-necessary. Chrome stamped the wall clock into /CreationDate and /ModDate and
-named the tagged-PDF structure nodes from a counter that is not
-document-relative, so two builds of untouched source differed in 32 bytes. On a
-1MB binary `git diff` cannot show that, so the artifact read as modified after
-every rebuild and nobody could tell a rebuild from an edit. A missing sentence
-published under exactly that cover.
+necessary. Chrome stamped the wall clock into /CreationDate and /ModDate and named
+the tagged-PDF structure nodes from a counter that is not document-relative, so
+two builds of untouched source differed in 32 bytes. On a 1MB binary `git diff`
+cannot show that, so the artifact read as modified after every rebuild and nobody
+could tell a rebuild from an edit. A missing sentence published under exactly that
+cover.
 
-Rebuilding and comparing bytes answers two questions at once:
+This asks one question — same source, same bytes — and it can only be asked where
+the browser that made the committed file is. The committed bytes name their own
+toolchain: `/Producer (Skia/PDF m150)` and a `/Creator` carrying both the
+HeadlessChrome build and the operating system. A different Chrome, or the same
+Chrome on a different kernel, produces a different file from identical source, and
+that is not a defect in the paper.
 
-  * is the build reproducible — same source, same bytes;
-  * is the artifact in the tree current — nobody edited the paper and forgot to
-    rebuild, and nobody hand-patched the PDF. On a clean CI checkout that file is
-    the committed one, so there the second question is about the commit.
+So "is the artifact current with its source" is a separate gate,
+bin/check-pdf-current, which needs no browser, runs in a tenth of a second and
+therefore runs in CI on every pull request. This one is for the machine that
+builds the artifact, and for the `determinism` CI job, which builds twice on a
+pinned browser and compares those two builds to each other.
 
-The working tree is left as it was found. On a mismatch the committed file is
-restored, so a failing check never rewrites the artifact it is complaining about.
+What changed here, and why
+──────────────────────────
+The previous version compared bytes and then guessed at the cause. It had one
+message for a length difference — "the source and the committed PDF disagree, run
+bin/build-pdf and commit" — and one for a same-length difference: "a varying stamp
+is leaking into the file, add it to normalise() in bin/print-page.mjs". Both were
+stated with confidence and both were wrong in ordinary cases:
+
+  * Upgrade Chrome 150 → 151 and `Skia/PDF m150` becomes `Skia/PDF m151`, which is
+    the same length. The check reported a varying stamp and sent the reader to
+    normalise(). Following that advice writes a rule that rewrites the producer
+    string to a constant — the file would then claim to have been made by a
+    browser that did not make it, and the gate would go green on the forgery.
+  * Move the paper's own published date and /CreationDate moves with it, also at
+    identical length. That is the one change this gate exists to catch, and it was
+    reported as a stamp to normalise away — which, followed, permanently detaches
+    the PDF's citation date from the paper.
+  * Build on Linux and the `/Creator` platform string is 16 bytes shorter, so the
+    length branch fires: "the source and the committed PDF disagree, run
+    bin/build-pdf and commit". Following that replaces a reviewed artifact with one
+    built on the wrong toolchain.
+
+The fix is not a better guess. It is to stop guessing: the manifest says what the
+artifact was built from and by, so the three causes are distinguishable from
+evidence, and each is reported only when the evidence supports it.
+
+  source changed     an input's digest no longer matches the manifest
+  artifact stale     inputs match, but the committed PDF is not the recorded one
+  toolchain differs  both match, and this machine's /Producer or /Creator is not
+                     the one that made the committed file
+  non-deterministic  everything matches and the bytes still differ — and only
+                     here is "a varying stamp is leaking in" the right diagnosis
+
+The tracked file is never written. The old version rebuilt over
+static/whitepaper.pdf and copied the committed bytes back afterwards, so merely
+running the check opened a multi-second window in which the deliverable did not
+exist and the only copy of it was in a temporary directory that died with the
+process. It now builds somewhere else entirely, via `bin/build-pdf --out`, so
+there is no window to lose it in.
 """
-import pathlib, shutil, subprocess, sys, tempfile
+import hashlib, json, pathlib, re, subprocess, sys, tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-PDF = ROOT / "static" / "whitepaper.pdf"
+PROVENANCE = ROOT / "whitepaper" / "pdf.provenance.json"
 
+# Distinct from 1 so a caller can tell "this machine cannot answer the question"
+# from "the answer is no". A gate that exits 0 when it could not check is how a
+# check rots into decoration.
+CANNOT_JUDGE = 2
+
+
+def pdf_string(blob, key):
+    m = re.search(rb"/" + key.encode() + rb"\s*\((.*?)(?<!\\)\)", blob, re.S)
+    return re.sub(r"\\([()\\])", r"\1", m.group(1).decode("latin1")) if m else ""
+
+
+if not PROVENANCE.exists():
+    sys.exit(f"{PROVENANCE.relative_to(ROOT)} is missing — run bin/build-pdf first.")
+manifest = json.loads(PROVENANCE.read_text(encoding="utf-8"))
+PDF = ROOT / manifest["artifact"]
 if not PDF.exists():
-    sys.exit("static/whitepaper.pdf is missing — run bin/build-pdf")
+    sys.exit(f"{manifest['artifact']} is missing — run bin/build-pdf")
 
+committed = PDF.read_bytes()
+
+# ── the cheap questions first, so the expensive one is asked in a known state ──
+# Rebuilding takes seconds and answers nothing useful if the tree is already
+# inconsistent: a stale artifact will differ from the rebuild for a reason that
+# has nothing to do with determinism, and reporting that as non-reproducibility is
+# how the previous version came to advise forging the producer string.
+stale_inputs = [rel for rel, digest in manifest.get("inputs", {}).items()
+                if not (ROOT / rel).exists()
+                or hashlib.sha256((ROOT / rel).read_bytes()).hexdigest() != digest]
+
+if stale_inputs:
+    sys.exit("SOURCE CHANGED — cannot judge reproducibility against a stale artifact.\n"
+             "These inputs have moved since static/whitepaper.pdf was built:\n"
+             + "".join(f"    {r}\n" for r in stale_inputs)
+             + "Run `python3 bin/build-pdf` and commit the PDF with "
+               "whitepaper/pdf.provenance.json, then run this again.")
+
+if hashlib.sha256(committed).hexdigest() != manifest["sha256"]:
+    sys.exit("ARTIFACT STALE — the committed PDF is not the one the manifest describes,\n"
+             "and every input the build reads is unchanged. Something wrote to\n"
+             f"{manifest['artifact']} directly: a hand-patch, a partial checkout, or a\n"
+             "merge that took the artifact from one side and the manifest from the other.\n"
+             f"    manifest: {manifest['bytes']:,} bytes, {manifest['sha256'][:16]}…\n"
+             f"    on disk:  {len(committed):,} bytes, "
+             f"{hashlib.sha256(committed).hexdigest()[:16]}…\n"
+             "Run `python3 bin/build-pdf` to restore it from source.")
+
+# ── the rebuild ──────────────────────────────────────────────────────────────
+# --out keeps this away from the tracked file entirely. Nothing below can leave
+# the tree without a whitepaper.pdf, whatever happens to this process.
 with tempfile.TemporaryDirectory() as tmp:
-    committed = pathlib.Path(tmp) / "committed.pdf"
-    shutil.copy2(PDF, committed)
-
-    r = subprocess.run([sys.executable, str(ROOT / "bin" / "build-pdf")],
+    rebuilt_path = pathlib.Path(tmp) / "whitepaper.pdf"
+    r = subprocess.run([sys.executable, str(ROOT / "bin" / "build-pdf"),
+                        "--out", str(rebuilt_path)],
                        capture_output=True, text=True)
-    if r.returncode:
-        shutil.copy2(committed, PDF)
+    if r.returncode or not rebuilt_path.exists():
         sys.exit(f"rebuild failed, cannot judge reproducibility\n{r.stdout}\n{r.stderr}")
+    rebuilt = rebuilt_path.read_bytes()
 
-    rebuilt = PDF.read_bytes()
-    original = committed.read_bytes()
+if rebuilt == committed:
+    print(f"reproducible · {len(rebuilt):,} bytes identical to the committed artifact")
+    print(f"               built by {pdf_string(rebuilt, 'Producer')}")
+    sys.exit(0)
 
-    if rebuilt == original:
-        print(f"reproducible · {len(rebuilt):,} bytes identical to the committed artifact")
-        sys.exit(0)
+# ── the bytes differ, and now there is evidence for why ──────────────────────
+here = {k: pdf_string(rebuilt, k.capitalize()) for k in ("producer", "creator")}
+there = {k: manifest.get("built_by", {}).get(k, "") for k in ("producer", "creator")}
+skew = [k for k in here if here[k] and there[k] and here[k] != there[k]]
 
-    # Put the committed file back before reporting, so the tree is untouched.
-    fresh = pathlib.Path(tmp) / "rebuilt.pdf"
-    fresh.write_bytes(rebuilt)
-    shutil.copy2(committed, PDF)
+if skew:
+    lines = "".join(f"    /{k.capitalize()}\n"
+                    f"      committed by: {there[k]}\n"
+                    f"      this machine: {here[k]}\n" for k in skew)
+    print("TOOLCHAIN DIFFERS — this machine cannot judge byte reproducibility.\n"
+          f"{lines}"
+          "Chrome writes its own build and platform into the file, and it subsets the\n"
+          "embedded fonts itself, so a different browser or a different operating system\n"
+          "produces different bytes from identical source. Nothing here says the paper or\n"
+          "the artifact is wrong: the manifest checks above passed before the rebuild\n"
+          "started, which is what bin/check-pdf-current asserts on every pull request.\n\n"
+          "Do NOT normalise these away. They are the file's true statement about what made\n"
+          "it, and rewriting them to a constant would make the PDF claim a provenance it\n"
+          "does not have while turning this gate green on the claim.\n\n"
+          "To judge reproducibility here, match the recorded toolchain — or run the\n"
+          "`determinism` CI job, which builds twice on a pinned browser and compares those\n"
+          "two builds to each other, which is a question any machine can answer.",
+          file=sys.stderr)
+    sys.exit(CANNOT_JUDGE)
 
-    if len(rebuilt) != len(original):
-        sys.exit(f"NOT reproducible: rebuild is {len(rebuilt):,} bytes, committed is "
-                 f"{len(original):,}. The source and the committed PDF disagree — "
-                 f"if the paper changed, run bin/build-pdf and commit the result.")
-
-    diff = [i for i, (a, b) in enumerate(zip(original, rebuilt)) if a != b]
-    # Same length but different bytes is the signature of a stamp that varies:
-    # a timestamp, an id, a counter. Name where, so it can be normalised.
-    where = ", ".join(str(i) for i in diff[:8]) + (" …" if len(diff) > 8 else "")
-    sys.exit(f"NOT reproducible: {len(diff)} byte(s) differ at identical length "
-             f"(offsets {where}).\nA varying stamp is leaking into the file. "
-             f"normalise() in bin/print-page.mjs is where the known ones are "
-             f"rewritten; add this one there rather than accepting the churn.")
+# Same source, same artifact, same browser, different bytes. Now — and only now —
+# something in the build genuinely varies between runs, and normalise() is the
+# right place to look.
+diff = [i for i, (a, b) in enumerate(zip(committed, rebuilt)) if a != b]
+where = ", ".join(str(i) for i in diff[:8]) + (" …" if len(diff) > 8 else "")
+size = ("" if len(rebuilt) == len(committed) else
+        f"The rebuild is {len(rebuilt):,} bytes against {len(committed):,} committed, so "
+        f"the byte offsets below stop being comparable after the first difference.\n")
+sys.exit("NOT REPRODUCIBLE — same source, same recorded artifact, same browser "
+         f"({here['producer']}),\nand the rebuild still differs in {len(diff)} byte(s) "
+         f"(offsets {where}).\n"
+         f"{size}"
+         "Something in the build varies between runs. normalise() in bin/print-page.mjs "
+         "is\nwhere the known ones — the wall clock, the structure-node counter — are "
+         "rewritten;\nadd this one there. Every substitution must be length-preserving "
+         "and must leave\nthe xref table intact, both of which normalise() enforces.")

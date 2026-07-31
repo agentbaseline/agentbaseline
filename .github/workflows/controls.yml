@@ -47,3 +47,70 @@ jobs:
           python3 whitepaper/figures/build-figure-1.py
           git diff --exit-code whitepaper/figures/*.svg \
             || { echo "::error::figure-1.svg is stale — regenerate it from controls.yaml"; exit 1; }
+      # static/whitepaper.pdf is the handout. It is committed, so it can go stale
+      # the same way CONTROLS.md and figure-1.svg can, and it is the one artifact
+      # where `git diff` cannot show it: a megabyte of binary reads as "modified"
+      # and nothing more. The drift checks above rebuild their artifact; this one
+      # cannot, because the PDF needs pandoc and a Chrome that this runner does not
+      # have and whose exact build is embedded in the committed bytes. So it checks
+      # the manifest bin/build-pdf writes instead — digests of every file the render
+      # read, and of the PDF it produced. No browser, no pandoc, under a second.
+      - name: The committed PDF is the one this source builds
+        run: python3 bin/check-pdf-current
+
+  # Determinism is the other half of the question and it needs the browser, so it
+  # gets its own job with a pinned one. It does not compare against the committed
+  # file — it cannot, and that is the point. The artifact is built on macOS and
+  # carries `Mozilla/5.0 (Macintosh; …)` and its own font subsets; the same source
+  # under the same Chrome major version on Linux comes out 1,025,134 bytes against
+  # 1,033,311. Byte equality is a property of (source, browser build, platform), so
+  # requiring the runner to match the committed file would fail forever for reasons
+  # that have nothing to do with the paper.
+  #
+  # What any machine can answer is whether the build is deterministic: same source,
+  # same toolchain, twice, same bytes. That is the property the normalisation in
+  # bin/print-page.mjs exists to hold, and the property that breaks silently when
+  # someone adds an input that varies per run. Two builds, compared to each other.
+  determinism:
+    runs-on: ubuntu-latest
+    env:
+      # Pinned, not "latest". An unpinned browser makes this job's result depend on
+      # what Google shipped this morning, which is the same class of problem the job
+      # exists to detect. Moving this pin is a deliberate act with a visible diff.
+      CHROME_VERSION: '150.0.7871.124'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pandoc
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
+      - name: Cache the pinned browser
+        id: browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/agentbaseline-chrome
+          key: chrome-${{ env.CHROME_VERSION }}-linux64
+      - name: Install the pinned browser
+        run: |
+          npx --yes @puppeteer/browsers install \
+            "chrome@${CHROME_VERSION}" --path ~/.cache/agentbaseline-chrome \
+            | tee /tmp/browser.txt
+          # The installer prints "chrome@<version> <path>"; take the path from that
+          # line rather than searching the tree, so a stale cached copy of another
+          # version cannot be the one that gets driven. Anchored on the line rather
+          # than on "the last line", which npm is free to append notices to.
+          chrome=$(awk '/^chrome@/ { print $NF }' /tmp/browser.txt | tail -1)
+          test -x "$chrome" || { echo "::error::no browser at '$chrome'"; exit 1; }
+          echo "CHROME=$chrome" >> "$GITHUB_ENV"
+      - name: Two builds of one source produce one file
+        run: |
+          "$CHROME" --version
+          python3 bin/build-pdf --out /tmp/a.pdf --provenance /tmp/a.json
+          python3 bin/build-pdf --out /tmp/b.pdf --provenance /tmp/b.json
+          cmp /tmp/a.pdf /tmp/b.pdf || {
+            echo "::error::the build is not deterministic — two builds of identical source differ"
+            cmp -l /tmp/a.pdf /tmp/b.pdf | head -40
+            exit 1
+          }
+          echo "deterministic: $(stat -c%s /tmp/a.pdf) bytes, twice"
