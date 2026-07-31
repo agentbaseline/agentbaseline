@@ -9,3 +9,9 @@ whitepaper/figures/.figure-1.boxes.json
 
 # build-pdf scratch: the pandoc HTML and the paginated document
 whitepaper/.build/
+
+# build-pdf renders here and then os.replace()s onto the tracked artifact, so the
+# artifact is never absent. A hard kill — a CI timeout, the OOM killer — can still
+# leave one of these behind; the next build sweeps them, and this keeps one out of
+# a commit in the meantime.
+static/.whitepaper.pdf.new-*

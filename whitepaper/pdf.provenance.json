@@ -1,0 +1,36 @@
+{
+  "artifact": "static/whitepaper.pdf",
+  "bytes": 1033311,
+  "pages": 27,
+  "sha256": "1055cf549b2333ff94b116655c5d4f433c0c6ea36238f5ed1bb0a164ed6fa1e2",
+  "source_date_epoch": "1785412800",
+  "built_by": {
+    "producer": "Skia/PDF m150",
+    "creator": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36"
+  },
+  "inputs": {
+    "bin/build-pdf": "de2a89ad3fea45304903b38119bc01d9d729e969ef2a3b91c81ca53181b6423b",
+    "bin/controls_source.py": "ade276753e0ac230bfde2e0836c4abe74cab4b9c2e5accd586c3cd8a2f156b9d",
+    "bin/print-page.mjs": "884b76c7338edb53597b49d9617491e2484f3f72276ab313007c36d5a571a4d9",
+    "bin/vendor/paged.polyfill.js": "f59f361802416c770d549a647958649af2cf6601999924bc00e4f507dad5269f",
+    "static/fonts/chakra-petch-normal-500-latin.woff2": "adf007cd277ef6dac0c8cecacfb60cc5e24e7c8bcce4db98aa233bd3a88ef5a3",
+    "static/fonts/chakra-petch-normal-600-latin.woff2": "4d6d5f0b31b3a471a843779c4ecada040e5bc291f96bca9805a94293fe8003fa",
+    "static/fonts/figtree-italic-400-latin.woff2": "9341f363343c85f00e5a23573accc776baaf0b59ab2eda0560f206e22ac57c04",
+    "static/fonts/figtree-normal-400-latin.woff2": "8330490a01c60c196eae00b823de8102275aaa5862e7b76a7af21b8745338928",
+    "static/fonts/ibm-plex-mono-normal-400-latin.woff2": "c36f509c0a8f9f85f29cb44bc8701d8a9e0b14c499e77a884f789ead7093a7ac",
+    "static/fonts/ibm-plex-mono-normal-600-latin.woff2": "ad4580d8cb4b5f627c2d18457656732f7f7b070f7837fbc380e08054157e6f6c",
+    "static/fonts/ibm-plex-serif-italic-400-latin.woff2": "9daa6f3da3e4917e5da8537fe9b42a1d764f967e40920ef91cb1b01e069bd241",
+    "static/fonts/ibm-plex-serif-normal-400-latin.woff2": "9fbb32c4c07037bc1e9107ee9cbf3a84662449cb36511138d5adb80e195b9302",
+    "static/fonts/ibm-plex-serif-normal-600-latin.woff2": "d8bf89a58f34027c1ee0b24d4bd66f19a782887980e3ce149519c2c527cac3ce",
+    "static/fonts/ibm-plex-serif-normal-700-latin.woff2": "8d256fda8c12db0d7bbde004f3e844ba23cfaa3e764880b24056d6f0b79d70dd",
+    "whitepaper/contributors.yaml": "ebf70ae94553b618bc6f30cc3b6564bbfaca9d0171ba05df5b081744dc45b345",
+    "whitepaper/controls.yaml": "06cd3966513c595b7cb455caebc01d9b0c5907f168b7e97ab3b98e1f5c56ae8f",
+    "whitepaper/figures/figure-authority-attenuation.svg": "c5b0de1af890bf92126d0e403df3abc829ee8f1d06fa13450404d55770f26892",
+    "whitepaper/figures/figure-control-loop.svg": "fd0dc6f21cc59c52308bdd82c8434edd2025c98273f19fd8eda82ed05afbadf4",
+    "whitepaper/figures/figure-discover.svg": "110071cfd5f462339b0b6dcd1795c8946959c3ef0bc5391499ca7d9accad9e13",
+    "whitepaper/figures/figure-lethal-trifecta.svg": "8d276f8a417957eb460735a90bcf3288849275391d9e00ac2563eba01ca5f0ac",
+    "whitepaper/figures/figure-response-lifecycle.svg": "182ca091ca58cc3e2c08781b290bd051e399c0941aeb65ed7633f54afae586c3",
+    "whitepaper/figures/figure-runtime-isolation.svg": "a54ade8822fdcf98175c6adad2581cf7df7d3530061afa153cce4d25463d3fbb",
+    "whitepaper/whitepaper.md": "97462dbebde739c620081f996a10660c9789e6ffcb8a577750762de85e48cc20"
+  }
+}

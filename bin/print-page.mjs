@@ -56,6 +56,141 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // path below is willing to SIGKILL.
 const profile = mkdtempSync(join(tmpdir(), "print-page-"));
 
+/* Two builds of identical source produced PDFs differing in 32 bytes, so the
+ * committed static/whitepaper.pdf showed as modified on every rebuild. On a 1MB
+ * binary that diff is unreadable, which means review cannot tell "rebuilt" from
+ * "the text changed" — the same blindness that let a missing sentence publish.
+ *
+ * Only two things vary, and neither is content:
+ *
+ *   /CreationDate and /ModDate — wall-clock, straight from Skia.
+ *   node00000534 → node00000532 — Chrome names tagged-PDF structure nodes from a
+ *     counter that is not document-relative, so the base shifts between browser
+ *     launches. 26 bytes across 22 objects, all inside the /O /Table structures.
+ *
+ * Both are rewritten here. Every substitution is LENGTH-PRESERVING and that is
+ * not a stylistic choice: a PDF's xref table stores absolute byte offsets, so a
+ * replacement one byte shorter silently corrupts every object after it. The
+ * helper refuses any edit that would change the length, and the whole function
+ * refuses to return a buffer whose size has moved.
+ *
+ * Dates come from SOURCE_DATE_EPOCH (the reproducible-builds convention);
+ * bin/build-pdf sets it from the paper's own published date, so the PDF is
+ * stamped with the date of the document rather than the date of the build. With
+ * the variable unset the dates are left alone — a standalone invocation is not
+ * expected to be reproducible, and inventing a 1970 timestamp would be worse. */
+function sameLength(replacement, original) {
+  if (replacement.length !== original.length) {
+    throw new Error(
+      `refusing a normalisation that changes length (${original.length} -> ` +
+      `${replacement.length}); it would invalidate every xref offset after it`
+    );
+  }
+  return replacement;
+}
+
+function normalise(buf) {
+  // latin1 is a byte-for-byte round trip, so string length is byte length.
+  const before = buf.length;
+  let s = buf.toString("latin1");
+
+  const epoch = process.env.SOURCE_DATE_EPOCH;
+  if (epoch !== undefined && epoch !== "" && !/^\d+$/.test(epoch)) {
+    // Set but unusable. Falling through here would stamp the wall clock and
+    // exit 0 — the artifact would be wrong and reproducibly so, which is the
+    // one shape the gate cannot see. An empty or malformed value is a mistake
+    // in the caller, not permission to use the clock.
+    throw new Error(`SOURCE_DATE_EPOCH is set but not a Unix timestamp: ${JSON.stringify(epoch)}`);
+  }
+  if (epoch && /^\d+$/.test(epoch)) {
+    const d = new Date(Number(epoch) * 1000);
+    const p = (n, w = 2) => String(n).padStart(w, "0");
+    const stamp = `D:${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}` +
+                  `${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}+00'00'`;
+    s = s.replace(/\/(CreationDate|ModDate) \(D:[^)]*\)/g, (m, key) =>
+      sameLength(`/${key} (${stamp})`, m));
+  }
+
+  // Renumber the structure-tree nodes from 1, in their existing order. The names
+  // are opaque identifiers referenced from /ID, /Headers, /Limits and /Names; a
+  // consistent rename keeps every reference intact. Sorting the originals and
+  // assigning sequentially preserves the ordering the /Names tree requires —
+  // and that holds because the mapping is order-preserving, not because the
+  // inter-build difference happens to be a constant offset.
+  //
+  // The match is the WHOLE parenthesised string, never a substring. An earlier
+  // version matched /node\d{8}/ anywhere in the file, which is the same byte
+  // pattern a URL or a named destination can contain: a link to
+  // `https://example.org/node00000123` was silently rewritten to a different
+  // URL. Every guard stayed green — the edit is length-preserving, so
+  // sameLength passed, the size assertion passed, and check-pdf-reproducible
+  // passed because both builds were mangled identically. A structure ID is
+  // always the entire string `(node…)`; a URL is `(https://…)` and a
+  // destination is the name `/node…`, so anchoring on the parentheses excludes
+  // both.
+  const NODE = /\((node\d{8})\)/g;
+  const names = [...new Set([...s.matchAll(NODE)].map((m) => m[1]))].sort();
+  if (names.length) {
+    const map = new Map(names.map((n, i) => [n, `node${String(i + 1).padStart(8, "0")}`]));
+    s = s.replace(NODE, (whole, n) => sameLength(`(${map.get(n) ?? n})`, whole));
+  }
+
+  const outBuf = Buffer.from(s, "latin1");
+  if (outBuf.length !== before) {
+    throw new Error(`normalisation changed the file size (${before} -> ${outBuf.length})`);
+  }
+  // Both substitutions above are silent no-ops when their pattern is absent —
+  // which is what happens the day Chrome moves the struct tree into a compressed
+  // object stream. The wall clock would leak back in and nothing would raise.
+  const dates = (s.match(/\/(CreationDate|ModDate) \(D:/g) ?? []).length;
+  if (dates !== 2) {
+    throw new Error(`expected 2 date stamps to normalise, found ${dates} — ` +
+      `the producer has changed shape and normalise() is no longer reaching them`);
+  }
+  assertXrefIntact(outBuf);
+  return outBuf;
+}
+
+/* Check the file still parses, rather than trying to enumerate what must not be
+   touched.
+ 
+   Every guard above is about the edit: same length, same buffer size. None of
+   them look at the result. That gap has already shipped one defect — the rename
+   matched a URL and produced a valid, reproducible, wrong PDF with everything
+   green — and it can always ship another, because the replacements work on raw
+   bytes with no idea where an object ends. Narrowing the pattern reduces the
+   chance; only reading the file back rules it out.
+ 
+   The xref table stores an absolute byte offset for every object, so if any
+   substitution moved anything, an entry stops pointing at `N 0 obj` and this
+   throws. Costs about a second on a 1MB file. */
+function assertXrefIntact(buf) {
+  const s = buf.toString("latin1");
+  const start = s.lastIndexOf("startxref");
+  if (start < 0) throw new Error("no startxref — the PDF is not readable after normalisation");
+  const at = parseInt(s.slice(start + 9).trim(), 10);
+  const table = s.slice(at);
+  if (!table.startsWith("xref")) {
+    // A cross-reference stream rather than a classic table. Skia does not emit
+    // these today; if it starts to, the scan below cannot see the objects and
+    // silence would be the wrong answer.
+    throw new Error("xref is not a classic table — normalisation cannot verify this file");
+  }
+  let checked = 0, bad = 0;
+  for (const m of table.matchAll(/^(\d{10}) (\d{5}) n\s*$/gm)) {
+    const off = parseInt(m[1], 10);
+    if (off === 0) continue;
+    checked++;
+    if (!/^\d+\s+\d+\s+obj/.test(s.slice(off, off + 24))) bad++;
+  }
+  if (!checked) throw new Error("xref table lists no objects — refusing to trust this file");
+  if (bad) {
+    throw new Error(
+      `normalisation broke the file: ${bad} of ${checked} xref offsets no longer ` +
+      `point at an object. A replacement changed something it should not have.`);
+  }
+}
+
 const chrome = spawn(CHROME, [
   "--headless", "--disable-gpu", "--no-sandbox",
   "--allow-file-access-from-files",
@@ -286,7 +421,7 @@ try {
     marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0,
     displayHeaderFooter: false,
   }, PRINT_MS);
-  writeFileSync(output, Buffer.from(data, "base64"));
+  writeFileSync(output, normalise(Buffer.from(data, "base64")));
   console.log(`paginated ${out.pages} page(s)`);
 } catch (err) {
   // Caught rather than left to propagate: an uncaught rejection out of a

@@ -23,8 +23,23 @@ Three things the previous version got wrong, all visible in the shipped file:
 
 The appendix is now generated from controls.yaml, which is the source of truth
 and which check-appendix proves still agrees with the paper's own table.
+
+Two properties this script owes its callers, both learned the hard way:
+
+  * The tracked file is never absent. It used to unlink static/whitepaper.pdf and
+    then spend several seconds in Chrome, so a Ctrl-C, a CI step timeout or an
+    OOM in that window left the repository with no deliverable at all. The render
+    now goes to a sibling temporary file and is moved into place with os.replace,
+    which is atomic on the same filesystem: at every instant the path either holds
+    the old PDF or the new one.
+  * It records what it built from. `--provenance` writes the digest of every file
+    the render actually read, the digest of the PDF it produced, and the browser
+    that produced it. bin/check-pdf-current then answers "is the committed artifact
+    the one this source makes?" on any machine, with no browser and no pandoc,
+    which is what lets the question be asked in CI on every pull request rather
+    than remembered by whoever last touched the paper.
 """
-import pathlib, subprocess, sys, shutil, re, base64, html
+import argparse, pathlib, subprocess, sys, shutil, re, base64, hashlib, html, json, os, calendar, datetime, urllib.request
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import controls_source
@@ -32,8 +47,33 @@ import controls_source
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / "whitepaper" / "whitepaper.md"
 OUT = ROOT / "static" / "whitepaper.pdf"
+PROVENANCE = ROOT / "whitepaper" / "pdf.provenance.json"
 WORK = ROOT / "whitepaper" / ".build"
 PAGED = ROOT / "bin" / "vendor" / "paged.polyfill.js"
+
+# ── what this build read ─────────────────────────────────────────────────────
+# Recorded as the files are opened rather than listed by hand. A hand-written
+# list of inputs is a second source of truth about the build, and it goes stale
+# the first time someone adds a figure: the manifest would still describe the
+# render as current while the render had changed. Anything the build reads is in
+# here because reading it is what puts it here.
+INPUTS = {}
+
+def rel(path):
+    """A path as the repo names it, or as itself if it is outside the repo.
+
+    `--out` is routinely given a scratch path in /tmp — that is the whole reason
+    it exists — so nothing here may assume a path is under ROOT.
+    """
+    p = pathlib.Path(path).resolve()
+    return p.relative_to(ROOT).as_posix() if ROOT in p.parents else str(p)
+
+
+def record(path):
+    """Hash a file into the manifest and return its path."""
+    p = pathlib.Path(path).resolve()
+    INPUTS[rel(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
+    return p
 
 for tool in ("pandoc",):
     if not shutil.which(tool):
@@ -58,6 +98,7 @@ if not PAGED.exists():
 # script used to accept any block carrying an `id:` in any shape, so it could
 # print a number the card and the og:image did not have.
 def load_controls():
+    record(ROOT / "whitepaper" / "controls.yaml")
     outcomes, controls = controls_source.load()
     if not outcomes or not controls:
         sys.exit("could not read controls.yaml — refusing to render an empty appendix")
@@ -67,7 +108,7 @@ def load_controls():
 OUTCOMES, CONTROLS = load_controls()
 
 # ── the paper ────────────────────────────────────────────────────────────────
-md = SRC.read_text(encoding="utf-8")
+md = record(SRC).read_text(encoding="utf-8")
 
 def cut_section(text, heading_re):
     """Remove one `# Heading` block, up to the next level-1 heading."""
@@ -163,7 +204,7 @@ for fam, wt, style, fn in FACES:
     f = ROOT / "static" / "fonts" / fn
     if not f.exists():
         sys.exit(f"missing font {fn} — the PDF must not fall back to a system face")
-    b64 = base64.b64encode(f.read_bytes()).decode()
+    b64 = base64.b64encode(record(f).read_bytes()).decode()
     faces.append(f'@font-face{{font-family:"{fam}";font-weight:{wt};'
                  f'font-style:{style};font-display:block;'
                  f'src:url(data:font/woff2;base64,{b64}) format("woff2")}}')
@@ -370,7 +411,71 @@ th { font-family:"Chakra Petch",sans-serif; font-size:7pt; font-weight:600;
 """
 
 
-def render():
+PUBLISHED_RE = r"Published as\b[^\n]*?·\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})"
+COMMENTS_RE = r"Draft for public comment until\s+(\d{1,2}\s+[A-Za-z]+\s+\d{4})"
+
+
+def front_matter_dates():
+    """The paper's published date and comment deadline, from its own front matter.
+
+    One reading, used for both the cover and the PDF's timestamps. The cover used
+    to carry its own hardcoded copy of both dates while only the timestamps were
+    parsed from here, so moving the paper's date produced a PDF whose Document
+    Properties said 14 August and whose cover, printed by this same function, said
+    30 July. Nothing compared them because nothing could: they were two constants
+    that happened to agree. Derived from one string they cannot disagree, which is
+    a stronger guarantee than a check that they do.
+
+    hugo.toml states both dates a third time, for the site. That copy cannot be
+    removed — the templates need it and the paper is not a Hugo page — so
+    check-copy compares it against this front matter instead.
+
+    Reading the date from the source rather than the clock is also what makes the
+    build reproducible: SOURCE_DATE_EPOCH derives from it, so the same source
+    always yields the same bytes.
+
+    This raises rather than falling back. The previous version stamped 1 January
+    2026 and warned, on the reasoning that a wrong date still builds reproducibly
+    and breaking a build over metadata is worse. That reasoning held while the
+    date was only in the Document Properties. It does not hold now the cover is
+    printed from the same value: a conference handout whose cover reads "published
+    1 January 2026" is worse than a build that stops and says which line it could
+    not read. Abbreviating the month is enough to land here.
+    """
+    text = SRC.read_text(encoding="utf-8")
+    found = {}
+    for key, pattern, shape in (
+        ("published", PUBLISHED_RE, "Published as **Agent Baseline** · v… · 30 July 2026 · …"),
+        ("comments", COMMENTS_RE, "Draft for public comment until 30 September 2026."),
+    ):
+        m = re.search(pattern, text)
+        if not m:
+            sys.exit(f"cannot read the {key} date from whitepaper.md's front matter.\n"
+                     f"  expected a line shaped like: {shape}\n"
+                     f"The cover and the PDF's timestamps are both printed from that line, "
+                     f"so there is nothing sensible to fall back to. Fix the front matter, "
+                     f"or update {pathlib.Path(__file__).name} if the wording moved on purpose.")
+        try:
+            datetime.datetime.strptime(m.group(1), "%d %B %Y")
+        except ValueError:
+            sys.exit(f"whitepaper.md's {key} date is not a date this can parse: "
+                     f"{m.group(1)!r} — write it as '30 July 2026', month unabbreviated.")
+        found[key] = m.group(1)
+    return found
+
+
+def published_epoch(published):
+    """The published date as a UTC epoch, for /CreationDate and /ModDate."""
+    d = datetime.datetime.strptime(published, "%d %B %Y")
+    # Midday rather than midnight: the stored value is UTC but readers see it in
+    # local time, and a midnight stamp displays as the previous day anywhere west
+    # of Greenwich — a PDF of the 30th reporting the 29th looks like a bug in the
+    # date. Noon survives every offset.
+    return calendar.timegm(d.timetuple()) + 12 * 3600
+
+
+def render(out, provenance):
+    dates = front_matter_dates()
     version = "1.0-draft"
     m = re.search(r'^version:\s*"([^"]+)"',
                   (ROOT / "whitepaper" / "controls.yaml").read_text(encoding="utf-8"), re.M)
@@ -384,7 +489,7 @@ def render():
     cpath = ROOT / "whitepaper" / "contributors.yaml"
     if cpath.exists():
         people = []
-        for blk in re.split(r"\n(?=  - )", cpath.read_text(encoding="utf-8")):
+        for blk in re.split(r"\n(?=  - )", record(cpath).read_text(encoding="utf-8")):
             if not blk.lstrip().startswith("- name:"):
                 continue
             def f(k):
@@ -418,8 +523,8 @@ def render():
   </ul>
   <p class="by">{authors}</p>
   <p class="meta">
-    <b>v{version}</b> · published 30 July 2026<br>
-    Draft for public comment until 30 September 2026<br>
+    <b>v{version}</b> · published {dates["published"]}<br>
+    Draft for public comment until {dates["comments"]}<br>
     {len(CONTROLS)} controls across {len(OUTCOMES)} outcomes<br>
     Prose and figures CC BY 4.0 · schemas Apache-2.0
   </p>
@@ -444,18 +549,126 @@ def render():
     page = WORK / "paper.html"
     page.write_text(doc, encoding="utf-8")
 
-    OUT.parent.mkdir(exist_ok=True)
-    if OUT.exists():
-        OUT.unlink()
-    r = subprocess.run(["node", str(ROOT / "bin" / "print-page.mjs"),
-                        str(page), str(OUT)], capture_output=True, text=True)
-    if r.returncode or not OUT.exists():
-        sys.exit(f"PDF FAILED\n{r.stdout}\n{r.stderr}")
-    print(f"  {r.stdout.strip()}")
-    pages = len(re.findall(rb"/Type\s*/Page[^s]", OUT.read_bytes()))
-    print(f"wrote static/whitepaper.pdf  {OUT.stat().st_size:,} bytes · {pages} pages "
+    # Everything the document pulls in from disk at print time. The figures are
+    # rewritten to absolute file URLs above and Paged.js is loaded from one, so
+    # sweeping the rendered document finds them without a second list to keep in
+    # step — including the ones a future template adds. Anything outside the repo
+    # is somebody's local path and cannot be a recorded input.
+    for url in set(re.findall(r'file://[^"\'\s>)]+', doc)):
+        p = pathlib.Path(urllib.request.url2pathname(url[len("file://"):]))
+        if p.exists() and ROOT in p.resolve().parents:
+            record(p)
+    # The scripts are inputs too: the stylesheet and the cover live in this file,
+    # the normalisation lives in print-page.mjs, and the catalogue reader in
+    # controls_source.py decides what the appendix says. A change to any of them
+    # changes the artifact, so a manifest that omitted them would call a stale PDF
+    # current.
+    for script in (pathlib.Path(__file__), ROOT / "bin" / "print-page.mjs",
+                   ROOT / "bin" / "controls_source.py"):
+        record(script)
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Rendered to a sibling and moved into place, never written through. The old
+    # version unlinked the destination and then spent several seconds in Chrome;
+    # anything that killed the process in that window — Ctrl-C, a CI timeout, the
+    # OOM killer — left the tree with no whitepaper.pdf at all, and the only copy
+    # of it in a temporary directory that died with the process. os.replace is
+    # atomic within a filesystem, and the temporary file is a sibling so that it
+    # is the same filesystem.
+    tmp = out.with_name(f".{out.name}.new-{os.getpid()}")
+    # A kill that skips the cleanup below leaves one of these; sweep them rather
+    # than accumulating megabyte files in static/ until someone notices. The pid
+    # in the name is what makes that safe: a leftover whose process is still alive
+    # is a build in flight, and deleting it would be this script causing the exact
+    # failure it is here to prevent.
+    for stale in out.parent.glob(f".{out.name}.new-*"):
+        try:
+            pid = int(stale.name.rsplit("-", 1)[-1])
+        except ValueError:
+            continue
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            stale.unlink(missing_ok=True)
+        except PermissionError:
+            pass  # alive, and not ours
+    # The PDF is committed, so it must be reproducible: two builds of unchanged
+    # source have to produce the same bytes, or `git diff` reports the artifact as
+    # modified on every rebuild and a reviewer cannot tell a rebuild from an edit.
+    # Chrome stamps the wall clock into /CreationDate and /ModDate; print-page.mjs
+    # rewrites them from SOURCE_DATE_EPOCH, which is set here from the paper's own
+    # published date. The document's date is the honest thing for it to carry, and
+    # it only moves when the paper does. An epoch already in the environment wins,
+    # so a release process can pin it.
+    env = dict(os.environ)
+    env.setdefault("SOURCE_DATE_EPOCH", str(published_epoch(dates["published"])))
+    try:
+        r = subprocess.run(["node", str(ROOT / "bin" / "print-page.mjs"),
+                            str(page), str(tmp)], capture_output=True, text=True, env=env)
+        if r.returncode or not tmp.exists():
+            sys.exit(f"PDF FAILED\n{r.stdout}\n{r.stderr}")
+        print(f"  {r.stdout.strip()}")
+        blob = tmp.read_bytes()
+        os.replace(tmp, out)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+    pages = len(re.findall(rb"/Type\s*/Page[^s]", blob))
+    print(f"wrote {rel(out)}  {len(blob):,} bytes · {pages} pages "
           f"· {len(CONTROLS)} controls · {len(toc)} contents entries")
+
+    if provenance:
+        write_provenance(provenance, out, blob, pages, env["SOURCE_DATE_EPOCH"])
+        print(f"wrote {rel(provenance)}  {len(INPUTS)} recorded input(s)")
+
+
+def pdf_string(blob, key):
+    """One of the PDF's own document-information strings, unescaped."""
+    m = re.search(rb"/" + key.encode() + rb"\s*\((.*?)(?<!\\)\)", blob, re.S)
+    return re.sub(r"\\([()\\])", r"\1", m.group(1).decode("latin1")) if m else ""
+
+
+def write_provenance(path, out, blob, pages, epoch):
+    """Record what was built, from what, by what.
+
+    The toolchain fields are read back out of the PDF rather than asked of the
+    machine: /Producer and /Creator are the artifact's own statement about the
+    browser and platform that made it, which is the thing a later reader needs and
+    the thing that cannot be got wrong by querying the wrong binary. They are also
+    what makes a failure legible — an artifact built by Skia/PDF m150 on macOS is
+    not going to come out byte-identical under a different browser or a different
+    kernel, and a check that knows both strings can say so instead of blaming the
+    paper.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    doc = {
+        "artifact": rel(out),
+        "bytes": len(blob),
+        "pages": pages,
+        "sha256": hashlib.sha256(blob).hexdigest(),
+        "source_date_epoch": epoch,
+        "built_by": {"producer": pdf_string(blob, "Producer"),
+                     "creator": pdf_string(blob, "Creator")},
+        "inputs": dict(sorted(INPUTS.items())),
+    }
+    path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
-    render()
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    # --out exists so that a caller wanting to inspect a build never has to point
+    # the renderer at the tracked file. check-pdf-reproducible used to rebuild over
+    # static/whitepaper.pdf and copy the committed bytes back afterwards, which
+    # made merely running the check a way to lose the deliverable. It now builds
+    # somewhere else entirely, so there is no window to lose it in.
+    ap.add_argument("--out", type=pathlib.Path, default=OUT,
+                    help="where to write the PDF (default: static/whitepaper.pdf)")
+    ap.add_argument("--provenance", type=pathlib.Path, default=None,
+                    help="where to write the build manifest "
+                         "(default: whitepaper/pdf.provenance.json, and only when "
+                         "--out is the tracked artifact)")
+    args = ap.parse_args()
+    prov = args.provenance
+    if prov is None and args.out.resolve() == OUT.resolve():
+        prov = PROVENANCE
+    render(args.out, prov)

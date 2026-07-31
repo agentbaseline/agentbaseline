@@ -99,14 +99,33 @@ python3 bin/build-pdf                          # the PDF, via pandoc and Chrome
 python3 bin/build-social                       # the 1200x630 card
 ```
 
-Three checks run in CI and are worth running before you push. Each one exists because
+These checks run in CI and are worth running before you push. Each one exists because
 something broke and nothing caught it:
 
 ```sh
-python3 bin/check-controls   # identifiers, required fields, paper/controls agreement
-python3 bin/check-figure     # figure geometry: overlaps, containment, arrows, stale ranges
-python3 bin/check-copy       # repeated phrasing, dead titles, self-contradictions
+python3 bin/check-controls      # identifiers, required fields, paper/controls agreement
+python3 bin/check-figure        # figure geometry: overlaps, containment, arrows, stale ranges
+python3 bin/check-copy          # repeated phrasing, dead titles, self-contradictions
+python3 bin/check-appendix      # Appendix A still agrees with the catalogue
+python3 bin/check-bindings      # templates only read fields the catalogue has
+python3 bin/check-js            # scripts parse, source and minified
+python3 bin/check-pdf-current   # the committed PDF is the one this source builds
 ```
+
+`check-pdf-current` needs nothing but Python. It compares the tree against
+`whitepaper/pdf.provenance.json`, which `bin/build-pdf` writes as it renders — the digest
+of every file the render read, and of the PDF it produced. **Edit the paper and you must
+rebuild: commit `static/whitepaper.pdf` and `whitepaper/pdf.provenance.json` together.**
+
+```sh
+python3 bin/check-pdf-reproducible   # two builds of this source produce the same bytes
+```
+
+That one drives Chrome, so it only answers on the machine that built the artifact. The
+committed PDF carries the browser build and the operating system that made it, and the
+same source on another platform comes out a different size — so it will tell you it
+cannot judge rather than blame the paper. CI asks the determinism question the portable
+way instead, building twice on a pinned browser and comparing those two builds.
 
 `bin/snapshot <n> "<label>"` freezes a build into `docs/passes/`, so a visual regression is
 visible rather than inferred.
