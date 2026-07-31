@@ -17,6 +17,55 @@ errors, warnings = [], []
 def err(m): errors.append(m)
 def warn(m): warnings.append(m)
 
+# ── 0 · the built output must come from this configuration ───────────────────
+# Every check below that reads public/ is only as good as the build that made
+# it. A `hugo server` left running rewrites public/ continuously with a
+# localhost baseURL, so a check can validate a build nobody deployed and pass.
+# That cost three false alarms in one evening: a reorder that had worked was
+# reported as broken, twice.
+#
+# This sits at the top rather than at the bottom, where it used to. Below §7 it
+# ran *after* the check it exists to protect had already read the suspect build,
+# and its sys.exit then discarded every finding §1-§6 had collected — so a real
+# controls.yaml defect plus a stale public/ showed you only the stale-build
+# complaint. bin/check-copy has the same code in the right place; this file did
+# not. Nothing is collected yet here, so refusing outright costs no findings.
+_cfg = (ROOT / "hugo.toml").read_text(encoding="utf-8")
+_base = re.search(r'^baseURL\s*=\s*"([^"]+)"', _cfg, re.M)
+
+# The shape of baseURL, not its value. It decides the canonical tag, and the
+# canonical tag is what /controls puts on a reader's clipboard when they click an
+# identifier — so a build configured for a preview host ships citations that die
+# with the deployment, silently. Pinning the literal domain would fight
+# VERSIONING.md and ADR-0001, which promise identifiers survive a transfer to a
+# community body precisely because they carry no project name; a rename to any
+# real domain must stay green. Shape catches every accidental preview and every
+# localhost build without naming the project.
+if not _base:
+    sys.exit("hugo.toml declares no baseURL — every canonical on the site, and "
+             "every address the controls page copies, is derived from it.")
+_bad_host = re.match(r'^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])'
+                     r'|^https?://[^/]*\.vercel\.(app|sh)/?$', _base.group(1))
+if not _base.group(1).startswith("https://") or _bad_host:
+    sys.exit(f"hugo.toml baseURL is not a published https origin: {_base.group(1)}\n"
+             f"The controls page copies this origin to the clipboard as the "
+             f"citable address of a control, so a preview or localhost value "
+             f"ships citations that resolve for nobody.\n"
+             f"Any real https domain is fine — this pins the shape, not the name, "
+             f"so a transfer to a community body stays green.")
+
+_built = ROOT / "public" / "index.html"
+if _built.exists():
+    _got = re.search(r'canonical["\']?\s+href=["\']?([^"\'>\s]+)',
+                     _built.read_text(encoding="utf-8"))
+    if _got and not _got.group(1).startswith(_base.group(1).rstrip("/")):
+        sys.exit(f"public/ was built with a different baseURL than hugo.toml sets.\n"
+                 f"  hugo.toml : {_base.group(1).rstrip('/')}\n"
+                 f"  public/   : {_got.group(1)}\n"
+                 f"Usually a `hugo server` is still running and rewriting public/.\n"
+                 f"  pkill -f 'hugo server' && hugo --gc --minify\n"
+                 f"Refusing to check a build that is not the one you would deploy.")
+
 src = CAT.read_text(encoding="utf-8")
 
 # ── parse ─────────────────────────────────────────────────────────────────────
@@ -113,8 +162,20 @@ if PAPER.exists():
 
 # ── 7. built output must agree with the source of truth ──────────────────────
 # Asserts the rendered ranges rather than grepping for the shape of a past bug.
+#
+# `public/` is gitignored and CI runs this file as its first step, before any
+# hugo invocation — so for the whole life of this check the directory was absent,
+# `if built.exists()` was false, and it reported a pass having asserted nothing.
+# Indistinguishable, in output and exit code, from a run that checked all six
+# families. bin/check-js states the rule this broke: a gate that reports success
+# when it did not run is worse than no gate, because it is the one you stop
+# checking. Say so instead, and let the caller decide whether that is fatal.
 built = ROOT / "public" / "index.html"
-if built.exists():
+if not built.exists():
+    warn("§7 did not run: public/ is absent, so the rendered identifier ranges "
+         "were not checked. Run `hugo --gc --minify` first, or run this after "
+         "the build step rather than before it.")
+else:
     html = built.read_text(encoding="utf-8")
     for fam, n in sorted(hi_by_fam.items()):
         for m in re.finditer(rf"{fam}-(\d{{2}})…(\d{{2}})", html):
@@ -134,34 +195,6 @@ for _m in re.finditer(r'  - id: (\w+-\d+)\n(?:.*\n)*?    requirement: >-\n((?:  
     if _lines and len(_lines[-1].split()) == 1 and _lines[-1].rstrip(".").lower() in _NAMES:
         err(f"{_m.group(1)}: requirement ends in the bare word "
             f"'{_lines[-1]}' — a heading pasted in from the source document")
-
-# ── 0 · the built output must come from this configuration ───────────────────
-# Every check below that reads public/ is only as good as the build that made
-# it. A `hugo server` left running rewrites public/ continuously with a
-# localhost baseURL, so a check can validate a build nobody deployed and pass.
-# That cost three false alarms in one evening: a reorder that had worked was
-# reported as broken, twice.
-def _built_matches_config():
-    cfg = (ROOT / "hugo.toml").read_text(encoding="utf-8")
-    m = re.search(r'^baseURL\s*=\s*"([^"]+)"', cfg, re.M)
-    built = ROOT / "public" / "index.html"
-    if not m or not built.exists():
-        return None
-    want = m.group(1).rstrip("/")
-    h = built.read_text(encoding="utf-8")
-    got = re.search(r'canonical["\']?\s+href=["\']?([^"\'>\s]+)', h)
-    if got and not got.group(1).startswith(want):
-        return (want, got.group(1))
-    return None
-
-_drift = _built_matches_config()
-if _drift:
-    sys.exit(f"public/ was built with a different baseURL than hugo.toml sets.\n"
-             f"  hugo.toml : {_drift[0]}\n"
-             f"  public/   : {_drift[1]}\n"
-             f"Usually a `hugo server` is still running and rewriting public/.\n"
-             f"  pkill -f 'hugo server' && hugo --gc --minify\n"
-             f"Refusing to check a build that is not the one you would deploy.")
 
 # ── report ────────────────────────────────────────────────────────────────────
 fam = collections.Counter(c["id"].split("-")[0] for c in controls)
