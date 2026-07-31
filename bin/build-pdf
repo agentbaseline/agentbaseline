@@ -382,6 +382,13 @@ def published_epoch():
             return calendar.timegm(d.timetuple()) + 12 * 3600
         except ValueError:
             pass
+    # Loud. A wrong date is still reproducible, so the gate stays green and the
+    # paper ships with Document Properties that contradict its own cover — and
+    # for a citable handout the properties are the citation date. Abbreviating
+    # the month is enough to land here.
+    print("  WARNING: could not read the published date from whitepaper.md; "
+          "the PDF will be stamped 1 January 2026. Check the front matter.",
+          file=sys.stderr)
     return calendar.timegm((2026, 1, 1, 12, 0, 0, 0, 1, 0))
 
 

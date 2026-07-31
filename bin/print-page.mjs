@@ -95,6 +95,13 @@ function normalise(buf) {
   let s = buf.toString("latin1");
 
   const epoch = process.env.SOURCE_DATE_EPOCH;
+  if (epoch !== undefined && epoch !== "" && !/^\d+$/.test(epoch)) {
+    // Set but unusable. Falling through here would stamp the wall clock and
+    // exit 0 — the artifact would be wrong and reproducibly so, which is the
+    // one shape the gate cannot see. An empty or malformed value is a mistake
+    // in the caller, not permission to use the clock.
+    throw new Error(`SOURCE_DATE_EPOCH is set but not a Unix timestamp: ${JSON.stringify(epoch)}`);
+  }
   if (epoch && /^\d+$/.test(epoch)) {
     const d = new Date(Number(epoch) * 1000);
     const p = (n, w = 2) => String(n).padStart(w, "0");
@@ -132,7 +139,56 @@ function normalise(buf) {
   if (outBuf.length !== before) {
     throw new Error(`normalisation changed the file size (${before} -> ${outBuf.length})`);
   }
+  // Both substitutions above are silent no-ops when their pattern is absent —
+  // which is what happens the day Chrome moves the struct tree into a compressed
+  // object stream. The wall clock would leak back in and nothing would raise.
+  const dates = (s.match(/\/(CreationDate|ModDate) \(D:/g) ?? []).length;
+  if (dates !== 2) {
+    throw new Error(`expected 2 date stamps to normalise, found ${dates} — ` +
+      `the producer has changed shape and normalise() is no longer reaching them`);
+  }
+  assertXrefIntact(outBuf);
   return outBuf;
+}
+
+/* Check the file still parses, rather than trying to enumerate what must not be
+   touched.
+ 
+   Every guard above is about the edit: same length, same buffer size. None of
+   them look at the result. That gap has already shipped one defect — the rename
+   matched a URL and produced a valid, reproducible, wrong PDF with everything
+   green — and it can always ship another, because the replacements work on raw
+   bytes with no idea where an object ends. Narrowing the pattern reduces the
+   chance; only reading the file back rules it out.
+ 
+   The xref table stores an absolute byte offset for every object, so if any
+   substitution moved anything, an entry stops pointing at `N 0 obj` and this
+   throws. Costs about a second on a 1MB file. */
+function assertXrefIntact(buf) {
+  const s = buf.toString("latin1");
+  const start = s.lastIndexOf("startxref");
+  if (start < 0) throw new Error("no startxref — the PDF is not readable after normalisation");
+  const at = parseInt(s.slice(start + 9).trim(), 10);
+  const table = s.slice(at);
+  if (!table.startsWith("xref")) {
+    // A cross-reference stream rather than a classic table. Skia does not emit
+    // these today; if it starts to, the scan below cannot see the objects and
+    // silence would be the wrong answer.
+    throw new Error("xref is not a classic table — normalisation cannot verify this file");
+  }
+  let checked = 0, bad = 0;
+  for (const m of table.matchAll(/^(\d{10}) (\d{5}) n\s*$/gm)) {
+    const off = parseInt(m[1], 10);
+    if (off === 0) continue;
+    checked++;
+    if (!/^\d+\s+\d+\s+obj/.test(s.slice(off, off + 24))) bad++;
+  }
+  if (!checked) throw new Error("xref table lists no objects — refusing to trust this file");
+  if (bad) {
+    throw new Error(
+      `normalisation broke the file: ${bad} of ${checked} xref offsets no longer ` +
+      `point at an object. A replacement changed something it should not have.`);
+  }
 }
 
 const chrome = spawn(CHROME, [
