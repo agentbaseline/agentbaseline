@@ -1,8 +1,8 @@
 {
   "artifact": "static/whitepaper.pdf",
-  "bytes": 1033374,
+  "bytes": 1033270,
   "pages": 27,
-  "sha256": "5fc4ce7fb8ef78f4c2590f1f239b6149e09bae9969cade3a7012d6672d94c687",
+  "sha256": "c7a103ca9ece59998b25bc22cdcc1078b35200f93b717ddb4e67205beb82e6b3",
   "source_date_epoch": "1785412800",
   "built_by": {
     "producer": "Skia/PDF m150",
@@ -31,6 +31,6 @@
     "whitepaper/figures/figure-lethal-trifecta.svg": "8d276f8a417957eb460735a90bcf3288849275391d9e00ac2563eba01ca5f0ac",
     "whitepaper/figures/figure-response-lifecycle.svg": "182ca091ca58cc3e2c08781b290bd051e399c0941aeb65ed7633f54afae586c3",
     "whitepaper/figures/figure-runtime-isolation.svg": "a54ade8822fdcf98175c6adad2581cf7df7d3530061afa153cce4d25463d3fbb",
-    "whitepaper/whitepaper.md": "97462dbebde739c620081f996a10660c9789e6ffcb8a577750762de85e48cc20"
+    "whitepaper/whitepaper.md": "8d02ac2b94cc52d6374d55ed309da545bdf29955ab018898a2be3d115fa98801"
   }
 }
