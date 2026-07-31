@@ -16,6 +16,12 @@
       ],
       "destination": "https://agentbaseline.org/$1",
       "permanent": true
+    },
+    {
+      "//": "VERSIONING.md and docs/decisions/0001 both prescribe agentbaseline.org/DIS-01 as a way to qualify an identifier by namespace. It has never resolved: there is no such route, cleanUrls sends it to the 404 page, and the promise has been in two documents since before this file had a redirect in it. This makes the documented form work. Not permanent: the resolvable address of a control is /controls#ID, and a 308 would let caches outlive a decision to serve these directly.",
+      "source": "/(DIS|CON|AUT|VAL|OBS|RES)-(\\d{2})",
+      "destination": "/controls#$1-$2",
+      "permanent": false
     }
   ],
   "headers": [
