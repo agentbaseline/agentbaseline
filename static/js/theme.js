@@ -9,7 +9,15 @@
   addEventListener('DOMContentLoaded', function () {
     /* Landing directly on a control means someone was sent it, or cited it —
        the behaviour the whole versioning promise exists to support, and
-       invisible in page views because the hash never reaches the server. */
+       invisible in page views because the hash never reaches the server.
+
+       What this cannot see: a textual citation. The page's own prescribed form
+       is `DIS-01 (Agent Baseline v1.x)`, and a reader who meets that in an RFP
+       response has no link to follow — they search, land on /controls with no
+       hash, and this event does not fire even though the citation worked
+       perfectly. `arrival` counts linked citations only. A low number is not
+       evidence of low reach, in the same way `rsvp` reading zero would not have
+       been evidence nobody wanted to come. Read it as a floor. */
     var hash = (location.hash || '').slice(1);
     if (/^(?:DIS|CON|AUT|VAL|OBS|RES)-\d{2}$/.test(hash) && typeof va === 'function') {
       va('event', { name: 'arrival', data: { at: hash } });
