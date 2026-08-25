@@ -8,6 +8,14 @@ never reused.
 
 ## [Unreleased]
 
+### Added
+- The catalogue is published as a file. `/controls.yaml` and `/whitepaper.md` are now
+  served alongside `/whitepaper.pdf`, and `/llms.txt` indexes them. Previously the only
+  machine-fetchable artifact was the PDF: `controls.yaml` was mounted into Hugo's data
+  tree and never served, so recovering the source of truth meant parsing the paper or
+  scraping the page. Both files are mounted from `whitepaper/` rather than copied, so
+  there is still exactly one copy of the catalogue. No control changed. *(2026-08-25)*
+
 ### Changed
 - The catalogue is rebuilt from Appendix A of the paper as it landed in this repository —
   the appendix declares itself the canonical naming and requirement set, and the body prose

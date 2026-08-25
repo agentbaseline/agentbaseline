@@ -24,6 +24,40 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
 [[module.mounts]]
   source = "whitepaper/controls.yaml"
   target = "data/controls.yaml"
+# The same two files again, this time as published artifacts.
+#
+# The site's own robots.txt says this document "exists to be read, quoted and
+# cited — by people, by search engines and by models". Until now the only thing
+# a machine could fetch was whitepaper.pdf and two HTML pages: the catalogue
+# that everything renders FROM was mounted into the data tree and never served.
+# A reader asking "what does DIS-01 require" had to parse a PDF or scrape the
+# page to recover the file that produced both.
+#
+# controls.yaml is the source of truth (see its header) and the identifiers in
+# it are permanent, so it is the stable thing to cite. whitepaper.md is the
+# prose the PDF is typeset from — same words, no PDF extraction.
+#
+# Mounted rather than copied: a second copy in static/ would be a fork of the
+# source of truth, which is the one thing this repository is careful never to
+# have.
+#
+# The `static -> static` line below is load-bearing and must stay. Hugo only
+# supplies a default mount for a component nobody mounts explicitly. The moment
+# any mount names a `static/...` target, the implicit `static -> static` is
+# replaced rather than extended, and every real asset silently disappears from
+# the build: robots.txt, whitepaper.pdf, the fonts, the stylesheet, theme.js,
+# the icons, .well-known/security.txt. The build still succeeds and reports
+# "Static files | 2". Removing this line does not fail CI; it ships an
+# unstyled site with no paper.
+[[module.mounts]]
+  source = "static"
+  target = "static"
+[[module.mounts]]
+  source = "whitepaper/controls.yaml"
+  target = "static/controls.yaml"
+[[module.mounts]]
+  source = "whitepaper/whitepaper.md"
+  target = "static/whitepaper.md"
 [[module.mounts]]
   source = "whitepaper/contributors.yaml"
   target = "data/contributors.yaml"
