@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""render-page-md — markdown mirrors of the two pages, for Accept negotiation.
+
+Writes into the BUILD OUTPUT, not into static/:
+
+    public/index.md      from public/index.html
+    public/controls.md   from whitepaper/CONTROLS.md
+
+so it runs after hugo. vercel.json calls it from buildCommand, and rewrites
+/ and /controls to these files when the request carries
+`Accept: text/markdown` (see acceptmarkdown.com).
+
+Why converted rather than authored: the prose lives in layouts/index.html.
+A hand-written index.md would be a second copy of it, and a second copy
+drifts. The one thing this repository refuses to have is two sources for the
+same words, so the mirror is generated from the built page and nothing here
+is edited by hand.
+
+controls.md needs no conversion — whitepaper/CONTROLS.md is already generated
+from controls.yaml by bin/render-controls, and CI already fails on drift. It
+only needs its repo-relative links rewritten, because `../VERSIONING.md`
+resolves inside the repository and 404s on the site.
+
+Deterministic by construction: no timestamps, no ordering that depends on a
+dict, no network. Two runs on one input produce one file.
+"""
+
+import re
+import sys
+from html.parser import HTMLParser
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+PUBLIC = ROOT / "public"
+
+SITE = "https://agentbaseline.org"
+REPO = "https://github.com/agentbaseline/agentbaseline/blob/main"
+
+# Dropped entirely, with their subtrees. The wordmark is an SVG that draws
+# "Agent" as one <text> node per letter across four animation layers, so a
+# naive text extraction of the h1 reads "Agent A g e n t A g e n t ...".
+# Dropping svg leaves the sr-only span and the <em>, which together read
+# "Agent Baseline" — the accessible name, and the right title for a mirror.
+SKIP_TAGS = {"svg", "script", "style", "noscript", "template", "button"}
+
+BLOCK = {"p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "ul", "ol",
+         "div", "section", "header", "footer", "blockquote", "figure", "figcaption"}
+
+
+class ToMarkdown(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out = []          # finished blocks
+        self.buf = []          # current block's inline text
+        self.skip_depth = 0
+        self.heading = None    # level, while inside a heading
+        self.list_stack = []   # 'ul' | ['ol', counter]
+        self.href = None
+
+    # -- helpers ----------------------------------------------------------
+    def _flush(self):
+        text = re.sub(r"\s+", " ", "".join(self.buf)).strip()
+        self.buf = []
+        if not text:
+            return
+        if self.heading:
+            # No inline emphasis in headings: the wordmark's <em>Baseline</em>
+            # would otherwise render as "Agent *Baseline*".
+            text = text.replace("*", "")
+            self.out.append("#" * self.heading + " " + text)
+        elif self.list_stack:
+            top = self.list_stack[-1]
+            indent = "  " * (len(self.list_stack) - 1)
+            if isinstance(top, list):
+                top[1] += 1
+                self.out.append(f"{indent}{top[1]}. {text}")
+            else:
+                self.out.append(f"{indent}- {text}")
+        else:
+            self.out.append(text)
+
+    # -- parser hooks -----------------------------------------------------
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if self.skip_depth or tag in SKIP_TAGS:
+            self.skip_depth += 1
+            return
+        if tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
+            self._flush()
+            self.heading = int(tag[1])
+        elif tag in BLOCK:
+            self._flush()
+            if tag == "ul":
+                self.list_stack.append("ul")
+            elif tag == "ol":
+                self.list_stack.append(["ol", 0])
+        elif tag == "a":
+            # Adjacent links in the source carry no separator, so the mirror
+            # would read "[Discover](..)[Constrain](..)".
+            if "".join(self.buf).rstrip().endswith(")"):
+                self.buf.append(" · ")
+            href = a.get("href", "")
+            self.href = href
+            self.buf.append("[")
+        elif tag in ("strong", "b"):
+            self.buf.append("**")
+        elif tag in ("em", "i"):
+            self.buf.append("*")
+        elif tag == "code":
+            self.buf.append("`")
+        elif tag == "br":
+            self.buf.append(" ")
+        elif tag == "sup":
+            # <sup class=aff> is an affiliation next to a contributor's name.
+            # Superscript has no markdown equivalent, and without a separator
+            # the mirror reads "Ranti FamilusiDocker".
+            self.buf.append(" (")
+        elif tag == "span":
+            # The outcome rows are adjacent spans with no whitespace between
+            # them in the source, so the mirror would read
+            # "DIS-01…07 Discover every agent...Maintain an accurate view".
+            tail = "".join(self.buf)
+            if tail and tail[-1] not in " \n[(":
+                self.buf.append(" ")
+
+    def handle_endtag(self, tag):
+        if self.skip_depth:
+            self.skip_depth -= 1
+            return
+        if tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
+            self._flush()
+            self.heading = None
+        elif tag == "a" and self.href is not None:
+            href = self.href
+            self.href = None
+            if href.startswith("/"):
+                href = SITE + href
+            self.buf.append(f"]({href})")
+        elif tag in ("strong", "b"):
+            self.buf.append("**")
+        elif tag in ("em", "i"):
+            self.buf.append("*")
+        elif tag == "code":
+            self.buf.append("`")
+        elif tag == "sup":
+            self.buf.append(")")
+        elif tag in BLOCK:
+            self._flush()
+            if tag in ("ul", "ol") and self.list_stack:
+                self.list_stack.pop()
+
+    def handle_data(self, data):
+        if not self.skip_depth:
+            self.buf.append(data)
+
+    def result(self):
+        self._flush()
+        # Empty links are decorative leftovers, e.g. <span class=lead></span>
+        blocks = [b for b in self.out if b.strip() not in ("", "[]()")]
+        text = "\n\n".join(blocks) + "\n"
+        # Tight lists: consecutive items read as one list rather than as a
+        # run of loose paragraphs.
+        text = re.sub(r"\n\n(?=(?:\s*)(?:- |\d+\. ))", "\n", text)
+        return text
+
+
+def main_of(html: str) -> str:
+    m = re.search(r"(?is)<main\b[^>]*>(.*?)</main>", html)
+    if not m:
+        sys.exit("render-page-md: no <main> in the built page — did hugo run?")
+    return m.group(1)
+
+
+def write(path: Path, text: str) -> None:
+    path.write_text(text, encoding="utf8")
+    print(f"  {path.relative_to(ROOT)}  {len(text)} bytes")
+
+
+def main() -> None:
+    index_html = PUBLIC / "index.html"
+    if not index_html.exists():
+        sys.exit("render-page-md: public/index.html is missing — run hugo first")
+
+    parser = ToMarkdown()
+    parser.feed(main_of(index_html.read_text(encoding="utf8")))
+    body = parser.result()
+
+    header = (
+        "<!-- GENERATED FROM the built page BY bin/render-page-md — DO NOT EDIT -->\n"
+        f"<!-- Canonical: {SITE}/ -->\n\n"
+    )
+    write(PUBLIC / "index.md", header + body)
+
+    controls_src = ROOT / "whitepaper" / "CONTROLS.md"
+    if not controls_src.exists():
+        sys.exit("render-page-md: whitepaper/CONTROLS.md is missing — run bin/render-controls")
+    controls = controls_src.read_text(encoding="utf8")
+    # `../VERSIONING.md` and friends resolve in the repository, not on the site.
+    controls = re.sub(r"\]\(\.\./([A-Za-z0-9_./-]+)\)", rf"]({REPO}/\1)", controls)
+    controls = (
+        f"<!-- Canonical: {SITE}/controls -->\n\n"
+        + controls
+    )
+    write(PUBLIC / "controls.md", controls)
+
+
+if __name__ == "__main__":
+    print("render-page-md:")
+    main()
