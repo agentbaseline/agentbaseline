@@ -1,0 +1,85 @@
+{{/* JSON-LD, shared by both pages.
+
+     The site published no structured data at all, so a reader that consumes
+     schema.org — search engines, and increasingly models — had to infer what
+     this document is, who wrote it, what version it is at and whether it is
+     final. All of that is stated in the repository already; this exposes it
+     without restating it.
+
+     Everything below is read from the catalogue, the contributor record or
+     site params. Nothing is written twice, so nothing can disagree with the
+     page it sits on.
+
+     Called with a dict so each page supplies its own identity:
+       {{ partial "schema.html" (dict "ctx" . "headline" "…" "desc" "…") }}
+
+     Two deliberate omissions:
+
+     - `dateModified`. Hugo would give a file mtime, which in CI is the
+       checkout time — a date the document did not change on. layouts/sitemap.xml
+       already refuses to state a date it invented, for the same reason, and a
+       wrong dateModified is worse than an absent one.
+     - `address` on the Organization. Agent Baseline is a document from three
+       companies, not a company with premises. There is no address to state.
+
+     Contributor emails are in whitepaper/contributors.yaml and are NOT
+     published here. That file says not to publish an address a person has not
+     agreed to, and the page itself lists names and affiliations only.
+     Unconfirmed entries are skipped for the same reason. */}}
+{{- $people := hugo.Data.contributors -}}
+{{- $cat := hugo.Data.controls -}}
+{{- $site := .ctx.Site.BaseURL -}}
+{{- $u := .ctx.Permalink | default $site -}}
+{{- if ne $u $site -}}{{- $u = strings.TrimSuffix "/" $u -}}{{- end -}}
+
+{{- $authors := slice -}}
+{{- range $people.contributors -}}
+  {{- if .confirmed -}}
+    {{- $authors = $authors | append (dict
+        "@type" "Person"
+        "name" .name
+        "affiliation" (dict "@type" "Organization" "name" .affiliation)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $project := dict
+    "@type" "Organization"
+    "@id" (printf "%s#project" $site)
+    "name" "Agent Baseline"
+    "url" $site
+    "logo" (printf "%sicon-512.png" $site)
+    "description" "An open reference architecture and controls for running AI agents in the enterprise."
+    "sameAs" (slice .ctx.Site.Params.repo)
+    "contactPoint" (dict
+        "@type" "ContactPoint"
+        "contactType" "maintainers"
+        "email" "maintainers@agentbaseline.org"
+        "url" (printf "%s.well-known/security.txt" $site)
+        "availableLanguage" "en") -}}
+
+{{- $doc := dict
+    "@type" "TechArticle"
+    "@id" (printf "%s#document" $u)
+    "headline" .headline
+    "description" .desc
+    "url" $u
+    "inLanguage" "en"
+    "version" .ctx.Site.Params.version
+    "datePublished" "2026-07-30"
+    "creativeWorkStatus" "Draft"
+    "license" "https://creativecommons.org/licenses/by/4.0/"
+    "isAccessibleForFree" true
+    "publisher" (dict "@id" (printf "%s#project" $site))
+    "author" $authors
+    "about" (printf "%d controls across %d security outcomes for enterprise AI agents" (len $cat.controls) (len $cat.outcomes)) -}}
+
+{{- $crumbs := slice (dict "@type" "ListItem" "position" 1 "name" "Agent Baseline" "item" $site) -}}
+{{- if ne $u $site -}}
+  {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" 2 "name" .ctx.Title "item" $u) -}}
+{{- end -}}
+{{- $breadcrumb := dict
+    "@type" "BreadcrumbList"
+    "@id" (printf "%s#breadcrumb" $u)
+    "itemListElement" $crumbs -}}
+
+<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@graph" (slice $project $doc $breadcrumb) | jsonify (dict "indent" "") | safeJS }}</script>

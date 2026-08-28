@@ -286,6 +286,13 @@
       <a href="/controls">Browse the controls</a>
       {{ if fileExists "static/whitepaper.pdf" }}· <a href="/whitepaper.pdf">Download the PDF</a>{{ end }}
     </p>
+    {{/* The two lines above are for a person. This one is for whatever fetched
+         the address — a crawler, or an agent following a stale link. A 404 that
+         only says "not found" leaves it with nowhere to go, and the indexes
+         that list everything published here are the way back. */}}
+    <p class="ctas"><a href="/llms.txt">llms.txt</a> ·
+      <a href="/sitemap.xml">sitemap.xml</a> ·
+      <a href="/controls.yaml">controls.yaml</a></p>
   </div>
 
 </main>
