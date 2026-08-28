@@ -37,10 +37,28 @@
   {{- end }}
   {{- end }}
   {{- /* Guarded the same way the download links are, so a build without the
-         paper produces a sitemap without a dead entry rather than a 404. */}}
-  {{- if fileExists "static/whitepaper.pdf" }}
+         paper produces a sitemap without a dead entry rather than a 404.
+
+         Rule 3 above says the white paper is listed because it is the artifact
+         the site exists to hand over. By that rule controls.yaml belongs here
+         more than the PDF does: it is the source of truth the PDF is rendered
+         from, and its identifiers are the citation targets. whitepaper.md is
+         the same prose as the PDF without the extraction step.
+
+         Each entry carries the path to guard on, because the three artifacts
+         do not all live in the same place. whitepaper.pdf sits in static/.
+         The other two are mounted into static/ from whitepaper/ by hugo.toml,
+         and fileExists resolves against the project directory rather than the
+         mounted filesystem — so guarding on "static/controls.yaml" is always
+         false and silently drops the entry. Guard the source, not the mount. */}}
+  {{- range slice
+        (dict "url" "whitepaper.pdf" "src" "static/whitepaper.pdf")
+        (dict "url" "whitepaper.md"  "src" "whitepaper/whitepaper.md")
+        (dict "url" "controls.yaml"  "src" "whitepaper/controls.yaml") }}
+  {{- if fileExists .src }}
   <url>
-    <loc>{{ "whitepaper.pdf" | absURL }}</loc>
+    <loc>{{ .url | absURL }}</loc>
   </url>
+  {{- end }}
   {{- end }}
 </urlset>

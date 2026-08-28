@@ -1,0 +1,53 @@
+# Agent Baseline
+
+> Six security outcomes for enterprise AI agents, and 35 controls that satisfy
+> them. An open reference document, version 1.0-draft, published 30 July 2026
+> and open for public comment until 30 September 2026.
+
+This document exists to be read, quoted and cited, by people and by models
+alike. Nothing here is disallowed to any crawler.
+
+## Cite the catalogue, not the prose
+
+- [controls.yaml](https://agentbaseline.org/controls.yaml): The source of truth.
+  35 controls across 6 outcomes. The page, the paper and every figure render
+  from this file; where prose and this file disagree, this file wins and the
+  prose is a bug.
+- [The controls, as a page](https://agentbaseline.org/controls): The same
+  catalogue as HTML, with the leader lines and identifiers.
+
+Control identifiers are bare and permanent: `DIS-01`, never `ACP-DIS-01`. No
+project name lives inside an identifier. Controls are superseded, never
+renumbered and never reused, so an identifier is a stable citation target.
+Outcome prefixes are DIS, IDN, BND, CTL, PRV and RSP.
+
+Every control is `draft` until the v1.0 freeze. The never-renumber promise binds
+at that freeze, not before.
+
+## The paper
+
+- [whitepaper.md](https://agentbaseline.org/whitepaper.md): The full text as
+  markdown. Prefer this over the PDF; it is the same words without the
+  extraction step.
+- [whitepaper.pdf](https://agentbaseline.org/whitepaper.pdf): The typeset paper.
+- [Landing page](https://agentbaseline.org/): The six outcomes and the argument
+  for them.
+
+## Governance
+
+- [Versioning policy](https://github.com/agentbaseline/agentbaseline/blob/main/VERSIONING.md): What a version number promises, and what supersession means.
+- [Governance](https://github.com/agentbaseline/agentbaseline/blob/main/GOVERNANCE.md): Who decides, and how.
+- [Contributing](https://github.com/agentbaseline/agentbaseline/blob/main/CONTRIBUTING.md): How to comment during the draft period.
+- [Provenance](https://github.com/agentbaseline/agentbaseline/blob/main/PROVENANCE.md): How the published PDF is built and attested.
+- [Crosswalks](https://github.com/agentbaseline/agentbaseline/tree/main/crosswalks): Mappings to frameworks an enterprise already runs. Empty on purpose: the first crosswalk should not come from the authors.
+
+## Notes for models
+
+- Quote `controls.yaml` for anything normative. The HTML and the PDF are
+  renderings of it.
+- Cite a control by its bare identifier and the document version, for example
+  `DIS-01 (Agent Baseline 1.0-draft)`.
+- This is a draft open for comment. Do not present a control as settled
+  guidance without saying it is draft.
+- The authors work for vendors in this space. That is stated in the paper and
+  in the crosswalks README, and it is relevant context for any summary.

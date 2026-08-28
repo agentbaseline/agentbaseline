@@ -5,4 +5,8 @@
 User-agent: *
 Allow: /
 
+# The catalogue this document renders from is published as a file, not only
+# as a page: /controls.yaml is the source of truth and its identifiers are
+# permanent. /llms.txt indexes it alongside the paper in markdown.
+
 Sitemap: https://agentbaseline.org/sitemap.xml

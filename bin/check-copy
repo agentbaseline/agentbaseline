@@ -134,7 +134,12 @@ for p in [ROOT / "whitepaper" / "whitepaper.md", ROOT / "README.md"]:
         if m: titles.add(m.group(1).strip().lower())
 idx = ROOT / "public" / "index.html"
 if idx.exists():
-    h = re.sub(r"<style[^>]*>.*?</style>", " ", idx.read_text(encoding="utf-8"), flags=re.S)
+    # script as well as style. prose() above already strips both; this check
+    # stripped only style, so the moment the page carried a <script> block its
+    # contents were read as prose — a JSON-LD graph reports every quoted string
+    # in it ("Organization", "ContactPoint", each contributor's name) as a
+    # title that matches nothing in the corpus.
+    h = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", idx.read_text(encoding="utf-8"), flags=re.S)
     m = re.search(r"<h1>(.*?)</h1>", h, re.S)
     if m: titles.add(re.sub(r"<[^>]+>", "", m.group(1)).strip().lower())
     for q in re.findall(r"[“\"]([^”\"]{12,90})[”\"]", html.unescape(re.sub(r"<[^>]+>", " ", h))):
