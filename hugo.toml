@@ -40,6 +40,49 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"
 
+  # Every brand download saves under this prefix, so a file that has left the
+  # site still says whose mark it is. A root key of [params], so it has to stay
+  # above the first sub-table — see the note at the top of this file.
+  brandPrefix = "agent-baseline"
+
+# The downloadable brand assets, in the order both menus list them. Two surfaces
+# offer these — the Artifacts dropdown and the wordmark's own right-click menu —
+# and both read this one list through partials/brand-rows.html, so an asset is
+# added here and nowhere else.
+#
+#   path  what the site serves. Short and unprefixed, the way whitepaper.pdf
+#         and social-card.png already are. icon.svg and icon-512.png are the
+#         favicon as well, which is why they are not renamed: the download
+#         name comes from the <a download> attribute instead, so one file is
+#         both the favicon and a branded download.
+#   name  the row's label, and the saved filename after brandPrefix. This is
+#         why icon-512.png saves as agent-baseline-icon.png — the 512 is a
+#         detail of the favicon, not of the logo someone asked for.
+#   icon  a partial under layouts/partials/icons.
+#
+# Each path is checked with fileExists at build time, so an asset that has not
+# been generated yet costs a missing row rather than a 404.
+[[params.brandAssets]]
+  path = "wordmark.svg"
+  name = "wordmark.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "wordmark.png"
+  name = "wordmark.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "icon.svg"
+  name = "icon.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "icon-512.png"
+  name = "icon.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "wordmark-animated.mov"
+  name = "wordmark-animated.mov"
+  icon = "file-video"
+
 # The event strip renders only while `until` is in the future, so it removes
 # itself the day after rather than relying on anyone noticing.
 [params.event]

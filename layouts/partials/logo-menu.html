@@ -1,0 +1,56 @@
+{{/* The wordmark's right-click menu.
+
+     Only the homepage h1 is the wordmark — the other two layouts set their h1
+     to "Controls" and to the 404 message — so this is included there and
+     nowhere else, and nothing ships the script on a page with no target.
+
+     The menu is real markup, rendered hidden, rather than something the script
+     builds: the deployment CSP is script-src 'self' with no unsafe-inline, and
+     markup that already exists needs no innerHTML to assemble. It also means
+     the rows come from brand-rows.html, the same partial the Artifacts
+     dropdown uses.
+
+     It is deliberately not attached to the .mast link in the utility bar.
+     Right-clicking a link already means something — open in a new tab, copy
+     the address — and taking that over to offer a download is a worse trade
+     than leaving one surface out. The h1 is not a link, so nothing competes.
+
+     Deferred, not synchronous: theme.js is in <head> because a stored theme
+     has to beat first paint, and this has no such claim. */}}
+<style>
+  /* Positioned by the script, which sets left/top in px. Borrowing the
+     dropdown's own skin keeps one menu language on the page. */
+  #logomenu { position:absolute; display:none; z-index:60;
+    min-width:212px; width:max-content; max-width:calc(100vw - 24px);
+    margin:0; padding:6px; list-style:none;
+    background:var(--menu, var(--paper)); border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10); }
+  #logomenu[data-open] { display:block; }
+  #logomenu a, #logomenu button { display:flex; align-items:center; gap:9px;
+    padding:8px 10px; font-family:var(--mono); font-size:12.5px;
+    color:var(--soft); background:none; border:0; border-radius:3px;
+    text-align:left; text-decoration:none; cursor:pointer; white-space:nowrap; }
+  #logomenu a:hover, #logomenu button:hover,
+  #logomenu a:focus-visible, #logomenu button:focus-visible {
+    background:var(--menu-hover, var(--wash)); color:var(--link); outline:none; }
+  #logomenu a svg.ph, #logomenu button svg.ph { flex:0 0 auto; }
+  /* A button is not a block-level anchor: it does not stretch to its parent
+     and it does not inherit line-height, so without both of these the copy
+     row came out narrower than the links above it and 6px shorter. Global
+     box-sizing is border-box, so the 100% takes the padding with it. */
+  #logomenu button { width:100%; line-height:inherit; }
+  #logomenu li.grp { margin:6px 0 2px; padding:8px 10px 0;
+    border-top:1px solid var(--line); font-family:var(--labelfont);
+    font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--faint); }
+  /* It reports back in place. Its width is already held by the longest
+     filename below it, so the swap moves nothing. */
+  #logomenu button .done { display:none; }
+  #logomenu button[data-done] .label { display:none; }
+  #logomenu button[data-done] .done { display:inline; color:var(--accent); }
+</style>
+<ul id="logomenu" role="menu" aria-label="Logo">
+  <li role="none"><button type="button" role="menuitem" data-copy="/wordmark.svg">{{ partial "icons/copy.svg" . }}<span class="label">Copy as SVG</span><span class="done">Copied</span></button></li>
+  {{- partial "brand-rows.html" . }}
+</ul>
+<script src="/js/logo-menu.js" defer></script>

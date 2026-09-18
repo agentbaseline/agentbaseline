@@ -1,0 +1,65 @@
+{{/* The shared skin for every details.menu dropdown in the utility bar.
+
+     Two components wear it: the Artifacts menu, on every page, and the
+     hamburger site menu on controls.html and 404.html. That is why the rules
+     are not inside artifacts-menu.html — the site menu would then be styled
+     only on pages that happen to also carry the Artifacts menu, and would lose
+     its skin the day someone used it alone.
+
+     Every including menu prints it, so the two layouts with two menus carry
+     these rules twice. That is deliberate. Guarding the second copy behind
+     .Store looks tidier and is a trap: hugo server reuses the page object
+     across incremental rebuilds, the flag survives from the previous build,
+     and the rules stop being emitted at all — a blank skin that only appears
+     after an edit and never in a clean build. Identical rules twice cost
+     under a kilobyte before compression and cannot fail. */}}
+<style>
+  /* A dropdown sits over the page rather than in it, so it gets its own
+     surface a step down from --paper instead of matching it. Its own tokens,
+     not --wash: --wash is the hover state, and a panel painted in the same
+     value as its own hover has no hover.
+     Ordered the way the rest of the site orders theme tokens — light on
+     :root, dark in the media query, then the two explicit data-theme
+     overrides, which win on specificity when a visitor has made a choice. */
+  :root { --menu:#F1EDE1; --menu-hover:#E6E1D2; }
+  @media (prefers-color-scheme: dark) {
+    :root { --menu:#0E100D; --menu-hover:#1B1D1A; }
+  }
+  :root[data-theme="light"] { --menu:#F1EDE1; --menu-hover:#E6E1D2; }
+  :root[data-theme="dark"] { --menu:#0E100D; --menu-hover:#1B1D1A; }
+
+  details.menu { position:relative; }
+  details.menu summary { list-style:none; cursor:pointer;
+    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--soft); display:inline-flex;
+    align-items:center; gap:4px; }
+  details.menu summary::-webkit-details-marker { display:none; }
+  details.menu summary:hover, details.menu[open] summary { color:var(--link); }
+  /* list-style:none removes the marker, not the focus ring — without this the
+     summary is the one control on the site still drawing the UA default. */
+  details.menu summary:focus-visible { outline:2px solid var(--accent);
+    outline-offset:2px; }
+  /* width:max-content sizes the box to the longest row outright, instead of
+     leaving it to shrink-to-fit against a containing block that is only as
+     wide as the summary — that is what let a long filename wrap. max-width
+     keeps the widening from ever reaching past the viewport, since the box is
+     anchored to the right and grows leftward. */
+  details.menu ul.dd { position:absolute; top:calc(100% + 10px); right:-8px;
+    min-width:190px; width:max-content; max-width:calc(100vw - 24px);
+    margin:0; padding:6px; list-style:none;
+    background:var(--menu); border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10); z-index:30; }
+  details.menu ul.dd.left { left:-8px; right:auto; }
+  /* nowrap, because the rows are filenames: min-width sets the floor and the
+     absolute box then sizes to content, so a name longer than the floor widens
+     the menu instead of breaking across two lines with the icon stranded
+     beside it. wordmark-animated.mov is the one that found this. */
+  details.menu ul.dd a { display:flex; align-items:center; gap:9px;
+    padding:8px 10px; font-family:var(--mono); font-size:12.5px;
+    color:var(--soft); border-radius:3px; text-transform:none; letter-spacing:0;
+    white-space:nowrap; }
+  /* The row is a flex container, so the icon is a flex item and would be the
+     thing that gives if the box were ever squeezed. Pin it. */
+  details.menu ul.dd a svg.ph { flex:0 0 auto; }
+  details.menu ul.dd a:hover { background:var(--menu-hover); color:var(--link); }
+</style>

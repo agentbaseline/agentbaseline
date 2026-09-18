@@ -1,0 +1,25 @@
+{{/* The brand download rows, shared by the Artifacts dropdown and the
+     wordmark's right-click menu. The list itself is params.brandAssets in
+     hugo.toml — two menus offering different subsets of the same assets is
+     how one of them ends up a row behind the other.
+
+     Each row is filtered through fileExists first so the group label only
+     appears when there is something under it. bin/build-brand writes
+     wordmark.svg and wordmark.png; a checkout that has not run it still gets
+     a coherent menu, one group shorter.
+
+     The download attribute carries params.brandPrefix, so a row served from
+     /icon-512.png saves as agent-baseline-icon.png. It only renames on a
+     click — someone who opens the URL directly still gets the served name —
+     which is the trade for leaving the favicon's own path alone. */}}
+{{- $prefix := .Site.Params.brandPrefix -}}
+{{- $assets := slice -}}
+{{- range .Site.Params.brandAssets -}}
+  {{- if fileExists (printf "static/%s" .path) -}}{{- $assets = $assets | append . -}}{{- end -}}
+{{- end -}}
+{{- if $assets }}
+    <li class="grp">Logo</li>
+  {{- range $assets }}
+    <li><a href="/{{ .path }}" download="{{ $prefix }}-{{ .name }}">{{ partial (printf "icons/%s.svg" .icon) . }}{{ .name }}</a></li>
+  {{- end }}
+{{- end }}
