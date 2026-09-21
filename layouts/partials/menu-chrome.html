@@ -52,13 +52,15 @@
   details.menu ul.dd.left { left:-8px; right:auto; }
   /* The bar is sticky, so a panel taller than the room under it cannot be
      scrolled into view: the page moves and the bar, with the panel hanging
-     off it, does not. Eight rows are 352px, and at a phone's landscape
-     height the last two sat below the fold with no way to reach them. Cap
-     the panel at the viewport less its own top: the bar wraps to two lines
-     below about 1000px and the panel then opens at 87px, so 100px keeps the
-     bottom edge on screen at every width measured (568 to 1280) and does
-     nothing where the panel already fits. */
-  details.menu ul.dd { max-height:calc(100dvh - 100px); overflow-y:auto; }
+     off it, does not. Ten rows are 428px, and at a phone's height the last
+     ones sat below the fold with no way to reach them. Where the browser has
+     anchor positioning (below) the panel is content-sized and capped at
+     `stretch`, the room between where it actually opens and 12px above the
+     viewport's bottom. This constant is the fallback for browsers without
+     it: the bar wraps to three lines at 320px and the panel then opens at
+     165px, the deepest measured, so 180px keeps the bottom edge on screen
+     there and does nothing where the panel already fits. */
+  details.menu ul.dd { max-height:calc(100dvh - 180px); overflow-y:auto; }
   /* When the bar wraps, the Artifacts label can lead a row at the left edge,
      and a panel that grows leftward from it hangs 90px off the viewport —
      body{overflow-x:clip} means no scrolling reaches it. Anchor positioning
@@ -68,8 +70,13 @@
   @supports (position-try-fallbacks: flip-inline) {
     details.menu summary { anchor-name:--dd; }
     details.menu { anchor-scope:--dd; }
+    /* max-content, not auto: with both insets set, auto stretches to the
+       viewport's bottom, and fit-content did not cap in Chrome. stretch as a
+       max-height resolves against the room the insets leave. */
     details.menu ul.dd { position:fixed; position-anchor:--dd;
-      top:calc(anchor(bottom) + 10px); right:calc(anchor(right) - 8px); left:auto;
+      top:calc(anchor(bottom) + 10px); bottom:12px;
+      height:max-content; max-height:-webkit-fill-available; max-height:stretch;
+      right:calc(anchor(right) - 8px); left:auto;
       position-try-fallbacks:flip-inline; }
     details.menu ul.dd.left { left:calc(anchor(left) - 8px); right:auto; }
   }
