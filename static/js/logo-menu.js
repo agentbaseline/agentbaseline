@@ -21,6 +21,9 @@
   Array.prototype.forEach.call(menu.children, function (li) {
     var act = li.querySelector('a, button');
     li.setAttribute('role', 'none');
+    /* The group label repeats the menu's own aria-label; as a bare text
+       child of role=menu it is read out as a stray. */
+    if (!act) li.setAttribute('aria-hidden', 'true');
     if (act) {
       act.setAttribute('role', 'menuitem');
       act.tabIndex = -1;
@@ -62,6 +65,18 @@
     open = true;
   }
 
+  /* Closing from the keyboard leaves focus on a display:none button, so the
+     next Tab starts from nowhere. #main is the skip link's target and already
+     carries tabindex=-1; put the keyboard user there, without scrolling. */
+  function hideFromKeyboard() {
+    var had = menu.contains(document.activeElement);
+    hide();
+    if (had) {
+      var main = document.getElementById('main');
+      if (main) main.focus({ preventScroll: true });
+    }
+  }
+
   function hide() {
     if (!open) return;
     gen++;
@@ -96,7 +111,7 @@
 
   menu.addEventListener('keydown', function (e) {
     var at = items.indexOf(document.activeElement);
-    if (e.key === 'Escape') { hide(); return; }
+    if (e.key === 'Escape') { hideFromKeyboard(); return; }
     if (e.key === 'ArrowDown') { e.preventDefault(); focusAt(at + 1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); focusAt(at - 1); }
     else if (e.key === 'Home') { e.preventDefault(); focusAt(0); }
@@ -128,7 +143,7 @@
   });
 
   addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') hide();
+    if (e.key === 'Escape') hideFromKeyboard();
   });
   addEventListener('pointerdown', function (e) {
     /* A right-button press on the title is the first half of the second
