@@ -79,6 +79,12 @@
   title.addEventListener('contextmenu', function (e) {
     if (e.shiftKey || open) { hide(); return; }
     e.preventDefault();
+    /* theme.js closes the utility bar's dropdowns on click and on Escape. A
+       right-click is neither, so an open Artifacts menu stayed up beside this
+       one, listing the same five rows twice. */
+    Array.prototype.forEach.call(document.querySelectorAll('details.menu[open]'), function (d) {
+      d.removeAttribute('open');
+    });
     show(e.pageX, e.pageY);
     items[0].focus();
   });
