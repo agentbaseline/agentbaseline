@@ -151,8 +151,9 @@
        fires before contextmenu, so hiding here would clear `open` before that
        handler reads it, and the menu would simply reopen at the new cursor —
        the escape hatch never fired. Leave the title's own right-clicks to
-       contextmenu; every other press still dismisses. */
-    if (e.button === 2 && title.contains(e.target)) return;
+       contextmenu; every other press still dismisses. On macOS a Control-
+       click is a right-click too, and arrives here as button 0 with ctrlKey. */
+    if ((e.button === 2 || e.ctrlKey) && title.contains(e.target)) return;
     if (open && !menu.contains(e.target)) hide();
   });
   /* Absolutely positioned against the document, so a scroll does not move it
