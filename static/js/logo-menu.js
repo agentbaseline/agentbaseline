@@ -137,7 +137,13 @@
       .then(function () {
         if (g !== gen) return;
         act.setAttribute('data-done', '');
-        copyTimer = setTimeout(hide, 1100);
+        /* A second copy before the first timer fires would otherwise leave
+           that timer running unreferenced: hide() could only clear the latest,
+           and the orphan closed whatever menu was open 1.1s later — including
+           one reopened after an Escape. Clear it, and let the callback check
+           it still belongs to this opening. */
+        if (copyTimer) clearTimeout(copyTimer);
+        copyTimer = setTimeout(function () { if (g === gen) hide(); }, 1100);
       })
       .catch(function () { if (g === gen) hide(); });
   });
