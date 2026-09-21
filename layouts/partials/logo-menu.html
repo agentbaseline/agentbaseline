@@ -22,6 +22,11 @@
      dropdown's own skin keeps one menu language on the page. */
   #logomenu { position:absolute; display:none; z-index:60;
     min-width:212px; width:max-content; max-width:calc(100vw - 24px);
+    /* Eight rows are 352px, taller than a phone on its side. The script
+       clamps the box inside the viewport but cannot shrink it; this can, and
+       the rows then scroll inside it. Measured after display, so the clamp
+       sees the capped height. */
+    max-height:calc(100dvh - 16px); overflow-y:auto;
     margin:0; padding:6px; list-style:none;
     background:var(--menu, var(--paper)); border:1px solid var(--line); border-radius:4px;
     box-shadow:0 10px 28px rgba(0,0,0,.10); }
