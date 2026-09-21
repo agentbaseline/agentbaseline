@@ -59,6 +59,20 @@
      bottom edge on screen at every width measured (568 to 1280) and does
      nothing where the panel already fits. */
   details.menu ul.dd { max-height:calc(100dvh - 100px); overflow-y:auto; }
+  /* When the bar wraps, the Artifacts label can lead a row at the left edge,
+     and a panel that grows leftward from it hangs 90px off the viewport —
+     body{overflow-x:clip} means no scrolling reaches it. Anchor positioning
+     lets the panel flip and grow rightward in that one case, and changes
+     nothing where it already fits. Browsers without it (Firefox before 147,
+     Safari before 26) keep the rules above. */
+  @supports (position-try-fallbacks: flip-inline) {
+    details.menu summary { anchor-name:--dd; }
+    details.menu { anchor-scope:--dd; }
+    details.menu ul.dd { position:fixed; position-anchor:--dd;
+      top:calc(anchor(bottom) + 10px); right:calc(anchor(right) - 8px); left:auto;
+      position-try-fallbacks:flip-inline; }
+    details.menu ul.dd.left { left:calc(anchor(left) - 8px); right:auto; }
+  }
   /* nowrap, because the rows are filenames: min-width sets the floor and the
      absolute box then sizes to content, so a name longer than the floor widens
      the menu instead of breaking across two lines with the icon stranded
