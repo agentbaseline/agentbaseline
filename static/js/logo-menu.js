@@ -42,6 +42,11 @@
 
   var open = false;
   var copyTimer = null;
+  /* Bumped by every hide(), so a copy that was still fetching when the menu
+     was dismissed cannot report into the next opening: the .then would set
+     "Copied" on the hidden button and hide() would then decline to clear it,
+     because open was already false. */
+  var gen = 0;
 
   function show(pageX, pageY) {
     /* Measured while shown but still off-screen: a display:none element has no
@@ -59,6 +64,7 @@
 
   function hide() {
     if (!open) return;
+    gen++;
     menu.removeAttribute('data-open');
     open = false;
     if (copyBtn) {
@@ -100,6 +106,7 @@
     if (!act) return;
     if (act !== copyBtn) { hide(); return; }
 
+    var g = gen;
     fetch(act.getAttribute('data-copy'))
       .then(function (r) {
         if (!r.ok) throw new Error(r.status);
@@ -107,10 +114,11 @@
       })
       .then(function (svg) { return navigator.clipboard.writeText(svg); })
       .then(function () {
+        if (g !== gen) return;
         act.setAttribute('data-done', '');
         copyTimer = setTimeout(hide, 1100);
       })
-      .catch(function () { hide(); });
+      .catch(function () { if (g === gen) hide(); });
   });
 
   addEventListener('keydown', function (e) {
