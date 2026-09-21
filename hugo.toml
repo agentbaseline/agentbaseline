@@ -40,6 +40,56 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"
 
+  # Every brand download is served under this prefix, so a file that has left
+  # the site still says whose mark it is. The prefix is in the served name, not
+  # only in the <a download> attribute, because Vercel sends every static file
+  # with Content-Disposition: inline; filename="<served name>", and for a
+  # same-origin download that filename takes precedence over the attribute
+  # (HTML, "downloading resources", step 6): Chrome saved icon.svg, not
+  # agent-baseline-icon.svg. A root key of [params], so it has to stay above
+  # the first sub-table — see the note at the top of this file.
+  brandPrefix = "agent-baseline"
+
+# The downloadable brand assets, in the order both menus list them. Two surfaces
+# offer these — the Artifacts dropdown and the wordmark's own right-click menu —
+# and both read this one list through partials/brand-rows.html, so an asset is
+# added here and nowhere else.
+#
+#   path  what the site serves, and therefore what a download saves as. The
+#         row's label is the path with brandPrefix trimmed. The favicon stays
+#         at icon.svg and icon-512.png for the nine <link> tags that name it;
+#         bin/build-brand writes the branded copies beside them from the same
+#         bytes, so nothing is kept by hand twice.
+#   icon  a partial under layouts/partials/icons.
+#
+# Each file is for one ground: the plain wordmark is dark ink for light grounds,
+# the -on-dark files carry the dark theme's ink for dark grounds, and the
+# animated wordmark exists only for dark grounds. The name says which.
+#
+# Each path is checked with fileExists at build time, so an asset that has not
+# been generated yet costs a missing row rather than a 404.
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark-on-dark.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark-on-dark.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "agent-baseline-icon.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "agent-baseline-icon.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark-animated-on-dark.mov"
+  icon = "file-video"
+
 # The event strip renders only while `until` is in the future, so it removes
 # itself the day after rather than relying on anyone noticing.
 [params.event]

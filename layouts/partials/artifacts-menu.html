@@ -1,0 +1,35 @@
+{{/* The utility bar's Artifacts dropdown.
+
+     This was three verbatim copies — index.html, controls.html and 404.html —
+     of both the markup and the details.menu rules. Adding the brand downloads
+     meant five new rows in each of the three, which is the shape of change
+     that drifts: the copy nobody remembered to edit is the one a reader finds.
+
+     The dropdown skin it shares with the hamburger site menu lives in
+     menu-chrome.html; only the rules this menu alone needs are below. Both
+     travel with the markup, for the reason event-bar.html gives: co-located,
+     the component cannot be included into a layout that lacks them.
+
+     The brand rows come from partials/brand-rows.html because the wordmark's
+     right-click menu offers the same assets, and two hand-kept lists of the
+     same files drift the same way three hand-kept menus did. */}}
+{{ partial "menu-chrome.html" . }}
+<style>
+  /* The group label carries the section-mark grammar the rest of the sheet
+     uses for labels: mono is for filenames, the label font is for what a
+     block of them is. The rule above it does the separating, so there is no
+     second divider element. */
+  details.menu ul.dd li.grp { margin:6px 0 2px; padding:8px 10px 0;
+    border-top:1px solid var(--line); font-family:var(--labelfont);
+    font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--faint); }
+</style>
+<details class="menu">
+  <summary>Artifacts {{ partial "icons/caret-down.svg" . }}</summary>
+  <ul class="dd">
+    {{ if fileExists "static/whitepaper.pdf" }}<li><a href="/whitepaper.pdf">{{ partial "icons/file-pdf.svg" . }}PDF</a></li>{{ end }}
+    <li><a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">{{ partial "icons/file-code.svg" . }}controls.yaml</a></li>
+    <li><a href="{{ .Site.Params.repo }}">{{ partial "icons/git-branch.svg" . }}repository</a></li>
+    {{- partial "brand-rows.html" . }}
+  </ul>
+</details>

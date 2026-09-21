@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate the brand assets: favicon, repo avatar, campaign graphic.
+"""Generate the brand assets: favicon, repo avatar, campaign graphic, and the
+downloadable wordmark and icon under their branded names.
 
 One visual system, three surfaces. The favicon is the wordmark reduced to a
 single glyph — the outlined Figtree "A" with the pen's glint frozen on its
@@ -46,6 +47,9 @@ upm = font["head"].unitsPerEm
 glyphset = font.getGlyphSet()
 gname = font.getBestCmap()[ord("A")]
 glyph = glyphset[gname]
+
+cmap = font.getBestCmap()
+hmtx = font["hmtx"]
 
 bp = BoundsPen(glyphset); glyph.draw(bp)
 xmin, ymin, xmax, ymax = bp.bounds
@@ -101,6 +105,109 @@ icon = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 '''
 (ROOT / "static" / "icon.svg").write_text(icon, encoding="utf-8")
 print("wrote static/icon.svg")
+# The same bytes under the branded name the site offers as a download. The
+# favicon keeps its short path for the nine <link> tags; the download is
+# served under the name it should save as, because Vercel's Content-
+# Disposition filename is the served name and wins over <a download>.
+(ROOT / "static" / "agent-baseline-icon.svg").write_text(icon, encoding="utf-8")
+print("wrote static/agent-baseline-icon.svg")
+
+
+# ── wordmark geometry ────────────────────────────────────────────────────────
+# Measured Figtree 600 advances at 100 units/em with the page's -0.02em
+# tracking baked in: per-letter x for "Agent", then the two word widths.
+#
+# LX comes from the browser, not from the advances in the font, and the two
+# disagree slightly: HarfBuzz kerns the "Ag" pair by -0.9 and the font's raw
+# advances do not. Positions 3-5 match either way. Keep the measured values —
+# the h1 on the site places each letter at exactly these x's, so a wordmark
+# derived from anything else would ship a logo that is not the one the page
+# draws.
+#
+# AGENT_W and BASELINE_W are *ink* widths, not advance widths: each is the
+# advance total less the trailing letter's right side bearing. That is what
+# they are used for — butting the datum rule against the last glyph's edge
+# and setting the gap between the two words — so they must not be swapped for
+# advance totals.
+LX = [0, 67.9, 124.6, 177.7, 232.1]
+AGENT_W, SPACE, BASELINE_W = 269.4, 21.5, 354.4
+TRACK = 2.0                                        # -0.02em at 100 units/em
+
+
+def string_paths(s, size, ox, oy, xs=None):
+    """Outline `s` at `size` px, baseline-left at (ox, oy).
+
+    Returns (paths, bounds): one SVG path per glyph, and the union bbox of all
+    of them. `xs` supplies per-letter x offsets in 100-units/em when measured
+    positions are the source of truth; without it they come from the font's own
+    advances with the page's tracking applied, which is exact for any run
+    HarfBuzz finds no kern pairs in ("Baseline" is one).
+    """
+    if xs is None:
+        xs, x = [], 0.0
+        for ch in s:
+            xs.append(x)
+            x += hmtx[cmap[ord(ch)]][0] / upm * 100 - TRACK
+    sc = size / upm
+    paths, box = [], None
+    for ch, x in zip(s, xs):
+        g = glyphset[cmap[ord(ch)]]
+        tf = Transform(sc, 0, 0, -sc, ox + x * size / 100, oy)
+        sp = SVGPathPen(glyphset)
+        g.draw(TransformPen(sp, tf))
+        paths.append(sp.getCommands())
+        gb = BoundsPen(glyphset)
+        g.draw(TransformPen(gb, tf))
+        if gb.bounds:
+            box = gb.bounds if box is None else (
+                min(box[0], gb.bounds[0]), min(box[1], gb.bounds[1]),
+                max(box[2], gb.bounds[2]), max(box[3], gb.bounds[3]))
+    return paths, box
+
+
+# ── wordmark · the downloadable logo ─────────────────────────────────────────
+# The site's h1 draws the wordmark with <text> in Figtree, which means it is
+# only the wordmark on a machine that has the face. This is the same artwork as
+# real outlines, so it survives being dropped into a slide, a README or a press
+# kit with no font anywhere.
+#
+# Colour is currentColor under a `color` presentation attribute on the root, so
+# the file opens in its ink on its own and keeps it as an <img>. An embedder who
+# inlines the markup can override it by setting `color` on the <svg> element
+# itself — the attribute has specificity zero — but not from an ancestor: a
+# presentation attribute is a specified value and beats inheritance, and nothing
+# recolours an <img>. So there are two files, one per ground: dark ink for light
+# grounds, the dark theme's ink for dark grounds. The name says which.
+WM_FS = 170                                        # matches the campaign plate
+WM_STROKE = 1.6                                    # so the outline weight agrees
+WM_PAD = 6
+WM_INKS = {"": PAPER, "-on-dark": INK}             # #151714 on light, #E6E7E3 on dark
+
+_ag, _agbox = string_paths("Agent", WM_FS, 0, 0, xs=LX)
+_bl, _blbox = string_paths("Baseline", WM_FS, (AGENT_W + SPACE) * WM_FS / 100, 0)
+_x0 = min(_agbox[0], _blbox[0]) - WM_PAD
+_y0 = min(_agbox[1], _blbox[1]) - WM_PAD
+_x1 = max(_agbox[2], _blbox[2]) + WM_PAD
+_y1 = max(_agbox[3], _blbox[3]) + WM_PAD
+
+
+
+def wordmark_svg(ink):
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{_x0:.1f} {_y0:.1f} {_x1 - _x0:.1f} {_y1 - _y0:.1f}" color="{ink}" role="img" aria-label="Agent Baseline">
+  <title>Agent Baseline</title>
+  <g fill="none" stroke="currentColor" stroke-width="{WM_STROKE}">
+{"".join(f'    <path d="{p}"/>{chr(10)}' for p in _ag)}  </g>
+  <g fill="currentColor">
+{"".join(f'    <path d="{p}"/>{chr(10)}' for p in _bl)}  </g>
+</svg>
+'''
+
+
+wordmarks = {suffix: wordmark_svg(ink) for suffix, ink in WM_INKS.items()}
+for suffix, svg in wordmarks.items():
+    (ROOT / "static" / f"agent-baseline-wordmark{suffix}.svg").write_text(svg, encoding="utf-8")
+    print(f"wrote static/agent-baseline-wordmark{suffix}.svg")
+WM_W, WM_H = _x1 - _x0, _y1 - _y0
 
 
 # ── shared text helpers for the campaign plate ───────────────────────────────
@@ -126,11 +233,7 @@ def crosshair(x, y, r=11):
 
 
 # ── campaign graphic · 1600x900 ──────────────────────────────────────────────
-# wordmark geometry from measured Figtree 600 advances (100 units/em, the
-# page's -0.02em tracking baked in): per-letter x for "Agent", then Baseline
 FS = 170
-LX = [0, 67.9, 124.6, 177.7, 232.1]
-AGENT_W, SPACE, BASELINE_W = 269.4, 21.5, 354.4   # at 100, tracking applied
 MX, MY = 120, 452                                  # wordmark origin
 S = FS / 100
 
@@ -215,6 +318,34 @@ def shot(svg_path, out, w, h, scale=2):
     print(f"wrote {out.relative_to(ROOT)}  ({out.stat().st_size:,} bytes)")
 
 shot(BRAND / "social-campaign.svg", BRAND / "social-campaign.png", 1600, 900, 2)
+
+# the wordmark as a raster, for the places that will not take an SVG. Rendered
+# at 3x the design size so it survives a retina slide; the transparent ground
+# comes from shot()'s --default-background-color, so each composites on the
+# ground its ink is for. Chrome needs explicit width/height to size a standalone
+# SVG.
+#
+# The sized copy lives under brand/, beside .avatar.svg, not under static/:
+# Hugo publishes static/ dotfiles (.well-known depends on that), so a copy
+# stranded there by a Chrome failure would ship on the next deploy. shot()
+# exits on failure, which is why the removal is in a finally.
+wm_svg = BRAND / ".wordmark-px.svg"
+wm_scale = 3
+wm_px = (round(WM_W * wm_scale), round(WM_H * wm_scale))
+for suffix, svg in wordmarks.items():
+    wm_svg.write_text(
+        svg.replace("<svg ", f'<svg width="{wm_px[0]}" height="{wm_px[1]}" ', 1),
+        encoding="utf-8")
+    try:
+        shot(wm_svg, ROOT / "static" / f"agent-baseline-wordmark{suffix}.png", wm_px[0], wm_px[1], 1)
+    finally:
+        wm_svg.unlink(missing_ok=True)
+
+# the favicon at 512 under its branded download name — the same bytes as
+# static/icon-512.png, which the <link rel=icon sizes=512x512> keeps naming.
+(ROOT / "static" / "agent-baseline-icon.png").write_bytes(
+    (ROOT / "static" / "icon-512.png").read_bytes())
+print("wrote static/agent-baseline-icon.png")
 
 # the repo avatar: the favicon at 512
 avatar_svg = BRAND / ".avatar.svg"

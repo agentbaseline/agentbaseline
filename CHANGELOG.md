@@ -8,6 +8,15 @@ never reused.
 
 ## [Unreleased]
 
+### Added
+- The brand assets are downloadable from the site — the wordmark as SVG and PNG, each for
+  light and for dark grounds, the icon, and the animated wordmark for dark grounds. They are listed under Artifacts on every page, and on the
+  homepage the wordmark's own right-click menu offers the same set plus copy-as-SVG. They
+  are served under an `agent-baseline-` prefix, which is also what they save as: Vercel
+  names a same-origin download after the served file, not the `download` attribute.
+  `bin/build-brand` now writes the wordmark as real outlines, so it no longer needs the
+  Figtree face to render. *(2026-09-18)*
+
 ### Changed
 - The catalogue is rebuilt from Appendix A of the paper as it landed in this repository —
   the appendix declares itself the canonical naming and requirement set, and the body prose

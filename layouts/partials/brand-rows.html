@@ -1,0 +1,27 @@
+{{/* The brand download rows, shared by the Artifacts dropdown and the
+     wordmark's right-click menu. The list itself is params.brandAssets in
+     hugo.toml — two menus offering different subsets of the same assets is
+     how one of them ends up a row behind the other.
+
+     Each row is filtered through fileExists first so the group label only
+     appears when there is something under it. bin/build-brand writes the
+     wordmark files; a checkout that has not run it still gets a coherent
+     menu, one group shorter.
+
+     The served name is the branded name, so that is what a download saves
+     as whatever the browser makes of the download attribute: Vercel's
+     Content-Disposition filename is the served name, and for a same-origin
+     file it wins over the attribute (see hugo.toml). The attribute stays for
+     a server that sends no such header. The label trims the prefix, since
+     every row would otherwise open with the same fifteen characters. */}}
+{{- $prefix := printf "%s-" .Site.Params.brandPrefix -}}
+{{- $assets := slice -}}
+{{- range .Site.Params.brandAssets -}}
+  {{- if fileExists (printf "static/%s" .path) -}}{{- $assets = $assets | append . -}}{{- end -}}
+{{- end -}}
+{{- if $assets }}
+    <li class="grp">Logo</li>
+  {{- range $assets }}
+    <li><a href="/{{ .path }}" download="{{ .path }}">{{ partial (printf "icons/%s.svg" .icon) . }}{{ strings.TrimPrefix $prefix .path }}</a></li>
+  {{- end }}
+{{- end }}

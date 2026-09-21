@@ -101,7 +101,6 @@
   .utility .crumb .sep { color:var(--faint); margin:0 2px; }
   .utility .crumb .here { color:var(--soft); }
   .nav-menu summary svg.ph { width:18px; height:18px; }
-  details.menu ul.dd.left { left:-8px; right:auto; }
   .utility .right { margin-left:auto; color:var(--faint); }
   .utility .pub { font-family:var(--labelfont); font-size:11.5px;
     letter-spacing:.07em; text-transform:uppercase; color:var(--soft); }
@@ -116,25 +115,6 @@
   .utility a.closes:hover {
     background:color-mix(in srgb, var(--accent) 22%, transparent);
     color:var(--accent); }
-  details.menu { position:relative; }
-  details.menu summary { list-style:none; cursor:pointer;
-    font-family:var(--labelfont); font-size:12px; letter-spacing:.07em;
-    text-transform:uppercase; color:var(--soft); display:inline-flex;
-    align-items:center; gap:4px; }
-  details.menu summary::-webkit-details-marker { display:none; }
-  details.menu summary:hover, details.menu[open] summary { color:var(--link); }
-  /* list-style:none removes the marker, not the focus ring — without this the
-     summary is the one control on the site still drawing the UA default. */
-  details.menu summary:focus-visible { outline:2px solid var(--accent);
-    outline-offset:2px; }
-  details.menu ul.dd { position:absolute; top:calc(100% + 10px); right:-8px;
-    min-width:190px; margin:0; padding:6px; list-style:none;
-    background:var(--paper); border:1px solid var(--line); border-radius:4px;
-    box-shadow:0 10px 28px rgba(0,0,0,.10); z-index:30; }
-  details.menu ul.dd a { display:flex; align-items:center; gap:9px;
-    padding:8px 10px; font-family:var(--mono); font-size:12.5px;
-    color:var(--soft); border-radius:3px; text-transform:none; letter-spacing:0; }
-  details.menu ul.dd a:hover { background:var(--wash); color:var(--link); }
   .utility .ver { color:var(--faint); }
   @media (max-width:760px) { .utility .pub { display:none; } }
   .themebtn { background:none; border:0; padding:2px; margin:0; cursor:pointer;
@@ -231,6 +211,7 @@
 
 <nav class="utility" aria-label="Document">
   <div class="in">
+    {{ partial "menu-chrome.html" . }}
     <details class="menu nav-menu">
       <summary aria-label="Site menu">{{ partial "icons/list.svg" . }}</summary>
       <ul class="dd left">
@@ -244,14 +225,7 @@
       <span class="sep">/</span> <span class="here">Not found</span></span>
     <span class="right pub"><span class="k">Published</span> {{ .Site.Params.published }}</span>
     <a class="closes" href="{{ .Site.Params.repo }}/issues">Comment closes {{ .Site.Params.commentsUntil }}</a>
-    <details class="menu">
-      <summary>Artifacts {{ partial "icons/caret-down.svg" . }}</summary>
-      <ul class="dd">
-        {{ if fileExists "static/whitepaper.pdf" }}<li><a href="/whitepaper.pdf">{{ partial "icons/file-pdf.svg" . }}PDF</a></li>{{ end }}
-        <li><a href="{{ .Site.Params.repo }}/blob/main/whitepaper/controls.yaml">{{ partial "icons/file-code.svg" . }}controls.yaml</a></li>
-        <li><a href="{{ .Site.Params.repo }}">{{ partial "icons/git-branch.svg" . }}repository</a></li>
-      </ul>
-    </details>
+    {{ partial "artifacts-menu.html" . }}
     <span class="ver">v{{ .Site.Params.version }}</span>
     {{/* aria-pressed is corrected by theme.js as soon as the body parses — the
          head script resolves the theme before this element exists, so the
