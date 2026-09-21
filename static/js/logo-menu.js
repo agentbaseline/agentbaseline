@@ -117,6 +117,13 @@
     if (e.key === 'Escape') hide();
   });
   addEventListener('pointerdown', function (e) {
+    /* A right-button press on the title is the first half of the second
+       right-click the contextmenu handler treats as "fall through". pointerdown
+       fires before contextmenu, so hiding here would clear `open` before that
+       handler reads it, and the menu would simply reopen at the new cursor —
+       the escape hatch never fired. Leave the title's own right-clicks to
+       contextmenu; every other press still dismisses. */
+    if (e.button === 2 && title.contains(e.target)) return;
     if (open && !menu.contains(e.target)) hide();
   });
   /* Absolutely positioned against the document, so a scroll does not move it
