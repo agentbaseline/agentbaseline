@@ -219,6 +219,7 @@
         <li><a href="{{ .Site.Params.repo }}/issues">Comment</a></li>
         <li><a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a></li>
         <li><a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a></li>
+        {{ with .Site.Params.slack }}<li><a href="{{ . }}">{{ partial "icons/slack-logo.svg" $ }}Slack</a></li>{{ end }}
       </ul>
     </details>
     <span class="crumb"><a class="mast" href="/">Agent Baseline</a>

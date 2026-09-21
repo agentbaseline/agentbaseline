@@ -40,6 +40,17 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
   commentsUntil = "30 September 2026"
   repo          = "https://github.com/agentbaseline/agentbaseline"
 
+  # The community Slack, linked from the utility bar and the review section.
+  # A shared invite link. Slack's default is a link that lives 30 days and
+  # 400 uses; the expiry is chosen when the link is copied (Invite people →
+  # Copy invite link → Edit link settings), and an owner or admin renews a
+  # lapsed one under Workspace settings → People → Invitations → Invite links.
+  # The site would go on pointing at a dead link, so this is the one line to
+  # change. Check it in a browser: join.slack.com answers curl with 302 then
+  # 403 whether or not the link is live. Leave it empty and the links go.
+  # A root key of [params], so it stays above the first sub-table.
+  slack         = "https://join.slack.com/t/agentbaseline/shared_invite/zt-4af54ql1d-flDoRP_Bk~l1XxcU4sWJRg"
+
   # Every brand download is served under this prefix, so a file that has left
   # the site still says whose mark it is. The prefix is in the served name, not
   # only in the <a download> attribute, because Vercel sends every static file

@@ -26,7 +26,9 @@ asking another company's permission.
 
 1. **Comment.** Open an issue against a specific control identifier. Disagreement is the point
    of a public draft.
-2. **Discuss.** Substantive changes are discussed in the open before a pull request.
+2. **Discuss.** Substantive changes are discussed in the open before a pull request. The
+   community Slack is for conversation; a change is proposed in an issue, where it is public
+   and citable.
 3. **Propose.** A pull request against `whitepaper/controls.yaml` and the prose that renders
    from it.
 4. **Decide.** A maintainer reviews and merges. Rejections are explained in the thread, not

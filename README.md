@@ -155,7 +155,8 @@ names the authors individually.
 ## License
 
 Prose and figures: [CC BY 4.0](LICENSE). Schemas and `controls.yaml`:
-[Apache-2.0](LICENSE-schemas).
+[Apache-2.0](LICENSE-schemas). Icons: [Phosphor](https://phosphoricons.com), vendored under
+`layouts/partials/icons`, [MIT](LICENSE-icons).
 
 ⟡ Pending legal confirmation. If this is donated to CNCF, its charter requires the Community
 Specification License for a specification not tied to an implementation — worth settling

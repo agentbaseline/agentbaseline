@@ -9,6 +9,10 @@ never reused.
 ## [Unreleased]
 
 ### Added
+- The community Slack is linked from the utility bar on every page and, on the homepage,
+  from the review section, with the invite address in one place in `hugo.toml`.
+  CONTRIBUTING and GOVERNANCE say what belongs in Slack and what belongs in an issue, and
+  the vendored Phosphor icons carry their MIT notice. *(2026-09-21)*
 - The brand assets are downloadable from the site — the wordmark as SVG and PNG, each for
   light and for dark grounds, the icon, and the animated wordmark for dark grounds. They are listed under Artifacts on every page, and on the
   homepage the wordmark's own right-click menu offers the same set plus copy-as-SVG. They
