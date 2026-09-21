@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate the brand assets: favicon, repo avatar, campaign graphic.
+"""Generate the brand assets: favicon, repo avatar, campaign graphic, and the
+downloadable wordmark and icon under their branded names.
 
 One visual system, three surfaces. The favicon is the wordmark reduced to a
 single glyph — the outlined Figtree "A" with the pen's glint frozen on its
@@ -104,6 +105,12 @@ icon = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 '''
 (ROOT / "static" / "icon.svg").write_text(icon, encoding="utf-8")
 print("wrote static/icon.svg")
+# The same bytes under the branded name the site offers as a download. The
+# favicon keeps its short path for the nine <link> tags; the download is
+# served under the name it should save as, because Vercel's Content-
+# Disposition filename is the served name and wins over <a download>.
+(ROOT / "static" / "agent-baseline-icon.svg").write_text(icon, encoding="utf-8")
+print("wrote static/agent-baseline-icon.svg")
 
 
 # ── wordmark geometry ────────────────────────────────────────────────────────
@@ -188,8 +195,8 @@ wordmark = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{_x0:.1f} {_y0:.
 {"".join(f'    <path d="{p}"/>{chr(10)}' for p in _bl)}  </g>
 </svg>
 '''
-(ROOT / "static" / "wordmark.svg").write_text(wordmark, encoding="utf-8")
-print("wrote static/wordmark.svg")
+(ROOT / "static" / "agent-baseline-wordmark.svg").write_text(wordmark, encoding="utf-8")
+print("wrote static/agent-baseline-wordmark.svg")
 WM_W, WM_H = _x1 - _x0, _y1 - _y0
 
 
@@ -318,9 +325,15 @@ wm_svg.write_text(
     wordmark.replace("<svg ", f'<svg width="{wm_px[0]}" height="{wm_px[1]}" ', 1),
     encoding="utf-8")
 try:
-    shot(wm_svg, ROOT / "static" / "wordmark.png", wm_px[0], wm_px[1], 1)
+    shot(wm_svg, ROOT / "static" / "agent-baseline-wordmark.png", wm_px[0], wm_px[1], 1)
 finally:
     wm_svg.unlink(missing_ok=True)
+
+# the favicon at 512 under its branded download name — the same bytes as
+# static/icon-512.png, which the <link rel=icon sizes=512x512> keeps naming.
+(ROOT / "static" / "agent-baseline-icon.png").write_bytes(
+    (ROOT / "static" / "icon-512.png").read_bytes())
+print("wrote static/agent-baseline-icon.png")
 
 # the repo avatar: the favicon at 512
 avatar_svg = BRAND / ".avatar.svg"

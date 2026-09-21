@@ -52,7 +52,7 @@
 <ul id="logomenu" role="menu" aria-label="Logo">
   {{/* Guarded like the download rows: a checkout that has not run
        bin/build-brand gets no copy row rather than one whose fetch 404s. */}}
-  {{ if fileExists "static/wordmark.svg" }}<li role="none"><button type="button" role="menuitem" data-copy="/wordmark.svg">{{ partial "icons/copy.svg" . }}<span class="label">Copy as SVG</span><span class="done">Copied</span></button></li>{{ end }}
+  {{ if fileExists "static/agent-baseline-wordmark.svg" }}<li role="none"><button type="button" role="menuitem" data-copy="/agent-baseline-wordmark.svg">{{ partial "icons/copy.svg" . }}<span class="label">Copy as SVG</span><span class="done">Copied</span></button></li>{{ end }}
   {{- partial "brand-rows.html" . }}
 </ul>
 <script src="/js/logo-menu.js" defer></script>
