@@ -306,14 +306,21 @@ shot(BRAND / "social-campaign.svg", BRAND / "social-campaign.png", 1600, 900, 2)
 # at 3x the design size so it survives a retina slide; the transparent ground
 # comes from shot()'s --default-background-color, so it composites on anything
 # light. Chrome needs explicit width/height to size a standalone SVG.
-wm_svg = ROOT / "static" / ".wordmark-px.svg"
+#
+# The sized copy lives under brand/, beside .avatar.svg, not under static/:
+# Hugo publishes static/ dotfiles (.well-known depends on that), so a copy
+# stranded there by a Chrome failure would ship on the next deploy. shot()
+# exits on failure, which is why the removal is in a finally.
+wm_svg = BRAND / ".wordmark-px.svg"
 wm_scale = 3
 wm_px = (round(WM_W * wm_scale), round(WM_H * wm_scale))
 wm_svg.write_text(
     wordmark.replace("<svg ", f'<svg width="{wm_px[0]}" height="{wm_px[1]}" ', 1),
     encoding="utf-8")
-shot(wm_svg, ROOT / "static" / "wordmark.png", wm_px[0], wm_px[1], 1)
-wm_svg.unlink()
+try:
+    shot(wm_svg, ROOT / "static" / "wordmark.png", wm_px[0], wm_px[1], 1)
+finally:
+    wm_svg.unlink(missing_ok=True)
 
 # the repo avatar: the favicon at 512
 avatar_svg = BRAND / ".avatar.svg"
