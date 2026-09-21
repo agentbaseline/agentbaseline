@@ -125,6 +125,14 @@
   .utility a.closes:hover {
     background:color-mix(in srgb, var(--accent) 22%, transparent);
     color:var(--accent); }
+  /* The room's link wears its mark and the accent, and no wash: the deadline
+     pill stays the one tinted block in the chrome. Inline, not flex, so the
+     bar's baseline alignment sees this link's text baseline like the others'.
+     Phosphor regular rather than the site's thin: at this size on a 1x screen
+     the thin octothorpe dissolves, and the theme button's 15px is the size. */
+  .utility a.slack { color:var(--accent); }
+  .utility a.slack:hover { color:var(--link-hover); }
+  .utility a.slack svg.ph { width:15px; height:15px; vertical-align:-3px; margin-right:6px; }
   .utility .ver { color:var(--faint); }
   @media (max-width:760px) { .utility .pub { display:none; } }
   .themebtn { background:none; border:0; padding:2px; margin:0; cursor:pointer;
@@ -428,6 +436,29 @@
     background:color-mix(in srgb, var(--accent) 20%, transparent);
     color:var(--accent); }
 
+  /* The community chip sits at the end of the review section's rule: the
+     heading names the review, the chip is where it is talked about. The chip
+     the meetup wears — a size up from the tags under the questions, because
+     it stands alone rather than in a row — with the mark set in the accent
+     like the label beside it. Where the row is too narrow for both, the chip
+     takes its own line beneath the heading; narrower still, the heading
+     wraps as it always did. Flex places the chip against the heading's full
+     one-line width, so the heading is never squeezed to make room for it. */
+  .h2row { display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px;
+    margin:76px 0 22px; }
+  .prose + .h2row { margin-top:56px; }
+  .h2row h2 { flex:1 1 auto; margin:0; }
+  .h2row a.slack { display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--labelfont); font-weight:500; font-size:11.5px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--accent);
+    text-decoration:none; border-radius:3px; padding:7px 14px 7px 11px;
+    background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  .h2row a.slack:hover {
+    background:color-mix(in srgb, var(--accent) 20%, transparent);
+    color:var(--accent); }
+  .h2row a.slack:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .h2row a.slack svg.ph { width:15px; height:15px; }
+
   .allcontrols { font-family:var(--labelfont); font-weight:500; font-size:12.5px;
     letter-spacing:.08em; text-transform:uppercase; margin:6px 0 0; }
   .allcontrols a { color:var(--accent); text-decoration:none; }
@@ -467,6 +498,7 @@
     <a href="{{ .Site.Params.repo }}/issues">Comment</a>
     <a href="{{ .Site.Params.repo }}/blob/main/CHANGELOG.md">Changelog</a>
     <a href="{{ .Site.Params.repo }}/blob/main/GOVERNANCE.md">Governance</a>
+    {{ with .Site.Params.slack }}<a class="slack" href="{{ . }}">{{ partial "icons/slack-logo.svg" $ }}Slack</a>{{ end }}
     <span class="right pub"><span class="k">Published</span> {{ .Site.Params.published }}</span>
     <a class="closes" href="{{ .Site.Params.repo }}/issues">Comment closes {{ .Site.Params.commentsUntil }}</a>
     {{ partial "artifacts-menu.html" . }}
@@ -572,7 +604,20 @@
   </div>
 
 
+  {{- with .Site.Params.slack }}
+  {{/* The heading names the review; the chip at the end of its rule is where
+       the review is talked about. The same chip the meetup wears, so the one
+       thing to click here looks like the one thing to click there, with
+       Phosphor's mark in the accent like every icon on the page is in the
+       colour of its text. A row rather than a link inside the h2, so the
+       heading's name stays the heading. */}}
+  <div class="h2row">
+    <h2>Working draft for community review</h2>
+    <a class="slack" href="{{ . }}">{{ partial "icons/slack-logo.svg" $ }}Join the Slack</a>
+  </div>
+  {{- else }}
   <h2>Working draft for community review</h2>
+  {{- end }}
 
   <div class="prose">
     {{/* The heading carries "working draft", so the paragraph does not repeat it. */}}

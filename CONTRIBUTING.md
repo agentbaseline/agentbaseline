@@ -28,6 +28,10 @@ what it requires, and what evidence would prove it was achieved.
 **Correct a fact** — product descriptions, framework mappings, dates and citations. If we have
 described someone's product wrongly, that is a defect and we want it filed.
 
+The community Slack, linked from [agentbaseline.org](https://agentbaseline.org), is for
+conversation. Anything that should change the text is filed as an issue, so the record stays
+public and can be cited.
+
 ## How to write a control
 
 Every control has four parts, and all four are required:
