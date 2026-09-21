@@ -62,6 +62,10 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
 #         bytes, so nothing is kept by hand twice.
 #   icon  a partial under layouts/partials/icons.
 #
+# Each file is for one ground: the plain wordmark is dark ink for light grounds,
+# the -on-dark files carry the dark theme's ink for dark grounds, and the
+# animated wordmark exists only for dark grounds. The name says which.
+#
 # Each path is checked with fileExists at build time, so an asset that has not
 # been generated yet costs a missing row rather than a 404.
 [[params.brandAssets]]
@@ -69,6 +73,12 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
   icon = "file-svg"
 [[params.brandAssets]]
   path = "agent-baseline-wordmark.png"
+  icon = "file-png"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark-on-dark.svg"
+  icon = "file-svg"
+[[params.brandAssets]]
+  path = "agent-baseline-wordmark-on-dark.png"
   icon = "file-png"
 [[params.brandAssets]]
   path = "agent-baseline-icon.svg"

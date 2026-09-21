@@ -171,14 +171,17 @@ def string_paths(s, size, ox, oy, xs=None):
 # real outlines, so it survives being dropped into a slide, a README or a press
 # kit with no font anywhere.
 #
-# Colour is currentColor over a `color` on the root: opened on its own the file
-# renders in the dark ink below, and an embedder who sets `color` on or above
-# the <svg> gets the wordmark in their own. One file covers light and dark
-# rather than shipping a near-duplicate per background.
+# Colour is currentColor under a `color` presentation attribute on the root, so
+# the file opens in its ink on its own and keeps it as an <img>. An embedder who
+# inlines the markup can override it by setting `color` on the <svg> element
+# itself — the attribute has specificity zero — but not from an ancestor: a
+# presentation attribute is a specified value and beats inheritance, and nothing
+# recolours an <img>. So there are two files, one per ground: dark ink for light
+# grounds, the dark theme's ink for dark grounds. The name says which.
 WM_FS = 170                                        # matches the campaign plate
 WM_STROKE = 1.6                                    # so the outline weight agrees
 WM_PAD = 6
-WM_DARK = PAPER                                    # #151714 — ink on light ground
+WM_INKS = {"": PAPER, "-on-dark": INK}             # #151714 on light, #E6E7E3 on dark
 
 _ag, _agbox = string_paths("Agent", WM_FS, 0, 0, xs=LX)
 _bl, _blbox = string_paths("Baseline", WM_FS, (AGENT_W + SPACE) * WM_FS / 100, 0)
@@ -187,7 +190,10 @@ _y0 = min(_agbox[1], _blbox[1]) - WM_PAD
 _x1 = max(_agbox[2], _blbox[2]) + WM_PAD
 _y1 = max(_agbox[3], _blbox[3]) + WM_PAD
 
-wordmark = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{_x0:.1f} {_y0:.1f} {_x1 - _x0:.1f} {_y1 - _y0:.1f}" color="{WM_DARK}" role="img" aria-label="Agent Baseline">
+
+
+def wordmark_svg(ink):
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{_x0:.1f} {_y0:.1f} {_x1 - _x0:.1f} {_y1 - _y0:.1f}" color="{ink}" role="img" aria-label="Agent Baseline">
   <title>Agent Baseline</title>
   <g fill="none" stroke="currentColor" stroke-width="{WM_STROKE}">
 {"".join(f'    <path d="{p}"/>{chr(10)}' for p in _ag)}  </g>
@@ -195,8 +201,12 @@ wordmark = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{_x0:.1f} {_y0:.
 {"".join(f'    <path d="{p}"/>{chr(10)}' for p in _bl)}  </g>
 </svg>
 '''
-(ROOT / "static" / "agent-baseline-wordmark.svg").write_text(wordmark, encoding="utf-8")
-print("wrote static/agent-baseline-wordmark.svg")
+
+
+wordmarks = {suffix: wordmark_svg(ink) for suffix, ink in WM_INKS.items()}
+for suffix, svg in wordmarks.items():
+    (ROOT / "static" / f"agent-baseline-wordmark{suffix}.svg").write_text(svg, encoding="utf-8")
+    print(f"wrote static/agent-baseline-wordmark{suffix}.svg")
 WM_W, WM_H = _x1 - _x0, _y1 - _y0
 
 
@@ -311,8 +321,9 @@ shot(BRAND / "social-campaign.svg", BRAND / "social-campaign.png", 1600, 900, 2)
 
 # the wordmark as a raster, for the places that will not take an SVG. Rendered
 # at 3x the design size so it survives a retina slide; the transparent ground
-# comes from shot()'s --default-background-color, so it composites on anything
-# light. Chrome needs explicit width/height to size a standalone SVG.
+# comes from shot()'s --default-background-color, so each composites on the
+# ground its ink is for. Chrome needs explicit width/height to size a standalone
+# SVG.
 #
 # The sized copy lives under brand/, beside .avatar.svg, not under static/:
 # Hugo publishes static/ dotfiles (.well-known depends on that), so a copy
@@ -321,13 +332,14 @@ shot(BRAND / "social-campaign.svg", BRAND / "social-campaign.png", 1600, 900, 2)
 wm_svg = BRAND / ".wordmark-px.svg"
 wm_scale = 3
 wm_px = (round(WM_W * wm_scale), round(WM_H * wm_scale))
-wm_svg.write_text(
-    wordmark.replace("<svg ", f'<svg width="{wm_px[0]}" height="{wm_px[1]}" ', 1),
-    encoding="utf-8")
-try:
-    shot(wm_svg, ROOT / "static" / "agent-baseline-wordmark.png", wm_px[0], wm_px[1], 1)
-finally:
-    wm_svg.unlink(missing_ok=True)
+for suffix, svg in wordmarks.items():
+    wm_svg.write_text(
+        svg.replace("<svg ", f'<svg width="{wm_px[0]}" height="{wm_px[1]}" ', 1),
+        encoding="utf-8")
+    try:
+        shot(wm_svg, ROOT / "static" / f"agent-baseline-wordmark{suffix}.png", wm_px[0], wm_px[1], 1)
+    finally:
+        wm_svg.unlink(missing_ok=True)
 
 # the favicon at 512 under its branded download name — the same bytes as
 # static/icon-512.png, which the <link rel=icon sizes=512x512> keeps naming.

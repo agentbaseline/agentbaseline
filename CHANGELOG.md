@@ -9,8 +9,8 @@ never reused.
 ## [Unreleased]
 
 ### Added
-- The brand assets are downloadable from the site — the wordmark as SVG and PNG, the icon,
-  and the animated wordmark. They are listed under Artifacts on every page, and on the
+- The brand assets are downloadable from the site — the wordmark as SVG and PNG, each for
+  light and for dark grounds, the icon, and the animated wordmark for dark grounds. They are listed under Artifacts on every page, and on the
   homepage the wordmark's own right-click menu offers the same set plus copy-as-SVG. They
   are served under an `agent-baseline-` prefix, which is also what they save as: Vercel
   names a same-origin download after the served file, not the `download` attribute.
