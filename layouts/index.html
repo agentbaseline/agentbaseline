@@ -440,12 +440,14 @@
      heading names the review, the chip is where it is talked about. The chip
      the meetup wears — a size up from the tags under the questions, because
      it stands alone rather than in a row — with the mark set in the accent
-     like the label beside it. The heading does not wrap, so where the row is
-     too narrow for both the chip takes its own line beneath it. */
+     like the label beside it. Where the row is too narrow for both, the chip
+     takes its own line beneath the heading; narrower still, the heading
+     wraps as it always did. Flex places the chip against the heading's full
+     one-line width, so the heading is never squeezed to make room for it. */
   .h2row { display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px;
     margin:76px 0 22px; }
   .prose + .h2row { margin-top:56px; }
-  .h2row h2 { flex:1 1 auto; margin:0; white-space:nowrap; }
+  .h2row h2 { flex:1 1 auto; margin:0; }
   .h2row a.slack { display:inline-flex; align-items:center; gap:8px;
     font-family:var(--labelfont); font-weight:500; font-size:11.5px;
     letter-spacing:.08em; text-transform:uppercase; color:var(--accent);
