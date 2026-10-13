@@ -1,0 +1,132 @@
+{{- /* What a page says to machines about itself. One line in the <head> of each
+     indexable page:
+
+       {{ partial "machine-readable.html" . }}
+
+     Not in layouts/404.html: an error page has no text version and is not a
+     thing to be described.
+
+     The page's text version. Every params.texts entry whose `page` is this
+     page gets a <link rel="alternate" type="text/markdown">, which is how an
+     agent that has landed on the HTML finds the Markdown without being told the
+     URL. Absolute, like the canonical, so it means the same thing when the HTML
+     has been saved or proxied. People see nothing: a <link> in the head does
+     not render. */ -}}
+{{- $here := strings.TrimSuffix "/" .RelPermalink | default "/" -}}
+{{- range $e := site.Params.texts -}}
+  {{- if eq $e.page $here -}}
+    {{- with site.Home.OutputFormats.Get $e.format }}
+<link rel="alternate" type="text/markdown" href="{{ .Permalink }}" title="{{ $e.title }} (Markdown)">
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+{{- /* Structured data, as JSON-LD. It is what a search engine or an answer
+     engine reads to know what a page IS — a technical document with these
+     authors under this licence, a dataset with these downloads — rather than
+     guessing from the prose.
+
+     Built as dicts and written with jsonify, never as a template of JSON text:
+     a quote in a title cannot break it, and jsonify escapes < and > so nothing
+     in a value can close the <script>. The deployment CSP (script-src 'self')
+     does not stop these blocks; they are data, the browser never executes them,
+     and crawlers read them as text.
+
+     Every value comes from a source of record — hugo.toml, the params.texts
+     entry, the document's contributors file, the document's own heading — and
+     a field with no such source is left out rather than filled in. That is why
+     there is no publisher: the repository names who convened the work, not who
+     publishes it. And no image: the card's URL is chosen in social-meta.html
+     with a fallback, and a second copy of that choice would drift from the
+     first. Version and date are each document's own (partials/
+     text-facts.html): the reference architecture is version 1 of 13 October
+     2026, not the baseline's draft of 30 July. bin/check-seo holds every
+     TechArticle's version, date and authors to its paper.
+
+     The home page also describes the site, as a WebSite. Then each document
+     whose page this is, typed by its entry's `schema`:
+
+       TechArticle  the white paper and the reference architecture.
+                    schema.org's own description of the type names
+                    specifications, which is what each paper is; Report
+                    would suit findings published by an organization, and its
+                    one distinguishing property, reportNumber, has nothing to
+                    hold. A paper's PDF and Markdown are each an `encoding` of
+                    the same work — associatedMedia is for media that accompany a
+                    work, not for the work in another format. Authors are the
+                    confirmed entries of the document's own contributors file
+                    (the data file the entry's `contributors` names: the
+                    baseline's contributors.yaml, or software-factory/
+                    contributors.yaml as sfcontributors), in the page's
+                    surname order, each with the affiliation that file states.
+                    affiliation, not worksFor: a byline names an affiliation,
+                    and employment is a claim no file here makes. An
+                    unconfirmed entry is never published here, as it is not on
+                    the page.
+       Dataset      the controls. The catalogue is data first — controls.yaml
+                    is the source of truth — and Dataset is the type that
+                    carries downloads (`distribution`). No creator: neither the
+                    repository nor contributors.yaml says who authored the
+                    catalogue as a work, as distinct from writing the paper. */ -}}
+{{- $lang := site.Language.Locale -}}
+{{- $graph := slice -}}
+{{- if .IsHome -}}
+  {{- $graph = $graph | append (dict "@context" "https://schema.org" "@type" "WebSite" "name" site.Title "url" site.BaseURL "inLanguage" $lang) -}}
+{{- end -}}
+{{- range $e := site.Params.texts -}}
+  {{- if eq $e.page $here -}}
+    {{- $md := site.Home.OutputFormats.Get $e.format -}}
+    {{- $f := partial "text-facts.html" $e -}}
+    {{- $ld := dict
+          "@context" "https://schema.org"
+          "@type" $e.schema
+          "name" $e.title
+          "description" $e.description
+          "url" (absURL $e.page)
+          "version" $f.version
+          "datePublished" (partial "published-iso.html" $f.published)
+          "inLanguage" $lang
+          "isAccessibleForFree" true
+          "license" $e.license_url -}}
+    {{- if eq $e.schema "TechArticle" -}}
+      {{- /* The document's own title, from its first level-1 heading, less any
+             pandoc {#id} attribute — the name it is cited by. */ -}}
+      {{- $src := (resources.Get $e.source).Content -}}
+      {{- with findRESubmatch `(?m)^# (.+?)(?:\s*\{#[^}]*\})?\s*$` $src 1 -}}
+        {{- $ld = merge $ld (dict "headline" (index (index . 0) 1)) -}}
+      {{- end -}}
+      {{- $key := $e.contributors | default "contributors" -}}
+      {{- $people := index hugo.Data $key -}}
+      {{- if not $people -}}
+        {{- errorf "params.texts %q: contributors = %q names no data file — see the mounts in hugo.toml" $e.format $key -}}
+      {{- end -}}
+      {{- $authors := slice -}}
+      {{- range sort (where $people.contributors "confirmed" true) "sortkey" -}}
+        {{- $authors = $authors | append (dict "@type" "Person" "name" .name "affiliation" (dict "@type" "Organization" "name" .affiliation)) -}}
+      {{- end -}}
+      {{- with $authors }}{{ $ld = merge $ld (dict "author" .) }}{{ end -}}
+      {{- $enc := slice -}}
+      {{- with $e.pdf -}}{{- if fileExists (printf "static/%s" .) -}}
+        {{- $enc = $enc | append (dict "@type" "MediaObject" "contentUrl" (absURL .) "encodingFormat" "application/pdf") -}}
+      {{- end -}}{{- end -}}
+      {{- $enc = $enc | append (dict "@type" "MediaObject" "contentUrl" $md.Permalink "encodingFormat" "text/markdown") -}}
+      {{- $ld = merge $ld (dict "encoding" $enc) -}}
+    {{- else if eq $e.schema "Dataset" -}}
+      {{- $dist := slice -}}
+      {{- /* The site's own copy, mounted from the repository (hugo.toml): a
+             distribution is the file itself, at an address this site answers
+             for, not a page that shows it. */ -}}
+      {{- with $e.data -}}
+        {{- $dist = $dist | append (dict "@type" "DataDownload" "name" (path.Base .) "contentUrl" (absURL .) "encodingFormat" "application/yaml") -}}
+      {{- end -}}
+      {{- $dist = $dist | append (dict "@type" "DataDownload" "name" (path.Base $md.RelPermalink) "contentUrl" $md.Permalink "encodingFormat" "text/markdown") -}}
+      {{- $ld = merge $ld (dict "distribution" $dist) -}}
+    {{- end -}}
+    {{- $graph = $graph | append $ld -}}
+  {{- end -}}
+{{- end -}}
+{{- /* One block per entity, each with its own @context and @type, rather than
+       an @graph: every block then stands alone, and bin/check-seo can hold
+       each one to the same rule. */ -}}
+{{- range $graph }}
+<script type="application/ld+json">{{ . | jsonify | safeJS }}</script>
+{{- end }}

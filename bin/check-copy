@@ -171,6 +171,11 @@ for p in [ROOT / "whitepaper" / "whitepaper.md", ROOT / "README.md"]:
 idx = ROOT / "public" / "index.html"
 if idx.exists():
     h = re.sub(r"<style[^>]*>.*?</style>", " ", idx.read_text(encoding="utf-8"), flags=re.S)
+    # JSON-LD is data for crawlers, not prose a reader sees, and every string in
+    # it is double-quoted — so each author's name and the word "Organization"
+    # read as quoted titles that exist nowhere. Only the structured-data blocks
+    # are cut; any other script stays in, and the visible text is unchanged.
+    h = re.sub(r"<script[^>]*application/ld\+json[^>]*>.*?</script>", " ", h, flags=re.S)
     m = re.search(r"<h1>(.*?)</h1>", h, re.S)
     if m: titles.add(re.sub(r"<[^>]+>", "", m.group(1)).strip().lower())
     for q in re.findall(r"[“\"]([^”\"]{12,90})[”\"]", html.unescape(re.sub(r"<[^>]+>", " ", h))):

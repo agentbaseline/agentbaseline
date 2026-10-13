@@ -63,6 +63,11 @@ founding maintainers too.
 4. Sign off with your name and affiliation. Contributors are credited as individuals with
    affiliations disclosed — not as company logos.
 
+A new document on the site gets a Markdown edition by joining `params.texts` in
+`hugo.toml`; the comment there lists the other places it has to be named.
+That is what puts it in `llms.txt`, and a page whose head names no Markdown
+edition fails `bin/check-seo`.
+
 ## What gets rejected
 
 - Naming a specific product as the implementation of a control. This property does not do

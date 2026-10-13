@@ -1,0 +1,49 @@
+{{- /* The body of a text version: the source document as it is in the
+     repository, with its relative links made absolute. Called with a
+     params.texts entry; returns a string.
+
+     A relative link is only meaningful beside the file it was written in. Once
+     the text is served from the root of the site, `figures/x.svg` and
+     `../VERSIONING.md` resolve to nothing, and an agent that follows them gets
+     a 404 and no way to tell that the paper cites a figure at all. Each is
+     resolved against the source's own directory and then pointed at the one
+     place that serves it: an SVG in the document's figures/ directory at the
+     address the entry's `figures` names (a static mount in hugo.toml —
+     /figures/ for the white paper, /software-factory/figures/ for the
+     reference architecture), and everything else at the file in the
+     repository. Fragments, absolute URLs and mailto: are left alone; a
+     site-absolute path gets the site's origin. bin/check-seo fails on any
+     relative link that survives, and on any of this site's links that does not
+     resolve to a built file.
+
+     Nothing else is touched. The text is the bytes the PDF is built from, which
+     is the whole reason to generate it rather than keep a copy. */ -}}
+{{- $e := . -}}
+{{- $src := .source -}}
+{{- $r := resources.Get $src -}}
+{{- if not $r -}}
+  {{- errorf "text version %q: %s is not mounted under assets/ — see the mounts in hugo.toml" .format $src -}}
+{{- end -}}
+{{- $body := $r.Content -}}
+{{- $dir := path.Dir $src -}}
+{{- $figs := printf "%s/figures/" $dir -}}
+{{- $origin := strings.TrimSuffix "/" site.BaseURL -}}
+{{- range findRESubmatch `\]\(([^)\s]+)` $body -}}
+  {{- $t := index . 1 -}}
+  {{- $abs := "" -}}
+  {{- if hasPrefix $t "/" -}}
+    {{- $abs = printf "%s%s" $origin $t -}}
+  {{- else if not (findRE `^(#|[a-zA-Z][a-zA-Z0-9+.-]*:)` $t) -}}
+    {{- $p := path.Join $dir $t -}}
+    {{- $abs = printf "%s/blob/main/%s" site.Params.repo $p -}}
+    {{- with $e.figures -}}
+      {{- if and (hasPrefix $p $figs) (strings.HasSuffix $p ".svg") -}}
+        {{- $abs = printf "%s%s%s" $origin . (strings.TrimPrefix $figs $p) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $abs -}}
+    {{- $body = replace $body (printf "](%s" $t) (printf "](%s" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $body -}}

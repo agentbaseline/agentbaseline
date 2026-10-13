@@ -1,0 +1,13 @@
+{{- /* The params.texts entry a text-version template is rendering, or an empty
+     dict when none is.
+
+     Matched by permalink: every text format is permalinkable, so inside its
+     template .RelPermalink is the file being written — /whitepaper.md — rather
+     than the home page. Called with the page. */ -}}
+{{- $here := .RelPermalink -}}
+{{- $entry := dict -}}
+{{- range site.Params.texts -}}
+  {{- $f := site.Home.OutputFormats.Get .format -}}
+  {{- if and $f (eq $f.RelPermalink $here) -}}{{- $entry = . -}}{{- end -}}
+{{- end -}}
+{{- return $entry -}}

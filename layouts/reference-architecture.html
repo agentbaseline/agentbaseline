@@ -23,6 +23,7 @@
        (bin/build-social) and the page's list do. */}}
 {{- $boundaries := slice }}{{ range hugo.Data.sfboundaries.boundaries }}{{ $boundaries = $boundaries | append (lower .name) }}{{ end }}
 {{ partial "social-meta.html" (dict "ctx" . "title" "The Secure Software Factory: A Reference Architecture" "desc" "Four security boundaries for software factories, where AI agents turn tickets into tested code, enforced outside the agent at every level of autonomy. Built on Agent Baseline." "image" (printf "social-card-software-factory-v%s.png" .Site.Params.softwareFactory.version) "alt" (printf "The Secure Software Factory: A Reference Architecture. Builds on Agent Baseline, version %s, published %s. Four boundaries: %s." .Site.Params.softwareFactory.version .Site.Params.softwareFactory.published (delimit $boundaries ", "))) }}
+{{ partial "machine-readable.html" . }}
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-512.png">
 <link rel="icon" href="/icon-512.png" sizes="512x512" type="image/png">

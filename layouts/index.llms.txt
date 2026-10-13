@@ -1,0 +1,46 @@
+{{- /* /llms.txt, after llmstxt.org: an H1, a one-paragraph summary in a
+     blockquote, a little plain guidance, then H2 sections of links, each with a
+     one-line note. The `Optional` section is the format's own name for links a
+     reader with little context to spare can skip.
+
+     Generated, not written: the documents come from params.texts, the outcomes
+     and their identifier ranges from controls.yaml, so adding a text version or
+     an outcome changes this file on the next build and nobody has to remember
+     it. Every link is absolute, because llms.txt is fetched on its own and read
+     out of context. bin/check-seo parses this file and fails on any link to this
+     site that does not resolve to a built file.
+
+     robots.txt does not mention it. The convention fixes the location — the
+     root, like robots.txt itself — and gives robots.txt no part in finding it;
+     the Sitemap line there is for sitemaps, which this is not. */ -}}
+{{- $cat := hugo.Data.controls -}}
+{{- $repo := site.Params.repo -}}
+{{ partial "llms-summary.html" "Agent Baseline" }}
+
+Cite a control by its bare identifier and the version you read it in: `DIS-01 (Agent Baseline v{{ site.Params.version }})`. Identifiers are superseded, never renumbered and never reused, and they freeze at v1.0.
+
+## Documents
+{{ range $e := site.Params.texts }}
+{{- $md := site.Home.OutputFormats.Get $e.format }}
+- [{{ $e.title }}]({{ $md.Permalink }}): {{ $e.description }}
+{{- /* Guarded the way the sitemap guards it: a build without the PDF lists
+       no PDF rather than a link that 404s. */}}
+{{- with $e.pdf }}{{ if fileExists (printf "static/%s" .) }}
+- [{{ $e.title }}, PDF]({{ absURL . }}): The typeset edition of the same text, for people and for print.
+{{- end }}{{ end }}
+{{- end }}
+- [Full text]({{ (site.Home.OutputFormats.Get "llmsfull").Permalink }}): Every document above, in one file.
+
+## Outcomes
+{{ range $cat.outcomes }}
+{{- $ids := where $cat.controls "outcome" .prefix }}
+- [{{ .name }}]({{ printf "controls#%s" (lower .name) | absURL }}): {{ .requirement }} Controls `{{ (index $ids 0).id }}`–`{{ (index $ids (sub (len $ids) 1)).id }}`.
+{{- end }}
+
+## Optional
+{{ range site.Params.texts }}{{ with .data }}
+- [{{ path.Base . }}]({{ absURL . }}): The catalogue as data, and its source of truth. The controls page, the PDF's Appendix A and controls.md are rendered from it.
+{{- end }}{{ end }}
+- [VERSIONING.md]({{ $repo }}/blob/main/VERSIONING.md): What an identifier means, and what is safe to cite.
+- [PROVENANCE.md]({{ $repo }}/blob/main/PROVENANCE.md): Who convened this work, and what each of them sells.
+- [Repository]({{ $repo }}): Issues, the changelog, and how to disagree with any of it.

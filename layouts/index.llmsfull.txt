@@ -1,0 +1,28 @@
+{{- /* /llms-full.txt: everything in params.texts, in full, in one file — the
+     white paper, the controls and the reference architecture today — for a
+     reader that would rather make one request than follow links.
+
+     The same opening as llms.txt, then each document as its text version
+     serves it, less the YAML header: a `---` block halfway down a file is not
+     front matter, and some Markdown readers take it for a rule and a heading.
+     Its fields move into a short list above the document instead, so whoever
+     quotes a passage from here can still say where it came from and under what
+     licence. The bodies come from partials/text-body.html, the same partial
+     the .md files use, so the two cannot disagree. */ -}}
+{{ partial "llms-summary.html" "Agent Baseline — full text" }}
+
+This file holds, in full and in this order: {{ delimit (apply site.Params.texts "index" "." "title") ", " " and " }}. Each is also published on its own, at the address given above it.
+{{- range $e := site.Params.texts }}
+{{- $md := site.Home.OutputFormats.Get $e.format }}
+{{- $f := partial "text-facts.html" $e }}
+
+* * *
+
+- Source: {{ $md.Permalink }}
+- Canonical page: {{ absURL $e.page }}
+- Version: {{ $f.version }}
+- Published: {{ $f.published }}
+- License: {{ $e.license }} ({{ $e.license_url }})
+
+{{ partial "text-body.html" $e | strings.TrimSuffix "\n" }}
+{{- end }}

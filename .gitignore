@@ -17,3 +17,6 @@ software-factory/.build/
 # a commit in the meantime.
 static/.whitepaper.pdf.new-*
 static/.software-factory.pdf.new-*
+
+# Lighthouse CI reports, written by `npx @lhci/cli autorun` (lighthouserc.cjs).
+.lighthouseci/

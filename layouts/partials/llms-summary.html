@@ -1,0 +1,11 @@
+{{- /* The opening of llms.txt and llms-full.txt: the H1 and the one-paragraph
+     blockquote that llmstxt.org puts first. Shared so the two files cannot
+     describe the project differently. The count and the version come from the
+     catalogue and the config, as they do on the pages. Takes the H1 text;
+     returns a string. */ -}}
+{{- $n := len hugo.Data.controls.controls -}}
+{{- $o := len hugo.Data.controls.outcomes -}}
+{{- /* A sentence does not open on a numeral. */ -}}
+{{- $words := slice "Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" -}}
+{{- $ow := cond (lt $o (len $words)) (index $words (cond (lt $o (len $words)) $o 0)) (string $o) -}}
+{{- return printf "# %s\n\n> %s security outcomes an enterprise must achieve to run AI agents, and the %d controls that evidence them. Agent Baseline v%s, published %s, versioned in the open." . $ow $n site.Params.version site.Params.published -}}

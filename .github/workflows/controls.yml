@@ -52,6 +52,12 @@ jobs:
       # pass a build that shipped something else.
       - name: Scripts parse — source and minified
         run: python3 bin/check-js
+      # What crawlers and agents are told and people never see: titles,
+      # descriptions, canonicals, social cards, JSON-LD, the text versions and
+      # their headers, the sitemap, robots.txt and llms.txt. After the build
+      # for the same reason as the step above: it reads what would deploy.
+      - name: What search engines and agents are told — meta, JSON-LD, llms.txt
+        run: python3 bin/check-seo
       # The PDF renders Appendix A from controls.yaml rather than from the
       # paper's own table. That substitution is only honest while they agree.
       - name: Appendix A agrees with the catalogue
@@ -156,3 +162,26 @@ jobs:
             exit 1
           }
           echo "deterministic: $(stat -c%s /tmp/sf-a.pdf) bytes, twice"
+
+  # Lighthouse scores the built pages as a browser and a search engine would:
+  # SEO, accessibility and best practices fail below 0.95, performance warns
+  # below 0.85. The thresholds and why the 404 page is not held to the SEO one
+  # are in lighthouserc.cjs. Its own job because it needs node and a browser and
+  # takes a minute, and the checks above should not wait on it. The CLI is
+  # pinned for the same reason the determinism job pins Chrome: an unpinned
+  # auditor makes the score depend on the day it ran.
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.164.0'
+          extended: true
+      - name: Build the site
+        run: hugo --gc --minify
+      - name: Lighthouse — SEO, accessibility, best practices; performance warns
+        run: npx --yes @lhci/cli@0.15.1 autorun

@@ -42,6 +42,94 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
 [[module.mounts]]
   source = "content"
   target = "content"
+# Declaring any static mount replaces Hugo's default one, so the site's own
+# static/ is named here first or every font, script and icon would vanish.
+[[module.mounts]]
+  source = "static"
+  target = "static"
+# The catalogue itself, served at /controls.yaml: the file the pages, the PDF's
+# Appendix A and controls.md are rendered from, and the one an agent should read
+# rather than parse a rendering of. Mounted, not copied — a copy in static/
+# would be a second source of truth. vercel.json serves it as
+# `text/yaml; charset=utf-8` rather than application/yaml, the type RFC 9512
+# registers, because browsers download an application/yaml response instead of
+# showing it, and this file is meant to be read where it opens; YAML tools take
+# either. The JSON-LD still names its format as application/yaml.
+[[module.mounts]]
+  source = "whitepaper/controls.yaml"
+  target = "static/controls.yaml"
+# The paper's figures, served at /figures/ so its text version can point at
+# them. Filtered to the SVGs: the generator, its helper module and its box
+# manifest live in the same directory and are not for publishing.
+[[module.mounts]]
+  source = "whitepaper/figures"
+  target = "static/figures"
+  files = ["*.svg"]
+# The reference architecture's figures, the same way, at /software-factory/figures/.
+[[module.mounts]]
+  source = "software-factory/figures"
+  target = "static/software-factory/figures"
+  files = ["*.svg"]
+# The text versions read their documents from here — see params.texts. Mounted
+# at the same path they have in the repository, so a relative link inside one
+# resolves against the directory it was written in. Declaring any assets mount
+# replaces Hugo's default one, as with static above; this site has no assets/
+# directory, so if one is ever added, mount it here first.
+[[module.mounts]]
+  source = "whitepaper/whitepaper.md"
+  target = "assets/whitepaper/whitepaper.md"
+[[module.mounts]]
+  source = "whitepaper/CONTROLS.md"
+  target = "assets/whitepaper/CONTROLS.md"
+[[module.mounts]]
+  source = "software-factory/software-factory.md"
+  target = "assets/software-factory/software-factory.md"
+
+# One output format per text version, all on the home page, so each lands at
+# the root of the site under its baseName: /whitepaper.md, /controls.md,
+# /software-factory.md. One template, layouts/index.md, renders every
+# text/markdown format; it finds its entry in params.texts by permalink, which
+# works because `permalinkable` makes .RelPermalink name the file being written
+# rather than the HTML page.
+# `notAlternative` keeps them out of .AlternativeOutputFormats: the <link
+# rel="alternate"> tags are written by hand, per page, in
+# partials/machine-readable.html, because /controls.md is the text of
+# /controls, not of the home page that happens to write it.
+[outputFormats.paper]
+  mediaType = "text/markdown"
+  baseName = "whitepaper"
+  isPlainText = true
+  notAlternative = true
+  permalinkable = true
+[outputFormats.catalogue]
+  mediaType = "text/markdown"
+  baseName = "controls"
+  isPlainText = true
+  notAlternative = true
+  permalinkable = true
+[outputFormats.reference]
+  mediaType = "text/markdown"
+  baseName = "software-factory"
+  isPlainText = true
+  notAlternative = true
+  permalinkable = true
+# /llms.txt and /llms-full.txt, after llmstxt.org. Each has its own template,
+# layouts/index.llms.txt and layouts/index.llmsfull.txt.
+[outputFormats.llms]
+  mediaType = "text/plain"
+  baseName = "llms"
+  isPlainText = true
+  notAlternative = true
+  permalinkable = true
+[outputFormats.llmsfull]
+  mediaType = "text/plain"
+  baseName = "llms-full"
+  isPlainText = true
+  notAlternative = true
+  permalinkable = true
+
+[outputs]
+  home = ["html", "paper", "catalogue", "reference", "llms", "llmsfull"]
 
 [params]
   version       = "1.0-draft"
@@ -164,6 +252,88 @@ disableKinds = ["taxonomy", "term", "RSS", "section"]
     { name = "Socket",      logo = "socket",      height = 19 },
     { name = "Tessl",       logo = "tessl",       height = 22 },
   ]
+
+# The text versions. Every document the site hands a person as a page or a PDF
+# is also published as Markdown, for agents and for anyone who would rather read
+# the source than a rendering of it. Nothing on any page changes; the pages say
+# where their text is in a <link rel="alternate">, and an agent that asks for
+# text/markdown is sent there (vercel.json).
+#
+#   format       the output format above that writes the file. Its baseName is
+#                the file's name at the root of the site.
+#   source       the document, by its path in the repository. A mount above
+#                puts it under assets/ at the same path. The body is the source
+#                byte for byte — the file the PDF is built from — with relative
+#                links made absolute, so it cannot drift from the paper.
+#   title        how the file's header and llms.txt name it.
+#   page         the HTML page it is the text of: its canonical, and the page
+#                whose <head> links to it. vercel.json carries the same pairing
+#                as a Link header, and bin/check-seo fails if the two disagree.
+#   schema       the schema.org type of the page's JSON-LD for this document.
+#   facts        optional: the [params] table holding this document's own
+#                `version` and `published`, for a document versioned apart from
+#                the baseline. Without it, the baseline's params.version and
+#                params.published. The text's header, llms-full.txt and the
+#                JSON-LD all read them through partials/text-facts.html.
+#   contributors optional, for a TechArticle: the data file (mounted above)
+#                whose confirmed entries are its authors. Without it, the
+#                baseline's, `contributors`.
+#   figures      optional: where this site serves the SVGs in the document's
+#                own figures/ directory (a static mount above). The text's links
+#                to them point there rather than at the repository.
+#   pdf          optional: the typeset edition, a path under static/.
+#   data         optional: the machine-readable source, by the path this site
+#                serves it at (a static mount above puts it there).
+#   license      an SPDX identifier, and license_url the licence itself. Which
+#                licence applies is README's call, not this file's: prose and
+#                figures are CC BY 4.0; controls.yaml is Apache-2.0, and
+#                CONTROLS.md is generated from it, so it carries the same. README
+#                marks both as pending legal confirmation — change them there
+#                first, then here.
+#   description  one sentence, for llms.txt and the JSON-LD.
+#
+# A new document joins the way the reference architecture did, with no new
+# template: mount it under assets/ at its repository path, add an output format
+# with the file's baseName, add that format to outputs.home, and add an entry
+# here. Set `page` to the HTML page that presents it, and put
+# partials/machine-readable.html in that page's <head>; or set it to the text's
+# own address if there is no page — then no page links to it and no Link header
+# or redirect is needed. Add the vercel.json redirect and headers for the new
+# file, and llms.txt and llms-full.txt pick it up on the next build.
+[[params.texts]]
+  format      = "paper"
+  source      = "whitepaper/whitepaper.md"
+  title       = "Agent Baseline white paper"
+  page        = "/"
+  schema      = "TechArticle"
+  figures     = "/figures/"
+  pdf         = "whitepaper.pdf"
+  license     = "CC-BY-4.0"
+  license_url = "https://creativecommons.org/licenses/by/4.0/"
+  description = "The argument in full: why product categories do not map to the problem of running AI agents safely, the six security outcomes that do, and the controls that evidence each."
+[[params.texts]]
+  format      = "catalogue"
+  source      = "whitepaper/CONTROLS.md"
+  title       = "Agent Baseline controls"
+  page        = "/controls"
+  schema      = "Dataset"
+  data        = "controls.yaml"
+  license     = "Apache-2.0"
+  license_url = "https://www.apache.org/licenses/LICENSE-2.0"
+  description = "Every control, grouped by outcome, each with a permanent identifier you can cite and the requirement it states. Generated from controls.yaml, the source of truth."
+[[params.texts]]
+  format       = "reference"
+  source       = "software-factory/software-factory.md"
+  title        = "The Secure Software Factory: A Reference Architecture"
+  page         = "/reference-architecture"
+  schema       = "TechArticle"
+  facts        = "softwareFactory"
+  contributors = "sfcontributors"
+  figures      = "/software-factory/figures/"
+  pdf          = "software-factory.pdf"
+  license      = "CC-BY-4.0"
+  license_url  = "https://creativecommons.org/licenses/by/4.0/"
+  description  = "Four security boundaries for software factories, where AI agents turn tickets into tested code, enforced outside the agent at every level of autonomy. Built on Agent Baseline."
 
 # The event strip and the closing block render only while `until` is in the
 # future AT BUILD TIME. The site is static, so after `until` passes they stay

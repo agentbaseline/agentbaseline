@@ -1,0 +1,18 @@
+{{- /* The version and publication date of a params.texts entry's document, as
+     people write them: "1.0-draft" and "30 July 2026". Called with the entry;
+     returns a dict with `version` and `published`.
+
+     The baseline's are params.version and params.published. A document
+     versioned apart from it — the reference architecture is version 1 of its
+     own, published 13 October 2026 — names the [params] table that holds its
+     own in `facts`, so the text's header, llms-full.txt and the JSON-LD state
+     its dates and not the baseline's. A name that finds no table, or a table
+     without both, fails the build rather than publishing a blank. */ -}}
+{{- $p := site.Params -}}
+{{- with .facts -}}
+  {{- $p = index site.Params (lower .) -}}
+{{- end -}}
+{{- if not (and $p $p.version $p.published) -}}
+  {{- errorf "params.texts %q: no version and published to state — facts = %q (see hugo.toml)" .format (.facts | default "") -}}
+{{- end -}}
+{{- return dict "version" $p.version "published" $p.published -}}
