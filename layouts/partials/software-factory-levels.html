@@ -10,8 +10,7 @@
      stay hidden and the three levels show stacked, each under its own
      heading.
 
-     Data: software-factory/levels.yaml, passed in as the context. The
-     drawings are the paper's figures (partial sf-figure.html). All of this
+     Data: software-factory/levels.yaml, passed in as the context. All of this
      section's CSS is in the <style> below, scoped to .mx. */}}
 {{- $levels := . }}
 <style>
@@ -80,7 +79,7 @@
      column while the drawing inside is 880px, so a ring on the panel cut
      through the figure. Ring the lead and the drawing instead. */
   .mx .lvp:focus-visible { outline:none; }
-  .mx .lvp:focus-visible > .lead, .mx .lvp:focus-visible > figure.sff {
+  .mx .lvp:focus-visible > .lead, .mx .lvp:focus-visible > figure.sfl {
     outline:2px solid var(--link); outline-offset:6px; }
   .mx .lvp h3 { margin:0 0 6px; font-family:var(--labelfont); font-weight:500;
     font-size:13.5px; line-height:1.4; letter-spacing:.08em; text-transform:uppercase;
@@ -98,9 +97,103 @@
     .mx.is-tabbed .lvp h3 { position:static; width:auto; height:auto; margin:0 0 6px;
       overflow:visible; clip:auto; white-space:normal; }
   }
+  /* The level's drawing (partial sf-level.html): the page's own, one per
+     level on one skeleton, so what changes between levels is what the eye
+     finds. Wider than the paper's figures: up to 1000px, centred on the
+     column from the level panel, never wider than the sheet's gutters allow.
+     Below 960px the one-column drawing takes over, capped at 440px, so the
+     smallest text holds about 10px at every width (wide: 11.5 of 1000 units
+     in the 888px slot a 960px screen gives it; narrow: 10.5 of 356 at 375). */
+  figure.sfl { margin:8px 0 0; position:relative; left:50%; transform:translateX(-50%);
+    width:min(1000px, calc(100vw - 2 * clamp(28px,4vw,56px))); }
+  .sfl svg { display:block; width:100%; height:auto; overflow:visible; }
+  .sfl .sfl-n { display:none; }
+  @media (max-width:959px) {
+    .sfl .sfl-w { display:none; }
+    .sfl .sfl-n { display:block; max-width:440px; margin:0 auto; }
+  }
+  @media (max-width:479px) { figure.sfl { width:calc(100vw - 16px); } }
+  /* each drawing links to the paper's own figure of its level, at its foot */
+  .sfl .sfl-link text { fill:var(--link); }
+  .sfl .sfl-link:hover text { fill:var(--link-hover); text-decoration:underline; }
+  .sfl .sfl-link:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* Paper and ink, in three voices: names in the heading face, the verbs on
+     the wires and the pills in mono, the frames' captions in the label
+     face. Colour says three things: the accent marks what is enforced
+     outside the agent's loop (each boundary's pill, and the authorization
+     decision); the page's mark, whoever chooses the next step and the outer
+     loop it drives, which is what changes between levels; the wash, agent
+     execution. */
+  .sfl text { font-family:var(--serif); }
+  .sfl .sfl-t { font-family:var(--head); font-weight:600; fill:var(--fig-ink); }
+  .sfl .sfl-l { font-family:var(--mono); fill:var(--fig-soft); }
+  .sfl .sfl-cap { font-family:var(--labelfont); font-weight:500; letter-spacing:.08em;
+    fill:var(--fig-soft); }
+  .sfl .sfl-cap-o { fill:var(--mark); }
+  .sfl .sfl-box { fill:var(--paper); stroke:var(--fig-rule); stroke-width:1.25; }
+  .sfl .sfl-plate { fill:var(--paper); }
+  .sfl .sfl-agent { fill:var(--wash); }
+  .sfl .sfl-zone { fill:none; stroke:var(--fig-hair); stroke-width:1.25; }
+  .sfl .sfl-sb { fill:var(--wash); stroke:var(--fig-accent); stroke-width:1.5; }
+  /* one of many: the outlines behind a card */
+  .sfl .sfl-ghost { fill:var(--paper); stroke-width:1; }
+  /* the record, heavier than any card and in ink: every boundary keeps one */
+  .sfl .sfl-rec { fill:var(--wash); stroke:var(--fig-ink); stroke-width:1.6; }
+  .sfl .sfl-b { stroke:var(--fig-accent); stroke-width:1.5; }
+  .sfl .sfl-o { stroke:var(--mark); stroke-width:1.75; }
+  /* a boundary's pill, on the edge of the part that enforces it */
+  .sfl .sfl-pill rect { fill:var(--fig-accent); }
+  .sfl .sfl-pill text { font-family:var(--mono); font-weight:600; letter-spacing:.04em;
+    fill:var(--paper); }
+  .sfl .sfl-wire { fill:none; stroke:var(--fig-faint); stroke-width:1.35; }
+  .sfl .sfl-main { stroke:var(--fig-soft); stroke-width:1.9; }
+  .sfl .sfl-grant { stroke:var(--fig-accent); stroke-width:1.5; stroke-dasharray:5 4; }
+  .sfl .sfl-loop { stroke:var(--mark); stroke-width:1.6; stroke-dasharray:6 4; }
+  .sfl .sfl-mk { fill:var(--fig-faint); }
+  .sfl .sfl-mk-main { fill:var(--fig-soft); }
+  .sfl .sfl-mk-g { fill:var(--fig-accent); }
+  .sfl .sfl-mk-o { fill:var(--mark); }
+  .sfl .sfl-glyph { fill:none; stroke:var(--fig-soft); stroke-width:1.3; }
+  .sfl .sfl-glyph-head { fill:var(--fig-soft); stroke:none; }
+  .sfl .sfl-glyph-o { stroke:var(--mark); }
+  .sfl .sfl-glyph-o.sfl-glyph-head { fill:var(--mark); }
+  .sfl .sfl-sw { fill:none; stroke-width:1.5; }
+  .sfl .sfl-sw-o { stroke:var(--mark); }
+  .sfl .sfl-sw-w { fill:var(--wash); stroke:var(--fig-rule); }
+  /* Asking about a part. Every part is a focusable group with a wide
+     transparent hit area; hovered, focused or told (tips.js), its lines go
+     to ink, its own colour holding where it has one. */
+  .sfl .sfl-hit { fill:transparent; stroke:transparent; stroke-width:16; }
+  .sfl .sfl-node { cursor:help; outline:none; }
+  .sfl .sfl-node:hover .sfl-box, .sfl .sfl-node.is-told .sfl-box,
+  .sfl .sfl-node:hover .sfl-rec, .sfl .sfl-node.is-told .sfl-rec { stroke:var(--fig-ink); }
+  .sfl .sfl-node:hover .sfl-b, .sfl .sfl-node.is-told .sfl-b { stroke:var(--fig-accent); stroke-width:2.25; }
+  .sfl .sfl-node:hover .sfl-o, .sfl .sfl-node.is-told .sfl-o { stroke:var(--mark); stroke-width:2.5; }
+  .sfl .sfl-node:hover .sfl-pill rect, .sfl .sfl-node.is-told .sfl-pill rect { stroke:var(--fig-ink); stroke-width:1.25; }
+  .sfl .sfl-node:hover .sfl-wire, .sfl .sfl-node.is-told .sfl-wire { stroke:var(--fig-ink); }
+  .sfl .sfl-node:hover .sfl-grant, .sfl .sfl-node.is-told .sfl-grant { stroke:var(--fig-accent); stroke-width:2.25; }
+  .sfl .sfl-node:hover .sfl-loop, .sfl .sfl-node.is-told .sfl-loop { stroke:var(--mark); stroke-width:2.25; }
+  .sfl .sfl-node:hover .sfl-l, .sfl .sfl-node.is-told .sfl-l,
+  .sfl .sfl-node:hover .sfl-cap, .sfl .sfl-node.is-told .sfl-cap { fill:var(--fig-ink); }
+  .sfl .sfl-node:hover .sfl-cap-o, .sfl .sfl-node.is-told .sfl-cap-o { fill:var(--mark); }
+  .sfl .sfl-node:focus-visible .sfl-box, .sfl .sfl-node:focus-visible .sfl-rec,
+  .sfl .sfl-node:focus-visible .sfl-b, .sfl .sfl-node:focus-visible .sfl-o,
+  .sfl .sfl-node:focus-visible .sfl-pill rect,
+  .sfl .sfl-node:focus-visible .sfl-hit { stroke:var(--link); }
+  .sfl .sfl-node:focus-visible .sfl-hit { stroke-width:2; fill:none; }
+  /* The tooltip (tips.js): one element the page shares, placed above the
+     part or below it when the top of the screen is too close. */
+  .sfl-tip { position:absolute; z-index:40; max-width:300px; padding:9px 12px 10px;
+    background:var(--paper); color:var(--ink); border:1px solid var(--fig-rule);
+    border-radius:4px; box-shadow:0 8px 28px rgba(0,0,0,.18);
+    font-family:var(--serif); font-size:14.5px; line-height:1.5; pointer-events:none; }
+  .sfl-tip b { display:block; font-family:var(--head); font-weight:600; font-size:14px;
+    line-height:1.4; margin-bottom:2px; color:var(--ink); }
+  .sfl-tip[hidden] { display:none; }
+  @media print { .sfl-tip { display:none; } .sfl .sfl-hit { stroke:none; } }
 </style>
 <div class="mx" data-tabs>
-  <p class="mx-hint" id="levels-hint">Select a level.</p>
+  <p class="mx-hint" id="levels-hint">Select a level, then hover or tap any part of the drawing for what it does.</p>
   <div class="mx-steps" data-tablist aria-label="Levels of autonomy" aria-describedby="levels-hint" hidden>
   {{- range $i, $l := $levels }}{{ $n := add $i 1 }}
     <button type="button" class="mx-step" id="lv-tab-{{ $n }}" data-tab aria-controls="level-{{ $n }}"><span class="n">Level {{ $n }}</span><span class="nm">{{ $l.name }}</span></button>
@@ -111,8 +204,9 @@
   <section class="lvp" id="level-{{ $n }}" aria-labelledby="level-{{ $n }}-h">
     <h3 id="level-{{ $n }}-h"><span class="n">Level {{ $n }}</span> {{ $l.name }}</h3>
     <p class="lead">{{ $l.lead }}</p>
-    {{ partial "sf-figure.html" (dict "n" $l.figure "caption" $l.caption) }}
+    {{ partial "sf-level.html" (dict "n" $n) }}
   </section>
   {{- end }}
 </div>
 <script src="/js/tabs.js" defer></script>
+<script src="/js/tips.js" defer></script>

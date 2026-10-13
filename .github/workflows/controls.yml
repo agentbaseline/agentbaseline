@@ -25,16 +25,19 @@ jobs:
       # drawing of the four boundaries is generated as well, and held to the
       # same drift check. `git diff` sees only tracked files, so a figure or
       # partial the generator writes that nobody committed passed it; anything
-      # untracked in either folder fails as well.
+      # untracked in either folder fails as well. The page's drawings of the
+      # three levels are generated the same way.
       - name: Reference architecture figures — current, and geometry
         run: |
           # From nothing: a committed figure the generator no longer makes
           # then shows as a deletion instead of surviving on disk.
           rm -f software-factory/figures/figure-*.svg software-factory/figures/.figure-*.json \
-            layouts/partials/sf-figure-*.svg layouts/partials/sf-architecture*.svg
+            layouts/partials/sf-figure-*.svg layouts/partials/sf-architecture*.svg \
+            layouts/partials/sf-level-*.svg
           python3 software-factory/figures/build-figures.py
           python3 bin/sync-figure-partial
           node bin/build-architecture-drawing.mjs
+          node bin/build-levels-drawing.mjs
           git diff --exit-code -- software-factory/figures layouts/partials
           untracked=$(git status --porcelain --untracked-files=all -- software-factory/figures layouts/partials)
           if [ -n "$untracked" ]; then

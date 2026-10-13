@@ -1,0 +1,16 @@
+{{- /* One level of autonomy, drawn: the page's own drawing of the level
+       (bin/build-levels-drawing.mjs into partials/sf-level-N.svg, wide, and
+       sf-level-N-narrow.svg, one column for phones), not the paper's figure.
+       Every part is focusable, named and described, and static/js/tips.js
+       shows the description as a tooltip. Context: dict "n" (the level's
+       number). A missing drawing fails the build. Styles: .sfl in
+       software-factory-levels.html. */ -}}
+{{- $wide := printf "sf-level-%d.svg" .n }}
+{{- $narrow := printf "sf-level-%d-narrow.svg" .n }}
+{{- if not (and (templates.Exists (printf "partials/%s" $wide)) (templates.Exists (printf "partials/%s" $narrow))) }}
+{{- errorf "layouts/partials/%s or %s is missing: level %d has not been drawn (run node bin/build-levels-drawing.mjs)" $wide $narrow .n }}
+{{- end }}
+<figure class="sfl">
+  <div class="sfl-w">{{ partial $wide . }}</div>
+  <div class="sfl-n">{{ partial $narrow . }}</div>
+</figure>

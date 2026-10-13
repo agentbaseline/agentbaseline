@@ -5,10 +5,10 @@
        sentences, then sends the reader to the paper. Sections: the four
        boundaries (with the page's own drawing of them, from the talk deck,
        partial sf-architecture.html, made by bin/build-architecture-drawing.mjs),
-       the three levels of autonomy (one level
-       at a time, each with the paper's own figure), the paper's downloads,
-       and who wrote it. The levels' figures are the paper's, inlined from the
-       same source as the PDF (partial sf-figure.html). Same chrome as the
+       the three levels of autonomy (one level at a time, each the page's
+       own drawing on one skeleton, partial sf-level.html, made by
+       bin/build-levels-drawing.mjs, every part described in a tooltip), the
+       paper's downloads, and who wrote it. Same chrome as the
        other pages (this site duplicates its chrome rather than sharing it;
        see 404.html). */ -}}
 <!doctype html>
@@ -92,7 +92,7 @@
       --fig-ink:#1C1A14; --fig-soft:#5F5B51; --fig-faint:#7E7969;
       --fig-hair:#E6E2D7; --fig-rule:#8F8A7C; --fig-accent:#5A7A00; --fig-new:#DCE4BE; }
     .skip, .eventbar, nav.utility { display:none; }
-    .mx .lvp, figure.sff { break-inside:avoid; }
+    .mx .lvp, figure.sff, figure.sfl { break-inside:avoid; }
     h2 { break-after:avoid; }
   }
 
@@ -312,9 +312,11 @@
     line-height:1.4; color:var(--ink); }
   .bd-c { display:block; font-size:15.5px; line-height:1.5; color:var(--soft); }
   @media (max-width:559px) { ol.bd { grid-template-columns:minmax(0,1fr); } }
-  /* The paper's figures (partial sf-figure.html), captioned as the PDF
-     captions them. The drawing takes the page's colours through the --fig-*
-     tokens; the narrow composition replaces the wide one on phones. */
+  /* The slot the page's drawings share (.sff; the boundaries' drawing sits
+     in it, and partial sf-figure.html can inline any of the paper's figures
+     in it, captioned as the PDF captions them). The drawing takes the page's
+     colours through the --fig-* tokens; the narrow composition replaces the
+     wide one on phones. */
   /* Wider than the prose column. The drawings are set for the PDF column,
      and at 680px their smallest text came out near 10px; at 880px it is
      about 13.5px. Centred on the column from whatever contains it (the level
